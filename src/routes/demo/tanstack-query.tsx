@@ -1,11 +1,19 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
+import { useProtectedRoute } from '#/hooks/useProtectedRoute';
 
 export const Route = createFileRoute('/demo/tanstack-query')({
   component: TanStackQueryDemo,
 })
 
 function TanStackQueryDemo() {
+  const { isLoading, isAuthenticated } = useProtectedRoute();
+
+  if (isLoading) {
+    return <div className="flex h-full items-center justify-center">Verificando sesión...</div>;
+  }
+
+  if (!isAuthenticated) return null;
   const { data } = useQuery({
     queryKey: ['todos'],
     queryFn: () =>

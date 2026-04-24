@@ -9,15 +9,11 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AboutRouteImport } from './routes/about'
+import { Route as DashboardRouteRouteImport } from './routes/dashboard.route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as TalksIndexRouteImport } from './routes/talks.index'
-import { Route as SpeakersIndexRouteImport } from './routes/speakers.index'
-import { Route as ScheduleIndexRouteImport } from './routes/schedule.index'
 import { Route as TeacherReportTeachNumModRouteImport } from './routes/teacher-report/teach-num-mod'
 import { Route as TeacherReportTeachNumAcadRouteImport } from './routes/teacher-report/teach-num-acad'
 import { Route as TeacherReportTeachListRouteImport } from './routes/teacher-report/teach-list'
-import { Route as TalksSlugRouteImport } from './routes/talks.$slug'
 import { Route as StudentReportStuNumProgSexRouteImport } from './routes/student-report/stu-num-prog-sex'
 import { Route as StudentReportStuNumPassFailDropRouteImport } from './routes/student-report/stu-num-pass-fail-drop'
 import { Route as StudentReportStuNumAppCatSexRouteImport } from './routes/student-report/stu-num-app-cat-sex'
@@ -25,7 +21,6 @@ import { Route as StudentReportStuNumAppAdmCatSexRouteImport } from './routes/st
 import { Route as StudentReportStuEnrSexRouteImport } from './routes/student-report/stu-enr-sex'
 import { Route as StudentReportStuEnrRegSexRouteImport } from './routes/student-report/stu-enr-reg-sex'
 import { Route as StudentReportStuEnrNewSexRouteImport } from './routes/student-report/stu-enr-new-sex'
-import { Route as SpeakersSlugRouteImport } from './routes/speakers.$slug'
 import { Route as ScholarshipReportSchWorkRouteImport } from './routes/scholarship-report/sch-work'
 import { Route as ScholarshipReportSchResearchRouteImport } from './routes/scholarship-report/sch-research'
 import { Route as ScholarshipReportSchLabRouteImport } from './routes/scholarship-report/sch-lab'
@@ -38,32 +33,16 @@ import { Route as GraduatesReportGradNumAcadSexRouteImport } from './routes/grad
 import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
 import { Route as DemoTableRouteImport } from './routes/demo/table'
 import { Route as DemoStorybookRouteImport } from './routes/demo/storybook'
-import { Route as DemoFormSimpleRouteImport } from './routes/demo/form.simple'
-import { Route as DemoFormAddressRouteImport } from './routes/demo/form.address'
+import { Route as AuthLoginRouteImport } from './routes/auth/login'
 
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
+const DashboardRouteRoute = DashboardRouteRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TalksIndexRoute = TalksIndexRouteImport.update({
-  id: '/talks/',
-  path: '/talks/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SpeakersIndexRoute = SpeakersIndexRouteImport.update({
-  id: '/speakers/',
-  path: '/speakers/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ScheduleIndexRoute = ScheduleIndexRouteImport.update({
-  id: '/schedule/',
-  path: '/schedule/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TeacherReportTeachNumModRoute =
@@ -81,11 +60,6 @@ const TeacherReportTeachNumAcadRoute =
 const TeacherReportTeachListRoute = TeacherReportTeachListRouteImport.update({
   id: '/teacher-report/teach-list',
   path: '/teacher-report/teach-list',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TalksSlugRoute = TalksSlugRouteImport.update({
-  id: '/talks/$slug',
-  path: '/talks/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StudentReportStuNumProgSexRoute =
@@ -129,11 +103,6 @@ const StudentReportStuEnrNewSexRoute =
     path: '/student-report/stu-enr-new-sex',
     getParentRoute: () => rootRouteImport,
   } as any)
-const SpeakersSlugRoute = SpeakersSlugRouteImport.update({
-  id: '/speakers/$slug',
-  path: '/speakers/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ScholarshipReportSchWorkRoute =
   ScholarshipReportSchWorkRouteImport.update({
     id: '/scholarship-report/sch-work',
@@ -202,20 +171,16 @@ const DemoStorybookRoute = DemoStorybookRouteImport.update({
   path: '/demo/storybook',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DemoFormSimpleRoute = DemoFormSimpleRouteImport.update({
-  id: '/demo/form/simple',
-  path: '/demo/form/simple',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DemoFormAddressRoute = DemoFormAddressRouteImport.update({
-  id: '/demo/form/address',
-  path: '/demo/form/address',
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/dashboard': typeof DashboardRouteRoute
+  '/auth/login': typeof AuthLoginRoute
   '/demo/storybook': typeof DemoStorybookRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
@@ -228,7 +193,6 @@ export interface FileRoutesByFullPath {
   '/scholarship-report/sch-lab': typeof ScholarshipReportSchLabRoute
   '/scholarship-report/sch-research': typeof ScholarshipReportSchResearchRoute
   '/scholarship-report/sch-work': typeof ScholarshipReportSchWorkRoute
-  '/speakers/$slug': typeof SpeakersSlugRoute
   '/student-report/stu-enr-new-sex': typeof StudentReportStuEnrNewSexRoute
   '/student-report/stu-enr-reg-sex': typeof StudentReportStuEnrRegSexRoute
   '/student-report/stu-enr-sex': typeof StudentReportStuEnrSexRoute
@@ -236,19 +200,14 @@ export interface FileRoutesByFullPath {
   '/student-report/stu-num-app-cat-sex': typeof StudentReportStuNumAppCatSexRoute
   '/student-report/stu-num-pass-fail-drop': typeof StudentReportStuNumPassFailDropRoute
   '/student-report/stu-num-prog-sex': typeof StudentReportStuNumProgSexRoute
-  '/talks/$slug': typeof TalksSlugRoute
   '/teacher-report/teach-list': typeof TeacherReportTeachListRoute
   '/teacher-report/teach-num-acad': typeof TeacherReportTeachNumAcadRoute
   '/teacher-report/teach-num-mod': typeof TeacherReportTeachNumModRoute
-  '/schedule/': typeof ScheduleIndexRoute
-  '/speakers/': typeof SpeakersIndexRoute
-  '/talks/': typeof TalksIndexRoute
-  '/demo/form/address': typeof DemoFormAddressRoute
-  '/demo/form/simple': typeof DemoFormSimpleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/dashboard': typeof DashboardRouteRoute
+  '/auth/login': typeof AuthLoginRoute
   '/demo/storybook': typeof DemoStorybookRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
@@ -261,7 +220,6 @@ export interface FileRoutesByTo {
   '/scholarship-report/sch-lab': typeof ScholarshipReportSchLabRoute
   '/scholarship-report/sch-research': typeof ScholarshipReportSchResearchRoute
   '/scholarship-report/sch-work': typeof ScholarshipReportSchWorkRoute
-  '/speakers/$slug': typeof SpeakersSlugRoute
   '/student-report/stu-enr-new-sex': typeof StudentReportStuEnrNewSexRoute
   '/student-report/stu-enr-reg-sex': typeof StudentReportStuEnrRegSexRoute
   '/student-report/stu-enr-sex': typeof StudentReportStuEnrSexRoute
@@ -269,20 +227,15 @@ export interface FileRoutesByTo {
   '/student-report/stu-num-app-cat-sex': typeof StudentReportStuNumAppCatSexRoute
   '/student-report/stu-num-pass-fail-drop': typeof StudentReportStuNumPassFailDropRoute
   '/student-report/stu-num-prog-sex': typeof StudentReportStuNumProgSexRoute
-  '/talks/$slug': typeof TalksSlugRoute
   '/teacher-report/teach-list': typeof TeacherReportTeachListRoute
   '/teacher-report/teach-num-acad': typeof TeacherReportTeachNumAcadRoute
   '/teacher-report/teach-num-mod': typeof TeacherReportTeachNumModRoute
-  '/schedule': typeof ScheduleIndexRoute
-  '/speakers': typeof SpeakersIndexRoute
-  '/talks': typeof TalksIndexRoute
-  '/demo/form/address': typeof DemoFormAddressRoute
-  '/demo/form/simple': typeof DemoFormSimpleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/dashboard': typeof DashboardRouteRoute
+  '/auth/login': typeof AuthLoginRoute
   '/demo/storybook': typeof DemoStorybookRoute
   '/demo/table': typeof DemoTableRoute
   '/demo/tanstack-query': typeof DemoTanstackQueryRoute
@@ -295,7 +248,6 @@ export interface FileRoutesById {
   '/scholarship-report/sch-lab': typeof ScholarshipReportSchLabRoute
   '/scholarship-report/sch-research': typeof ScholarshipReportSchResearchRoute
   '/scholarship-report/sch-work': typeof ScholarshipReportSchWorkRoute
-  '/speakers/$slug': typeof SpeakersSlugRoute
   '/student-report/stu-enr-new-sex': typeof StudentReportStuEnrNewSexRoute
   '/student-report/stu-enr-reg-sex': typeof StudentReportStuEnrRegSexRoute
   '/student-report/stu-enr-sex': typeof StudentReportStuEnrSexRoute
@@ -303,21 +255,16 @@ export interface FileRoutesById {
   '/student-report/stu-num-app-cat-sex': typeof StudentReportStuNumAppCatSexRoute
   '/student-report/stu-num-pass-fail-drop': typeof StudentReportStuNumPassFailDropRoute
   '/student-report/stu-num-prog-sex': typeof StudentReportStuNumProgSexRoute
-  '/talks/$slug': typeof TalksSlugRoute
   '/teacher-report/teach-list': typeof TeacherReportTeachListRoute
   '/teacher-report/teach-num-acad': typeof TeacherReportTeachNumAcadRoute
   '/teacher-report/teach-num-mod': typeof TeacherReportTeachNumModRoute
-  '/schedule/': typeof ScheduleIndexRoute
-  '/speakers/': typeof SpeakersIndexRoute
-  '/talks/': typeof TalksIndexRoute
-  '/demo/form/address': typeof DemoFormAddressRoute
-  '/demo/form/simple': typeof DemoFormSimpleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/about'
+    | '/dashboard'
+    | '/auth/login'
     | '/demo/storybook'
     | '/demo/table'
     | '/demo/tanstack-query'
@@ -330,7 +277,6 @@ export interface FileRouteTypes {
     | '/scholarship-report/sch-lab'
     | '/scholarship-report/sch-research'
     | '/scholarship-report/sch-work'
-    | '/speakers/$slug'
     | '/student-report/stu-enr-new-sex'
     | '/student-report/stu-enr-reg-sex'
     | '/student-report/stu-enr-sex'
@@ -338,19 +284,14 @@ export interface FileRouteTypes {
     | '/student-report/stu-num-app-cat-sex'
     | '/student-report/stu-num-pass-fail-drop'
     | '/student-report/stu-num-prog-sex'
-    | '/talks/$slug'
     | '/teacher-report/teach-list'
     | '/teacher-report/teach-num-acad'
     | '/teacher-report/teach-num-mod'
-    | '/schedule/'
-    | '/speakers/'
-    | '/talks/'
-    | '/demo/form/address'
-    | '/demo/form/simple'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/about'
+    | '/dashboard'
+    | '/auth/login'
     | '/demo/storybook'
     | '/demo/table'
     | '/demo/tanstack-query'
@@ -363,7 +304,6 @@ export interface FileRouteTypes {
     | '/scholarship-report/sch-lab'
     | '/scholarship-report/sch-research'
     | '/scholarship-report/sch-work'
-    | '/speakers/$slug'
     | '/student-report/stu-enr-new-sex'
     | '/student-report/stu-enr-reg-sex'
     | '/student-report/stu-enr-sex'
@@ -371,19 +311,14 @@ export interface FileRouteTypes {
     | '/student-report/stu-num-app-cat-sex'
     | '/student-report/stu-num-pass-fail-drop'
     | '/student-report/stu-num-prog-sex'
-    | '/talks/$slug'
     | '/teacher-report/teach-list'
     | '/teacher-report/teach-num-acad'
     | '/teacher-report/teach-num-mod'
-    | '/schedule'
-    | '/speakers'
-    | '/talks'
-    | '/demo/form/address'
-    | '/demo/form/simple'
   id:
     | '__root__'
     | '/'
-    | '/about'
+    | '/dashboard'
+    | '/auth/login'
     | '/demo/storybook'
     | '/demo/table'
     | '/demo/tanstack-query'
@@ -396,7 +331,6 @@ export interface FileRouteTypes {
     | '/scholarship-report/sch-lab'
     | '/scholarship-report/sch-research'
     | '/scholarship-report/sch-work'
-    | '/speakers/$slug'
     | '/student-report/stu-enr-new-sex'
     | '/student-report/stu-enr-reg-sex'
     | '/student-report/stu-enr-sex'
@@ -404,20 +338,15 @@ export interface FileRouteTypes {
     | '/student-report/stu-num-app-cat-sex'
     | '/student-report/stu-num-pass-fail-drop'
     | '/student-report/stu-num-prog-sex'
-    | '/talks/$slug'
     | '/teacher-report/teach-list'
     | '/teacher-report/teach-num-acad'
     | '/teacher-report/teach-num-mod'
-    | '/schedule/'
-    | '/speakers/'
-    | '/talks/'
-    | '/demo/form/address'
-    | '/demo/form/simple'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
+  DashboardRouteRoute: typeof DashboardRouteRoute
+  AuthLoginRoute: typeof AuthLoginRoute
   DemoStorybookRoute: typeof DemoStorybookRoute
   DemoTableRoute: typeof DemoTableRoute
   DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
@@ -430,7 +359,6 @@ export interface RootRouteChildren {
   ScholarshipReportSchLabRoute: typeof ScholarshipReportSchLabRoute
   ScholarshipReportSchResearchRoute: typeof ScholarshipReportSchResearchRoute
   ScholarshipReportSchWorkRoute: typeof ScholarshipReportSchWorkRoute
-  SpeakersSlugRoute: typeof SpeakersSlugRoute
   StudentReportStuEnrNewSexRoute: typeof StudentReportStuEnrNewSexRoute
   StudentReportStuEnrRegSexRoute: typeof StudentReportStuEnrRegSexRoute
   StudentReportStuEnrSexRoute: typeof StudentReportStuEnrSexRoute
@@ -438,24 +366,18 @@ export interface RootRouteChildren {
   StudentReportStuNumAppCatSexRoute: typeof StudentReportStuNumAppCatSexRoute
   StudentReportStuNumPassFailDropRoute: typeof StudentReportStuNumPassFailDropRoute
   StudentReportStuNumProgSexRoute: typeof StudentReportStuNumProgSexRoute
-  TalksSlugRoute: typeof TalksSlugRoute
   TeacherReportTeachListRoute: typeof TeacherReportTeachListRoute
   TeacherReportTeachNumAcadRoute: typeof TeacherReportTeachNumAcadRoute
   TeacherReportTeachNumModRoute: typeof TeacherReportTeachNumModRoute
-  ScheduleIndexRoute: typeof ScheduleIndexRoute
-  SpeakersIndexRoute: typeof SpeakersIndexRoute
-  TalksIndexRoute: typeof TalksIndexRoute
-  DemoFormAddressRoute: typeof DemoFormAddressRoute
-  DemoFormSimpleRoute: typeof DemoFormSimpleRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -463,27 +385,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/talks/': {
-      id: '/talks/'
-      path: '/talks'
-      fullPath: '/talks/'
-      preLoaderRoute: typeof TalksIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/speakers/': {
-      id: '/speakers/'
-      path: '/speakers'
-      fullPath: '/speakers/'
-      preLoaderRoute: typeof SpeakersIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/schedule/': {
-      id: '/schedule/'
-      path: '/schedule'
-      fullPath: '/schedule/'
-      preLoaderRoute: typeof ScheduleIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/teacher-report/teach-num-mod': {
@@ -505,13 +406,6 @@ declare module '@tanstack/react-router' {
       path: '/teacher-report/teach-list'
       fullPath: '/teacher-report/teach-list'
       preLoaderRoute: typeof TeacherReportTeachListRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/talks/$slug': {
-      id: '/talks/$slug'
-      path: '/talks/$slug'
-      fullPath: '/talks/$slug'
-      preLoaderRoute: typeof TalksSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/student-report/stu-num-prog-sex': {
@@ -561,13 +455,6 @@ declare module '@tanstack/react-router' {
       path: '/student-report/stu-enr-new-sex'
       fullPath: '/student-report/stu-enr-new-sex'
       preLoaderRoute: typeof StudentReportStuEnrNewSexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/speakers/$slug': {
-      id: '/speakers/$slug'
-      path: '/speakers/$slug'
-      fullPath: '/speakers/$slug'
-      preLoaderRoute: typeof SpeakersSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/scholarship-report/sch-work': {
@@ -654,18 +541,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoStorybookRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/demo/form/simple': {
-      id: '/demo/form/simple'
-      path: '/demo/form/simple'
-      fullPath: '/demo/form/simple'
-      preLoaderRoute: typeof DemoFormSimpleRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/form/address': {
-      id: '/demo/form/address'
-      path: '/demo/form/address'
-      fullPath: '/demo/form/address'
-      preLoaderRoute: typeof DemoFormAddressRouteImport
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -673,7 +553,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
+  DashboardRouteRoute: DashboardRouteRoute,
+  AuthLoginRoute: AuthLoginRoute,
   DemoStorybookRoute: DemoStorybookRoute,
   DemoTableRoute: DemoTableRoute,
   DemoTanstackQueryRoute: DemoTanstackQueryRoute,
@@ -686,7 +567,6 @@ const rootRouteChildren: RootRouteChildren = {
   ScholarshipReportSchLabRoute: ScholarshipReportSchLabRoute,
   ScholarshipReportSchResearchRoute: ScholarshipReportSchResearchRoute,
   ScholarshipReportSchWorkRoute: ScholarshipReportSchWorkRoute,
-  SpeakersSlugRoute: SpeakersSlugRoute,
   StudentReportStuEnrNewSexRoute: StudentReportStuEnrNewSexRoute,
   StudentReportStuEnrRegSexRoute: StudentReportStuEnrRegSexRoute,
   StudentReportStuEnrSexRoute: StudentReportStuEnrSexRoute,
@@ -694,15 +574,9 @@ const rootRouteChildren: RootRouteChildren = {
   StudentReportStuNumAppCatSexRoute: StudentReportStuNumAppCatSexRoute,
   StudentReportStuNumPassFailDropRoute: StudentReportStuNumPassFailDropRoute,
   StudentReportStuNumProgSexRoute: StudentReportStuNumProgSexRoute,
-  TalksSlugRoute: TalksSlugRoute,
   TeacherReportTeachListRoute: TeacherReportTeachListRoute,
   TeacherReportTeachNumAcadRoute: TeacherReportTeachNumAcadRoute,
   TeacherReportTeachNumModRoute: TeacherReportTeachNumModRoute,
-  ScheduleIndexRoute: ScheduleIndexRoute,
-  SpeakersIndexRoute: SpeakersIndexRoute,
-  TalksIndexRoute: TalksIndexRoute,
-  DemoFormAddressRoute: DemoFormAddressRoute,
-  DemoFormSimpleRoute: DemoFormSimpleRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

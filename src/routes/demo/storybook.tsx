@@ -6,18 +6,28 @@ import { Input } from '#/components/storybook/input'
 import { RadioGroup } from '#/components/storybook/radio-group'
 import { Slider } from '#/components/storybook/slider'
 import { Button } from '#/components/storybook/button'
+import { useProtectedRoute } from '#/hooks/useProtectedRoute'
 
 export const Route = createFileRoute('/demo/storybook')({
   component: StorybookDemo,
 })
 
 function StorybookDemo() {
+  const { isLoading, isAuthenticated } = useProtectedRoute();
+
+  // 2. Mientras Firebase revisa la sesión, mostramos un cargador (evita destellos de pantalla)
+  if (isLoading) {
+    return <div className="flex h-full items-center justify-center">Verificando sesión...</div>;
+  }
+
+  // 3. Si no está autenticado, devolvemos null (el hook useProtectedRoute ya lo está redirigiendo)
+  if (!isAuthenticated) return null;
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [employmentType, setEmploymentType] = useState('full-time')
   const [coffeeCups, setCoffeeCups] = useState(3)
 
-  const handleSubmit = () => {}
+  const handleSubmit = () => { }
 
   const handleReset = () => {
     setFirstName('')

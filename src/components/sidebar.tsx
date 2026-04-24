@@ -34,14 +34,15 @@ import {
     UnfoldMoreIcon,
     Settings01Icon,
     UserAdd01Icon,
-    Logout01Icon,
     StudentIcon,
     Male02Icon,
     Quiz03Icon,
     TeachingFreeIcons,
-    Bitcoin03Icon
+    Bitcoin03Icon,
+    Home02Icon
 } from "@hugeicons/core-free-icons";
 import { Link } from "@tanstack/react-router";
+import { useProtectedRoute } from "#/hooks/useProtectedRoute";
 
 type IconSvgObject = ([string, {
     [key: string]: string | number;
@@ -208,6 +209,7 @@ const workgroups: MenuItemGroup[] = [
 export function DashboardSidebar({
     ...props
 }: React.ComponentProps<typeof Sidebar>) {
+    const { isAuthenticated } = useProtectedRoute();
     const [expandedItems, setExpandedItems] = React.useState<string[]>([
         "all-work",
         "website-copy",
@@ -318,15 +320,53 @@ export function DashboardSidebar({
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem variant="destructive">
-                            <HugeiconsIcon icon={Logout01Icon} className="size-4" />
-                            <span>Log out</span>
-                        </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             </SidebarHeader>
 
             <SidebarContent className="px-2.5">
+                {isAuthenticated && <SidebarGroup>
+                    <SidebarGroupLabel className="flex items-center justify-between px-0 h-6">
+                        <span className="text-[10px] font-medium tracking-wider text-muted-foreground">
+                            Dashboard
+                        </span>
+                    </SidebarGroupLabel>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <Link to="/dashboard">
+                                    <SidebarMenuButton className="h-7 text-sm">
+                                        <HugeiconsIcon icon={Home02Icon} className="size-3.5" />
+                                        <span>Dashboard</span>
+                                    </SidebarMenuButton>
+                                </Link>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                                <Link to="/demo/table">
+                                    <SidebarMenuButton className="h-7 text-sm">
+                                        <HugeiconsIcon icon={Home02Icon} className="size-3.5" />
+                                        <span>DemoTable</span>
+                                    </SidebarMenuButton>
+                                </Link>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                                <Link to="/demo/tanstack-query">
+                                    <SidebarMenuButton className="h-7 text-sm">
+                                        <HugeiconsIcon icon={Home02Icon} className="size-3.5" />
+                                        <span>DemoTanstackQuery</span>
+                                    </SidebarMenuButton>
+                                </Link>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton className="h-7 text-sm text-muted-foreground">
+                                    <HugeiconsIcon icon={Add01Icon} className="size-3.5" />
+                                    <span>Crear formulario</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
+                }
                 <SidebarGroup className="p-0 mt-4">
                     <SidebarGroupLabel className="flex items-center justify-between px-0 h-6">
                         <span className="text-[10px] font-medium tracking-wider text-muted-foreground">
@@ -336,12 +376,6 @@ export function DashboardSidebar({
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {workgroups.map((item) => renderWorkgroupItem(item))}
-                            <SidebarMenuItem>
-                                <SidebarMenuButton className="h-7 text-sm text-muted-foreground">
-                                    <HugeiconsIcon icon={Add01Icon} className="size-3.5" />
-                                    <span>Crear formulario</span>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>

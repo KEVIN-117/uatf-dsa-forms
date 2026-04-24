@@ -23,6 +23,7 @@ import type {
 import type { RankingInfo } from '@tanstack/match-sorter-utils'
 
 import type { Person } from '#/data/demo-table-data'
+import { useProtectedRoute } from '#/hooks/useProtectedRoute'
 
 export const Route = createFileRoute('/demo/table')({
   component: TableDemo,
@@ -68,6 +69,15 @@ const fuzzySort: SortingFn<any> = (rowA, rowB, columnId) => {
 }
 
 function TableDemo() {
+  const { isLoading, isAuthenticated } = useProtectedRoute();
+
+  // 2. Mientras Firebase revisa la sesión, mostramos un cargador (evita destellos de pantalla)
+  if (isLoading) {
+    return <div className="flex h-full items-center justify-center">Verificando sesión...</div>;
+  }
+
+  // 3. Si no está autenticado, devolvemos null (el hook useProtectedRoute ya lo está redirigiendo)
+  if (!isAuthenticated) return null;
   const rerender = React.useReducer(() => ({}), {})[1]
 
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
