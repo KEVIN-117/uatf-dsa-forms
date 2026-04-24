@@ -1,0 +1,214 @@
+/* Importamos fuentes académicas y de alta legibilidad: 
+   Merriweather para títulos (toque clásico/institucional) 
+   Inter para el texto base (limpio, moderno y legible) */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&display=swap");
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+body {
+  @apply m-0;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+/* =========================================
+   TEMA CLARO (Default - Institucional)
+   ========================================= */
+:root {
+  /* Fondos y textos - Blanco nítido y gris oscuro */
+  --background: oklch(0.99 0.01 250);
+  --foreground: oklch(0.2 0.02 250);
+
+  /* Tarjetas y superficies */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0.02 250);
+
+  /* Color Institucional (Azul Académico) */
+  --primary: oklch(0.45 0.15 250);
+  --primary-foreground: oklch(0.98 0.01 250);
+
+  /* Acento Secundario (Oro/Amarillo Excelencia) */
+  --secondary: oklch(0.85 0.15 85);
+  --secondary-foreground: oklch(0.2 0.02 250);
+
+  /* Tonos neutros para textos secundarios */
+  --muted: oklch(0.95 0.01 250);
+  --muted-foreground: oklch(0.45 0.02 250);
+
+  /* Acentos interactivos (Azul claro/Celeste) */
+  --accent: oklch(0.92 0.05 250);
+  --accent-foreground: oklch(0.3 0.1 250);
+
+  /* Estados de error/alerta */
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: oklch(0.98 0 0);
+
+  /* Elementos UI */
+  --border: oklch(0.9 0.02 250);
+  --input: oklch(0.9 0.02 250);
+  --ring: oklch(0.45 0.15 250);
+
+  /* Gráficos y estadísticas */
+  --chart-1: oklch(0.45 0.15 250); /* Azul */
+  --chart-2: oklch(0.85 0.15 85); /* Oro */
+  --chart-3: oklch(0.6 0.15 150); /* Verde éxito */
+  --chart-4: oklch(0.7 0.1 300); /* Púrpura */
+  --chart-5: oklch(0.65 0.18 25); /* Naranja */
+
+  --radius: 0.5rem; /* Bordes ligeramente más cuadrados, formales */
+
+  /* Sidebar Institucional */
+  --sidebar: oklch(0.98 0.01 250);
+  --sidebar-foreground: oklch(0.2 0.02 250);
+  --sidebar-primary: oklch(0.45 0.15 250);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.92 0.05 250);
+  --sidebar-accent-foreground: oklch(0.3 0.1 250);
+  --sidebar-border: oklch(0.9 0.02 250);
+  --sidebar-ring: oklch(0.45 0.15 250);
+}
+
+/* =========================================
+   TEMA OSCURO (Lectura nocturna para estudiantes)
+   ========================================= */
+.dark {
+  /* Fondo azul marino muy oscuro, menos cansado que el negro puro */
+  --background: oklch(0.2 0.02 250);
+  --foreground: oklch(0.95 0.01 250);
+
+  --card: oklch(0.23 0.02 250);
+  --card-foreground: oklch(0.95 0.01 250);
+
+  /* Azul más brillante para contrastar en fondo oscuro */
+  --primary: oklch(0.65 0.15 250);
+  --primary-foreground: oklch(0.15 0.02 250);
+
+  --secondary: oklch(0.3 0.05 250);
+  --secondary-foreground: oklch(0.95 0.01 250);
+
+  --muted: oklch(0.28 0.02 250);
+  --muted-foreground: oklch(0.7 0.02 250);
+
+  --accent: oklch(0.3 0.05 250);
+  --accent-foreground: oklch(0.95 0.01 250);
+
+  --destructive: oklch(0.45 0.2 25);
+  --destructive-foreground: oklch(0.95 0 0);
+
+  --border: oklch(0.3 0.02 250);
+  --input: oklch(0.3 0.02 250);
+  --ring: oklch(0.65 0.15 250);
+
+  --sidebar: oklch(0.18 0.02 250);
+  --sidebar-foreground: oklch(0.95 0.01 250);
+  --sidebar-primary: oklch(0.65 0.15 250);
+  --sidebar-primary-foreground: oklch(0.15 0.02 250);
+  --sidebar-accent: oklch(0.28 0.02 250);
+  --sidebar-accent-foreground: oklch(0.95 0.01 250);
+  --sidebar-border: oklch(0.3 0.02 250);
+  --sidebar-ring: oklch(0.65 0.15 250);
+}
+
+/* =========================================
+   ASIGNACIÓN DE VARIABLES A TAILWIND V4
+   ========================================= */
+@theme inline {
+  --font-display: "Merriweather", Georgia, serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 6px);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Colores personalizados explícitos por si los necesitas en clases sueltas */
+  --color-edu-blue: oklch(0.45 0.15 250);
+  --color-edu-gold: oklch(0.85 0.15 85);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* =========================================
+   UTILIDADES PERSONALIZADAS EDUCATIVAS
+   ========================================= */
+.font-display {
+  font-family: "Merriweather", Georgia, serif;
+}
+
+.font-body {
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+/* Efecto de foco claro para accesibilidad en plataformas educativas */
+.focus-academic {
+  @apply focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none transition-all;
+}
+
+/* Hover suave para tarjetas de cursos o módulos */
+.course-card-hover {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.course-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 10px 25px -5px oklch(0 0 0 / 0.1),
+    0 8px 10px -6px oklch(0 0 0 / 0.1);
+  @apply border-primary/30;
+}
