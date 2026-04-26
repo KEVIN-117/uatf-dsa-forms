@@ -15,7 +15,8 @@
     "check": "biome check",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "seed": "vite-node src/shared/lib/seed.ts"
+    "seed": "vite-node src/shared/lib/seed.ts",
+    "deploy": "npm run build && firebase deploy"
   },
   "dependencies": {
     "@faker-js/faker": "^10.3.0",
