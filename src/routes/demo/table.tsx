@@ -23,7 +23,7 @@ import type {
 import type { RankingInfo } from '@tanstack/match-sorter-utils'
 
 import type { Person } from '#/data/demo-table-data'
-import { useProtectedRoute } from '#/hooks/useProtectedRoute'
+import { useProtectedRoute } from '#/features/auth/hooks/useProtectedRoute'
 
 export const Route = createFileRoute('/demo/table')({
   component: TableDemo,
@@ -369,3 +369,4 @@ function DebouncedInput({
     />
   )
 }
+

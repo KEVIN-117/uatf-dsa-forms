@@ -4,14 +4,16 @@ import {
   Scripts,
   createRootRouteWithContext,
 } from '@tanstack/react-router'
-import Header from '../components/Header'
+import Header from '#/app/layout/Header'
 import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
-import { SidebarProvider } from '#/components/ui/sidebar'
-import { DashboardSidebar } from "@/components/sidebar";
+import { SidebarProvider } from '#/shared/ui/sidebar'
+import { DashboardSidebar } from '#/app/layout/DashboardSidebar'
 
-import { AuthProvider } from '../integrations/firebase/AuthContext';
+import { AuthProvider } from '#/features/auth/providers/AuthProvider'
+import { DirectorProfileGate } from '#/features/director-profile/components/DirectorProfileGate'
+import { DirectorProfileProvider } from '#/features/director-profile/providers/DirectorProfileProvider'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -47,17 +49,20 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="font-sans antialiased wrap-anywhere selection:bg-[rgba(79,184,178,0.24)]">
         <AuthProvider>
-          <SidebarProvider className='bg-sidebar'>
-            <DashboardSidebar />
-            <div className="h-svh overflow-hidden lg:p-2 w-full">
-              <div className="lg:border lg:rounded-md overflow-hidden flex flex-col h-full w-full bg-background">
-                <Header />
-                <main className="w-full flex-1 overflow-auto p-1">
-                  {children}
-                </main>
+          <DirectorProfileProvider>
+            <SidebarProvider className='bg-sidebar'>
+              <DashboardSidebar />
+              <div className="h-svh overflow-hidden lg:p-2 w-full">
+                <div className="lg:border lg:rounded-md overflow-hidden flex flex-col h-full w-full bg-background">
+                  <Header />
+                  <main className="w-full flex-1 overflow-auto p-1">
+                    {children}
+                  </main>
+                </div>
               </div>
-            </div>
-          </SidebarProvider>
+            </SidebarProvider>
+            <DirectorProfileGate />
+          </DirectorProfileProvider>
         </AuthProvider>
         <Scripts />
       </body>

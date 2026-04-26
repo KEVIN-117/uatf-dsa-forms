@@ -1,12 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 
-import { Dialog } from '#/components/storybook/dialog'
-import { Input } from '#/components/storybook/input'
-import { RadioGroup } from '#/components/storybook/radio-group'
-import { Slider } from '#/components/storybook/slider'
-import { Button } from '#/components/storybook/button'
-import { useProtectedRoute } from '#/hooks/useProtectedRoute'
+import { Dialog } from '#/shared/storybook/dialog'
+import { Input } from '#/shared/storybook/input'
+import { RadioGroup } from '#/shared/storybook/radio-group'
+import { Slider } from '#/shared/storybook/slider'
+import { Button } from '#/shared/storybook/button'
+import { useProtectedRoute } from '#/features/auth/hooks/useProtectedRoute'
 
 export const Route = createFileRoute('/demo/storybook')({
   component: StorybookDemo,
@@ -101,3 +101,4 @@ function StorybookDemo() {
     </div>
   )
 }
+

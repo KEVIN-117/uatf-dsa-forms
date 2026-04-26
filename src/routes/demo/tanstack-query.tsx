@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { useProtectedRoute } from '#/hooks/useProtectedRoute';
+import { useProtectedRoute } from '#/features/auth/hooks/useProtectedRoute';
 
 export const Route = createFileRoute('/demo/tanstack-query')({
   component: TanStackQueryDemo,
@@ -51,3 +51,4 @@ function TanStackQueryDemo() {
     </div>
   )
 }
+

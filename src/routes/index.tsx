@@ -12,8 +12,6 @@ function HomePage() {
   return (
     <>
       <section className="relative min-h-[90vh] flex items-center justify-center px-6 overflow-hidden">
-
-
         <div className="relative max-w-5xl mx-auto text-center z-10">
           <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full bg-copper/10 border border-copper/30 text-copper-light text-sm font-medium backdrop-blur-sm text-accent">
             <Calendar className="w-4 h-4" />
