@@ -31,9 +31,8 @@ RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 reactapp
 
 COPY --from=builder --chown=reactapp:nodejs /app/package.json ./
-# Copiamos la salida construida (cliente y servidor)
+# Copiamos la salida construida (cliente, servidor SSR y el server Express compilado)
 COPY --from=builder --chown=reactapp:nodejs /app/dist ./dist
-COPY --from=builder --chown=reactapp:nodejs /app/server.ts ./
 COPY --from=builder --chown=reactapp:nodejs /app/pnpm-lock.yaml ./
 
 RUN pnpm install --prod --frozen-lockfile
@@ -46,5 +45,4 @@ USER reactapp
 EXPOSE 3000
 
 # Comando para ejecutar la aplicación
-
-CMD ["pnpm", "run", "start"]
+CMD ["node", "dist/server-entry.js"]

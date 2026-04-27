@@ -14,6 +14,7 @@ import { Route as TeacherReportFormIdRouteImport } from './routes/teacher-report
 import { Route as StudentReportFormIdRouteImport } from './routes/student-report/$formId'
 import { Route as ScholarshipReportFormIdRouteImport } from './routes/scholarship-report/$formId'
 import { Route as GraduatesReportFormIdRouteImport } from './routes/graduates-report/$formId'
+import { Route as DemoStorybookRouteImport } from './routes/demo/storybook'
 import { Route as DemoFormIdRouteImport } from './routes/demo/$formId'
 import { Route as DashboardTableRouteImport } from './routes/dashboard/table'
 import { Route as DashboardFormBuilderRouteImport } from './routes/dashboard/form-builder'
@@ -44,6 +45,11 @@ const ScholarshipReportFormIdRoute = ScholarshipReportFormIdRouteImport.update({
 const GraduatesReportFormIdRoute = GraduatesReportFormIdRouteImport.update({
   id: '/graduates-report/$formId',
   path: '/graduates-report/$formId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoStorybookRoute = DemoStorybookRouteImport.update({
+  id: '/demo/storybook',
+  path: '/demo/storybook',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DemoFormIdRoute = DemoFormIdRouteImport.update({
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/form-builder': typeof DashboardFormBuilderRoute
   '/dashboard/table': typeof DashboardTableRoute
   '/demo/$formId': typeof DemoFormIdRoute
+  '/demo/storybook': typeof DemoStorybookRoute
   '/graduates-report/$formId': typeof GraduatesReportFormIdRoute
   '/scholarship-report/$formId': typeof ScholarshipReportFormIdRoute
   '/student-report/$formId': typeof StudentReportFormIdRoute
@@ -98,6 +105,7 @@ export interface FileRoutesByTo {
   '/dashboard/form-builder': typeof DashboardFormBuilderRoute
   '/dashboard/table': typeof DashboardTableRoute
   '/demo/$formId': typeof DemoFormIdRoute
+  '/demo/storybook': typeof DemoStorybookRoute
   '/graduates-report/$formId': typeof GraduatesReportFormIdRoute
   '/scholarship-report/$formId': typeof ScholarshipReportFormIdRoute
   '/student-report/$formId': typeof StudentReportFormIdRoute
@@ -112,6 +120,7 @@ export interface FileRoutesById {
   '/dashboard/form-builder': typeof DashboardFormBuilderRoute
   '/dashboard/table': typeof DashboardTableRoute
   '/demo/$formId': typeof DemoFormIdRoute
+  '/demo/storybook': typeof DemoStorybookRoute
   '/graduates-report/$formId': typeof GraduatesReportFormIdRoute
   '/scholarship-report/$formId': typeof ScholarshipReportFormIdRoute
   '/student-report/$formId': typeof StudentReportFormIdRoute
@@ -127,6 +136,7 @@ export interface FileRouteTypes {
     | '/dashboard/form-builder'
     | '/dashboard/table'
     | '/demo/$formId'
+    | '/demo/storybook'
     | '/graduates-report/$formId'
     | '/scholarship-report/$formId'
     | '/student-report/$formId'
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/dashboard/form-builder'
     | '/dashboard/table'
     | '/demo/$formId'
+    | '/demo/storybook'
     | '/graduates-report/$formId'
     | '/scholarship-report/$formId'
     | '/student-report/$formId'
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/dashboard/form-builder'
     | '/dashboard/table'
     | '/demo/$formId'
+    | '/demo/storybook'
     | '/graduates-report/$formId'
     | '/scholarship-report/$formId'
     | '/student-report/$formId'
@@ -167,6 +179,7 @@ export interface RootRouteChildren {
   DashboardFormBuilderRoute: typeof DashboardFormBuilderRoute
   DashboardTableRoute: typeof DashboardTableRoute
   DemoFormIdRoute: typeof DemoFormIdRoute
+  DemoStorybookRoute: typeof DemoStorybookRoute
   GraduatesReportFormIdRoute: typeof GraduatesReportFormIdRoute
   ScholarshipReportFormIdRoute: typeof ScholarshipReportFormIdRoute
   StudentReportFormIdRoute: typeof StudentReportFormIdRoute
@@ -209,6 +222,13 @@ declare module '@tanstack/react-router' {
       path: '/graduates-report/$formId'
       fullPath: '/graduates-report/$formId'
       preLoaderRoute: typeof GraduatesReportFormIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo/storybook': {
+      id: '/demo/storybook'
+      path: '/demo/storybook'
+      fullPath: '/demo/storybook'
+      preLoaderRoute: typeof DemoStorybookRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/demo/$formId': {
@@ -263,6 +283,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardFormBuilderRoute: DashboardFormBuilderRoute,
   DashboardTableRoute: DashboardTableRoute,
   DemoFormIdRoute: DemoFormIdRoute,
+  DemoStorybookRoute: DemoStorybookRoute,
   GraduatesReportFormIdRoute: GraduatesReportFormIdRoute,
   ScholarshipReportFormIdRoute: ScholarshipReportFormIdRoute,
   StudentReportFormIdRoute: StudentReportFormIdRoute,
