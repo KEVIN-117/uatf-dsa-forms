@@ -34,192 +34,43 @@ import {
     UnfoldMoreIcon,
     Settings01Icon,
     UserAdd01Icon,
-    StudentIcon,
-    Male02Icon,
-    Quiz03Icon,
-    TeachingFreeIcons,
-    Bitcoin03Icon,
-    Home02Icon
+    Home02Icon,
+    Logout01Icon
 } from "@hugeicons/core-free-icons";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "#/features/auth/providers/AuthProvider";
+import type { MenuItem, MenuItemGroup } from "#/shared/types";
+import { useDynamicMenuItemsGrouped, useDynamicResultsMenuItemsGrouped } from "#/shared/hooks/useDynamicMenuItemsGrouped";
+import { Tooltip, TooltipContent, TooltipTrigger } from "#/shared/ui/tooltip";
+import { Button } from "#/shared/ui/button";
+import { useLogout } from "#/features/auth/hooks/useAuth";
+import { useDirectorProfile } from "#/features/director-profile/providers/DirectorProfileProvider";
+import ThemeToggle from "./ThemeToggle";
+import logoUATF from '/dsa-icon.png'
 
-type IconSvgObject = ([string, {
-    [key: string]: string | number;
-}])[] | readonly (readonly [string, {
-    readonly [key: string]: string | number;
-}])[];
-
-type MenuItem = {
-    id: string;
-    name: string;
-    icon: IconSvgObject;
-    href: string;
-}
-
-type MenuItemGroup = {
-    id: string;
-    name: string;
-    icon: IconSvgObject;
-    children: MenuItem[];
-}
-
-const workgroups: MenuItemGroup[] = [
-    {
-        id: "student-report",
-        name: "Student Report",
-        icon: Male02Icon,
-        children: [
-            {
-                id: "number-of-applicants-by-category-gender",
-                name: "Postulantes por modalidad y sexo",
-                icon: Quiz03Icon,
-                href: "/student-report/stu-num-app-cat-sex",
-            },
-            {
-                id: "number-of-applicants-admitted-by-category-gender",
-                name: "Postulantes admitidos por modalidad y sexo",
-                icon: Quiz03Icon,
-                href: "/student-report/stu-num-app-adm-cat-sex",
-            },
-            {
-                id: "student-enrollment-by-sex",
-                name: "Matrícula estudiantil por sexo",
-                icon: Quiz03Icon,
-                href: "/student-report/stu-enr-sex",
-            },
-            {
-                id: "new-student-enrollment-by-sex",
-                name: "Matrícula estudiantes nuevos por sexo",
-                icon: Quiz03Icon,
-                href: "/student-report/stu-enr-new-sex",
-            },
-            {
-                id: "enrollment-of-regular-students-by-sex",
-                name: "Matricula estudiantes regulares por sexo",
-                icon: Quiz03Icon,
-                href: "/student-report/stu-enr-reg-sex",
-            },
-            {
-                id: "number-of-students-scheduled-by-gender",
-                name: "Número de estudiantes programados por sexo",
-                icon: Quiz03Icon,
-                href: "/student-report/stu-num-prog-sex",
-            },
-            {
-                id: "number-of-students-who-passed-failed-and-dropped-out",
-                name: "Número de estudiantes aprobados, reprobados y desertores",
-                icon: Quiz03Icon,
-                href: "/student-report/stu-num-pass-fail-drop",
-            },
-        ],
-    },
-    {
-        id: "graduates-report", name: "Graduates report", icon: StudentIcon, children: [
-            {
-                id: "number-of-graduates-by-modality-and-sex",
-                name: "Número de graduados por modalidad y sexo",
-                icon: Quiz03Icon,
-                href: "/graduates-report/grad-num-mod-sex",
-            },
-            {
-                id: "number-of-graduates-by-academic-level-and-sex",
-                name: "Número de graduados por nivel académico y sexo",
-                icon: Quiz03Icon,
-                href: "/graduates-report/grad-num-acad-sex",
-            }
-        ]
-    },
-    {
-        id: "teacher-report",
-        name: "Reporte docente",
-        icon: TeachingFreeIcons,
-        children: [
-            {
-                id: "list-of-teachers",
-                name: "Lista de docentes",
-                icon: Quiz03Icon,
-                href: "/teacher-report/teach-list",
-            },
-            {
-                id: "number-of-teachers-by-academic-level",
-                name: "Número de docentes por nivel académico",
-                icon: Quiz03Icon,
-                href: "/teacher-report/teach-num-acad",
-            },
-            {
-                id: "number-of-teachers-by-modality",
-                name: "Número de docentes por modalidad",
-                icon: Quiz03Icon,
-                href: "/teacher-report/teach-num-mod",
-            }
-        ]
-    },
-    {
-        id: "scholarship-report",
-        name: "Reporte de becas",
-        icon: Bitcoin03Icon,
-        children: [
-            {
-                id: "food-scholarship-by-type-and-sex",
-                name: "Beca alimentación por tipo y sexo",
-                icon: Quiz03Icon,
-                href: "/scholarship-report/sch-food-type-sex",
-            },
-            {
-                id: "boarding-school-scholarship",
-                name: "Beca Internado",
-                icon: Quiz03Icon,
-                href: "/scholarship-report/sch-boarding",
-            },
-            {
-                id: "teaching-assistants",
-                name: "Auxiliares de docencia",
-                icon: Quiz03Icon,
-                href: "/scholarship-report/sch-assistants",
-            },
-            {
-                id: "research-grant",
-                name: "Beca investigación",
-                icon: Quiz03Icon,
-                href: "/scholarship-report/sch-research",
-            },
-            {
-                id: "graduation-scholarship",
-                name: "Beca graduación",
-                icon: Quiz03Icon,
-                href: "/scholarship-report/sch-graduation",
-            },
-            {
-                id: "work-scholarship",
-                name: "Beca trabajo",
-                icon: Quiz03Icon,
-                href: "/scholarship-report/sch-work",
-            },
-            {
-                id: "laboratory-scholarship",
-                name: "Beca laboratorio",
-                icon: Quiz03Icon,
-                href: "/scholarship-report/sch-lab",
-            }
-        ]
-    },
-];
 
 export function DashboardSidebar({
     ...props
 }: React.ComponentProps<typeof Sidebar>) {
-    const { isAuthenticated } = useAuth();
     const [expandedItems, setExpandedItems] = React.useState<string[]>([
         "all-work",
         "website-copy",
     ]);
+
+    const workgroups = useDynamicMenuItemsGrouped();
+    const resultGroups = useDynamicResultsMenuItemsGrouped();
+
 
     const toggleItem = (id: string) => {
         setExpandedItems((prev) =>
             prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
         );
     };
+
+    const logoutMutation = useLogout();
+    const { isAuthenticated, isLoading } = useAuth();
+    const { clearProfile, profile } = useDirectorProfile();
+    const navigate = useNavigate();
 
     const renderWorkgroupItem = (
         item: MenuItem | MenuItemGroup,
@@ -241,7 +92,7 @@ export function DashboardSidebar({
                             asChild
                         >
                             <SidebarMenuButton
-                                className="h-7 text-sm"
+                                className="h-fit text-sm"
                                 style={{ paddingLeft: `${8 + paddingLeft}px` }}
                             >
                                 <HugeiconsIcon icon={Icon} className="size-3.5" />
@@ -281,12 +132,19 @@ export function DashboardSidebar({
             <SidebarMenuItem key={item.id}>
                 <SidebarMenuButton
                     asChild
-                    className="h-7 text-sm"
+                    className="h-fit text-sm"
                     style={{ paddingLeft: `${8 + paddingLeft}px` }}
                 >
                     <Link to={item.href}>
-                        <HugeiconsIcon icon={Icon} className="size-3.5" />
-                        <span>{item.name}</span>
+                        <Tooltip>
+                            <TooltipTrigger className="flex items-center gap-2">
+                                <HugeiconsIcon icon={Icon} className="size-3.5" />
+                                <span className="flex-1 text-sm truncate max-w-40">{item.name}</span>
+                            </TooltipTrigger>
+                            <TooltipContent side="right">
+                                <p>{item.name}</p>
+                            </TooltipContent>
+                        </Tooltip>
                     </Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>
@@ -298,15 +156,15 @@ export function DashboardSidebar({
             <SidebarHeader className="px-2.5 py-3">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild className="flex justify-between items-center">
-                        <button className="flex items-center gap-2.5 w-full hover:bg-sidebar-accent rounded-md p-1 -m-1 transition-colors shrink-0">
+                        <section className="flex items-center gap-2.5 w-full hover:bg-sidebar-accent rounded-md p-1 -m-1 transition-colors shrink-0">
                             <div className="flex size-10 items-center justify-center rounded-lg bg-foreground text-background shrink-0">
-                                <img src="dsa-icon.png" alt="logo uatf" className="w-fit h-fit" />
+                                <img src={logoUATF} alt="logo uatf" className="w-fit h-fit" />
                             </div>
                             <h3 className="text-sm font-medium">UATF</h3>
                             <div className="flex items-center gap-1 group-data-[collapsible=icon]:hidden">
                                 <HugeiconsIcon icon={UnfoldMoreIcon} className="size-3 text-muted-foreground" />
                             </div>
-                        </button>
+                        </section>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" className="w-56">
                         <DropdownMenuGroup>
@@ -325,47 +183,58 @@ export function DashboardSidebar({
             </SidebarHeader>
 
             <SidebarContent className="px-2.5">
-                {isAuthenticated && <SidebarGroup>
-                    <SidebarGroupLabel className="flex items-center justify-between px-0 h-6">
-                        <span className="text-[10px] font-medium tracking-wider text-muted-foreground">
-                            Dashboard
-                        </span>
-                    </SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            <SidebarMenuItem>
-                                <Link to="/dashboard">
-                                    <SidebarMenuButton className="h-7 text-sm">
-                                        <HugeiconsIcon icon={Home02Icon} className="size-3.5" />
-                                        <span>Dashboard</span>
-                                    </SidebarMenuButton>
-                                </Link>
-                            </SidebarMenuItem>
-                            <SidebarMenuItem>
-                                <Link to="/demo/table">
-                                    <SidebarMenuButton className="h-7 text-sm">
-                                        <HugeiconsIcon icon={Home02Icon} className="size-3.5" />
-                                        <span>DemoTable</span>
-                                    </SidebarMenuButton>
-                                </Link>
-                            </SidebarMenuItem>
-                            <SidebarMenuItem>
-                                <Link to="/demo/tanstack-query">
-                                    <SidebarMenuButton className="h-7 text-sm">
-                                        <HugeiconsIcon icon={Home02Icon} className="size-3.5" />
-                                        <span>DemoTanstackQuery</span>
-                                    </SidebarMenuButton>
-                                </Link>
-                            </SidebarMenuItem>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton className="h-7 text-sm text-muted-foreground">
-                                    <HugeiconsIcon icon={Add01Icon} className="size-3.5" />
-                                    <span>Crear formulario</span>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
+                {isAuthenticated &&
+                    (
+                        <>
+                            <SidebarGroup>
+                                <SidebarGroupLabel className="flex items-center justify-between px-0 h-6">
+                                    <span className="text-[10px] font-medium tracking-wider text-muted-foreground">
+                                        Dashboard
+                                    </span>
+                                </SidebarGroupLabel>
+                                <SidebarGroupContent>
+                                    <SidebarMenu>
+                                        <SidebarMenuItem>
+                                            <Link to="/dashboard/dashboard">
+                                                <SidebarMenuButton className="h-7 text-sm">
+                                                    <HugeiconsIcon icon={Home02Icon} className="size-3.5" />
+                                                    <span>Dashboard</span>
+                                                </SidebarMenuButton>
+                                            </Link>
+                                        </SidebarMenuItem>
+                                        <SidebarMenuItem>
+                                            <Link to="/dashboard/table">
+                                                <SidebarMenuButton className="h-7 text-sm">
+                                                    <HugeiconsIcon icon={Home02Icon} className="size-3.5" />
+                                                    <span>DemoTable</span>
+                                                </SidebarMenuButton>
+                                            </Link>
+                                        </SidebarMenuItem>
+                                        <SidebarMenuItem>
+                                            <SidebarMenuButton asChild className="h-7 text-sm">
+                                                <Link to="/dashboard/form-builder">
+                                                    <HugeiconsIcon icon={Add01Icon} className="size-3.5" />
+                                                    <span>Crear formulario</span>
+                                                </Link>
+                                            </SidebarMenuButton>
+                                        </SidebarMenuItem>
+                                    </SidebarMenu>
+                                </SidebarGroupContent>
+                            </SidebarGroup>
+                            <SidebarGroup className="p-0 mt-4">
+                                <SidebarGroupLabel className="flex items-center justify-between px-0 h-6">
+                                    <span className="text-[10px] font-medium tracking-wider text-muted-foreground">
+                                        Resultados de formularios
+                                    </span>
+                                </SidebarGroupLabel>
+                                <SidebarGroupContent>
+                                    <SidebarMenu>
+                                        {resultGroups.map((item) => renderWorkgroupItem(item))}
+                                    </SidebarMenu>
+                                </SidebarGroupContent>
+                            </SidebarGroup>
+                        </>
+                    )
                 }
                 <SidebarGroup className="p-0 mt-4">
                     <SidebarGroupLabel className="flex items-center justify-between px-0 h-6">
@@ -382,7 +251,32 @@ export function DashboardSidebar({
             </SidebarContent>
 
             <SidebarFooter className="px-2.5 pb-3 group-data-[collapsible=icon]:hidden">
-
+                <div className="flex justify-between items-center gap-1.5">
+                    <ThemeToggle />
+                    {isAuthenticated && !isLoading && <Button className='bg-red-600 hover:bg-red-700 text-white'
+                        onClick={async () => {
+                            await logoutMutation.mutateAsync();
+                            navigate({ to: '/' });
+                        }}
+                        disabled={logoutMutation.isPending}
+                        variant="default"
+                        size="sm"
+                    >
+                        <HugeiconsIcon icon={Logout01Icon} className="size-4" />
+                        {logoutMutation.isPending ? 'Cerrando...' : 'Cerrar Sesión'}
+                    </Button>}
+                    {profile && <Button className='bg-red-600 hover:bg-red-700 text-white'
+                        onClick={async () => {
+                            clearProfile();
+                            navigate({ to: '/' });
+                        }}
+                        variant="default"
+                        size="sm"
+                    >
+                        <HugeiconsIcon icon={Logout01Icon} className="size-4" />
+                        Cerrar Sesión
+                    </Button>}
+                </div>
             </SidebarFooter>
         </Sidebar>
     );

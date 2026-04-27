@@ -7,6 +7,7 @@ import { Slot } from "radix-ui"
 
 import { useIsMobile } from "#/shared/hooks/use-mobile"
 import { cn } from "#/shared/lib/utils"
+import { setCookie } from "#/shared/lib/cookies"
 import { Button } from "#/shared/ui/button"
 import { Input } from "#/shared/ui/input"
 import { Separator } from "#/shared/ui/separator"
@@ -25,12 +26,12 @@ import {
   TooltipTrigger,
 } from "#/shared/ui/tooltip"
 
-const SIDEBAR_COOKIE_NAME = "sidebar_state"
-const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
-const SIDEBAR_WIDTH = "16rem"
-const SIDEBAR_WIDTH_MOBILE = "18rem"
-const SIDEBAR_WIDTH_ICON = "3rem"
-const SIDEBAR_KEYBOARD_SHORTCUT = "b"
+const SIDEBAR_COOKIE_NAME = import.meta.env.VITE_SIDEBAR_COOKIE_NAME
+const SIDEBAR_COOKIE_MAX_AGE = import.meta.env.VITE_SIDEBAR_COOKIE_MAX_AGE
+const SIDEBAR_WIDTH = import.meta.env.VITE_SIDEBAR_WIDTH
+const SIDEBAR_WIDTH_MOBILE = import.meta.env.VITE_SIDEBAR_WIDTH_MOBILE
+const SIDEBAR_WIDTH_ICON = import.meta.env.VITE_SIDEBAR_WIDTH_ICON
+const SIDEBAR_KEYBOARD_SHORTCUT = import.meta.env.VITE_SIDEBAR_KEYBOARD_SHORTCUT
 
 type SidebarContextProps = {
   state: "expanded" | "collapsed"
@@ -69,8 +70,6 @@ function SidebarProvider({
   const isMobile = useIsMobile()
   const [openMobile, setOpenMobile] = React.useState(false)
 
-  // This is the internal state of the sidebar.
-  // We use openProp and setOpenProp for control from outside the component.
   const [_open, _setOpen] = React.useState(defaultOpen)
   const open = openProp ?? _open
   const setOpen = React.useCallback(
@@ -82,18 +81,15 @@ function SidebarProvider({
         _setOpen(openState)
       }
 
-      // This sets the cookie to keep the sidebar state.
-      document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+      setCookie(SIDEBAR_COOKIE_NAME, String(openState), SIDEBAR_COOKIE_MAX_AGE)
     },
     [setOpenProp, open]
   )
 
-  // Helper to toggle the sidebar.
   const toggleSidebar = React.useCallback(() => {
     return isMobile ? setOpenMobile((open) => !open) : setOpen((open) => !open)
-  }, [isMobile, setOpen, setOpenMobile])
+  }, [isMobile, setOpen])
 
-  // Adds a keyboard shortcut to toggle the sidebar.
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (
@@ -109,8 +105,6 @@ function SidebarProvider({
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [toggleSidebar])
 
-  // We add a state so that we can do data-state="expanded" or "collapsed".
-  // This makes it easier to style the sidebar with Tailwind classes.
   const state = open ? "expanded" : "collapsed"
 
   const contextValue = React.useMemo<SidebarContextProps>(
@@ -123,7 +117,7 @@ function SidebarProvider({
       setOpenMobile,
       toggleSidebar,
     }),
-    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+    [state, open, setOpen, isMobile, openMobile, toggleSidebar]
   )
 
   return (

@@ -19,3 +19,31 @@ export interface Program {
   campusId: string; // id_sede
   level: string; // LIC, TUS, TUM (del archivo fac_y_carreras)
 }
+
+export type IconSvgObject =
+  | [
+      string,
+      {
+        [key: string]: string | number;
+      },
+    ][]
+  | readonly (readonly [
+      string,
+      {
+        readonly [key: string]: string | number;
+      },
+    ])[];
+
+export type MenuItem = {
+  id: string;
+  name: string;
+  icon: IconSvgObject;
+  href: string;
+};
+
+export type MenuItemGroup = {
+  id: string;
+  name: string;
+  icon: IconSvgObject;
+  children: MenuItem[];
+};

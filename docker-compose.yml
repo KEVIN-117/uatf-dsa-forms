@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  uatf-forms:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: uatf-forms
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - VITE_FIREBASE_API_KEY=AIzaSyAKBEdzEWp_BZvlals8zwf6qICHS2t9wV4
+      - VITE_FIREBASE_AUTH_DOMAIN=uatf-forms.firebaseapp.com
+      - VITE_FIREBASE_PROJECT_ID=uatf-forms
+      - VITE_FIREBASE_STORAGE_BUCKET=uatf-forms.firebasestorage.app
+      - VITE_FIREBASE_MESSAGING_SENDER_ID=637890826694
+      - VITE_FIREBASE_APP_ID=1:637890826694:web:5ae7d4f1c455227acde2c7
+      - VITE_FIREBASE_MEASUREMENT_I=G-SFG44B3F6J
+      - VITE_SIDEBAR_COOKIE_NAME=sidebar_state
+      - VITE_SIDEBAR_COOKIE_MAX_AGE=604800
+      - VITE_SIDEBAR_WIDTH=16rem
+      - VITE_SIDEBAR_WIDTH_MOBILE=18rem
+      - VITE_SIDEBAR_WIDTH_ICON=3rem
+      - VITE_SIDEBAR_KEYBOARD_SHORTCUT=b
+    restart: unless-stopped

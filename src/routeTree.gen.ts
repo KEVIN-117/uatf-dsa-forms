@@ -9,166 +9,61 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as DashboardRouteRouteImport } from './routes/dashboard.route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as TeacherReportTeachNumModRouteImport } from './routes/teacher-report/teach-num-mod'
-import { Route as TeacherReportTeachNumAcadRouteImport } from './routes/teacher-report/teach-num-acad'
-import { Route as TeacherReportTeachListRouteImport } from './routes/teacher-report/teach-list'
-import { Route as StudentReportStuNumProgSexRouteImport } from './routes/student-report/stu-num-prog-sex'
-import { Route as StudentReportStuNumPassFailDropRouteImport } from './routes/student-report/stu-num-pass-fail-drop'
-import { Route as StudentReportStuNumAppCatSexRouteImport } from './routes/student-report/stu-num-app-cat-sex'
-import { Route as StudentReportStuNumAppAdmCatSexRouteImport } from './routes/student-report/stu-num-app-adm-cat-sex'
-import { Route as StudentReportStuEnrSexRouteImport } from './routes/student-report/stu-enr-sex'
-import { Route as StudentReportStuEnrRegSexRouteImport } from './routes/student-report/stu-enr-reg-sex'
-import { Route as StudentReportStuEnrNewSexRouteImport } from './routes/student-report/stu-enr-new-sex'
-import { Route as ScholarshipReportSchWorkRouteImport } from './routes/scholarship-report/sch-work'
-import { Route as ScholarshipReportSchResearchRouteImport } from './routes/scholarship-report/sch-research'
-import { Route as ScholarshipReportSchLabRouteImport } from './routes/scholarship-report/sch-lab'
-import { Route as ScholarshipReportSchGraduationRouteImport } from './routes/scholarship-report/sch-graduation'
-import { Route as ScholarshipReportSchFoodTypeSexRouteImport } from './routes/scholarship-report/sch-food-type-sex'
-import { Route as ScholarshipReportSchBoardingRouteImport } from './routes/scholarship-report/sch-boarding'
-import { Route as ScholarshipReportSchAssistantsRouteImport } from './routes/scholarship-report/sch-assistants'
-import { Route as GraduatesReportGradNumModSexRouteImport } from './routes/graduates-report/grad-num-mod-sex'
-import { Route as GraduatesReportGradNumAcadSexRouteImport } from './routes/graduates-report/grad-num-acad-sex'
-import { Route as DemoTanstackQueryRouteImport } from './routes/demo/tanstack-query'
-import { Route as DemoTableRouteImport } from './routes/demo/table'
-import { Route as DemoStorybookRouteImport } from './routes/demo/storybook'
+import { Route as TeacherReportFormIdRouteImport } from './routes/teacher-report/$formId'
+import { Route as StudentReportFormIdRouteImport } from './routes/student-report/$formId'
+import { Route as ScholarshipReportFormIdRouteImport } from './routes/scholarship-report/$formId'
+import { Route as GraduatesReportFormIdRouteImport } from './routes/graduates-report/$formId'
+import { Route as DemoFormIdRouteImport } from './routes/demo/$formId'
+import { Route as DashboardTableRouteImport } from './routes/dashboard/table'
+import { Route as DashboardFormBuilderRouteImport } from './routes/dashboard/form-builder'
+import { Route as DashboardDashboardRouteImport } from './routes/dashboard/dashboard'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as DashboardReportsTemplateIdModuleRouteImport } from './routes/dashboard/reports/$templateId/$module'
 
-const DashboardRouteRoute = DashboardRouteRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TeacherReportTeachNumModRoute =
-  TeacherReportTeachNumModRouteImport.update({
-    id: '/teacher-report/teach-num-mod',
-    path: '/teacher-report/teach-num-mod',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const TeacherReportTeachNumAcadRoute =
-  TeacherReportTeachNumAcadRouteImport.update({
-    id: '/teacher-report/teach-num-acad',
-    path: '/teacher-report/teach-num-acad',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const TeacherReportTeachListRoute = TeacherReportTeachListRouteImport.update({
-  id: '/teacher-report/teach-list',
-  path: '/teacher-report/teach-list',
+const TeacherReportFormIdRoute = TeacherReportFormIdRouteImport.update({
+  id: '/teacher-report/$formId',
+  path: '/teacher-report/$formId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StudentReportStuNumProgSexRoute =
-  StudentReportStuNumProgSexRouteImport.update({
-    id: '/student-report/stu-num-prog-sex',
-    path: '/student-report/stu-num-prog-sex',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const StudentReportStuNumPassFailDropRoute =
-  StudentReportStuNumPassFailDropRouteImport.update({
-    id: '/student-report/stu-num-pass-fail-drop',
-    path: '/student-report/stu-num-pass-fail-drop',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const StudentReportStuNumAppCatSexRoute =
-  StudentReportStuNumAppCatSexRouteImport.update({
-    id: '/student-report/stu-num-app-cat-sex',
-    path: '/student-report/stu-num-app-cat-sex',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const StudentReportStuNumAppAdmCatSexRoute =
-  StudentReportStuNumAppAdmCatSexRouteImport.update({
-    id: '/student-report/stu-num-app-adm-cat-sex',
-    path: '/student-report/stu-num-app-adm-cat-sex',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const StudentReportStuEnrSexRoute = StudentReportStuEnrSexRouteImport.update({
-  id: '/student-report/stu-enr-sex',
-  path: '/student-report/stu-enr-sex',
+const StudentReportFormIdRoute = StudentReportFormIdRouteImport.update({
+  id: '/student-report/$formId',
+  path: '/student-report/$formId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StudentReportStuEnrRegSexRoute =
-  StudentReportStuEnrRegSexRouteImport.update({
-    id: '/student-report/stu-enr-reg-sex',
-    path: '/student-report/stu-enr-reg-sex',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const StudentReportStuEnrNewSexRoute =
-  StudentReportStuEnrNewSexRouteImport.update({
-    id: '/student-report/stu-enr-new-sex',
-    path: '/student-report/stu-enr-new-sex',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ScholarshipReportSchWorkRoute =
-  ScholarshipReportSchWorkRouteImport.update({
-    id: '/scholarship-report/sch-work',
-    path: '/scholarship-report/sch-work',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ScholarshipReportSchResearchRoute =
-  ScholarshipReportSchResearchRouteImport.update({
-    id: '/scholarship-report/sch-research',
-    path: '/scholarship-report/sch-research',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ScholarshipReportSchLabRoute = ScholarshipReportSchLabRouteImport.update({
-  id: '/scholarship-report/sch-lab',
-  path: '/scholarship-report/sch-lab',
+const ScholarshipReportFormIdRoute = ScholarshipReportFormIdRouteImport.update({
+  id: '/scholarship-report/$formId',
+  path: '/scholarship-report/$formId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ScholarshipReportSchGraduationRoute =
-  ScholarshipReportSchGraduationRouteImport.update({
-    id: '/scholarship-report/sch-graduation',
-    path: '/scholarship-report/sch-graduation',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ScholarshipReportSchFoodTypeSexRoute =
-  ScholarshipReportSchFoodTypeSexRouteImport.update({
-    id: '/scholarship-report/sch-food-type-sex',
-    path: '/scholarship-report/sch-food-type-sex',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ScholarshipReportSchBoardingRoute =
-  ScholarshipReportSchBoardingRouteImport.update({
-    id: '/scholarship-report/sch-boarding',
-    path: '/scholarship-report/sch-boarding',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ScholarshipReportSchAssistantsRoute =
-  ScholarshipReportSchAssistantsRouteImport.update({
-    id: '/scholarship-report/sch-assistants',
-    path: '/scholarship-report/sch-assistants',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const GraduatesReportGradNumModSexRoute =
-  GraduatesReportGradNumModSexRouteImport.update({
-    id: '/graduates-report/grad-num-mod-sex',
-    path: '/graduates-report/grad-num-mod-sex',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const GraduatesReportGradNumAcadSexRoute =
-  GraduatesReportGradNumAcadSexRouteImport.update({
-    id: '/graduates-report/grad-num-acad-sex',
-    path: '/graduates-report/grad-num-acad-sex',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const DemoTanstackQueryRoute = DemoTanstackQueryRouteImport.update({
-  id: '/demo/tanstack-query',
-  path: '/demo/tanstack-query',
+const GraduatesReportFormIdRoute = GraduatesReportFormIdRouteImport.update({
+  id: '/graduates-report/$formId',
+  path: '/graduates-report/$formId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DemoTableRoute = DemoTableRouteImport.update({
-  id: '/demo/table',
-  path: '/demo/table',
+const DemoFormIdRoute = DemoFormIdRouteImport.update({
+  id: '/demo/$formId',
+  path: '/demo/$formId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DemoStorybookRoute = DemoStorybookRouteImport.update({
-  id: '/demo/storybook',
-  path: '/demo/storybook',
+const DashboardTableRoute = DashboardTableRouteImport.update({
+  id: '/dashboard/table',
+  path: '/dashboard/table',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardFormBuilderRoute = DashboardFormBuilderRouteImport.update({
+  id: '/dashboard/form-builder',
+  path: '/dashboard/form-builder',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardDashboardRoute = DashboardDashboardRouteImport.update({
+  id: '/dashboard/dashboard',
+  path: '/dashboard/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
@@ -176,210 +71,111 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardReportsTemplateIdModuleRoute =
+  DashboardReportsTemplateIdModuleRouteImport.update({
+    id: '/dashboard/reports/$templateId/$module',
+    path: '/dashboard/reports/$templateId/$module',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRouteRoute
   '/auth/login': typeof AuthLoginRoute
-  '/demo/storybook': typeof DemoStorybookRoute
-  '/demo/table': typeof DemoTableRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
-  '/graduates-report/grad-num-acad-sex': typeof GraduatesReportGradNumAcadSexRoute
-  '/graduates-report/grad-num-mod-sex': typeof GraduatesReportGradNumModSexRoute
-  '/scholarship-report/sch-assistants': typeof ScholarshipReportSchAssistantsRoute
-  '/scholarship-report/sch-boarding': typeof ScholarshipReportSchBoardingRoute
-  '/scholarship-report/sch-food-type-sex': typeof ScholarshipReportSchFoodTypeSexRoute
-  '/scholarship-report/sch-graduation': typeof ScholarshipReportSchGraduationRoute
-  '/scholarship-report/sch-lab': typeof ScholarshipReportSchLabRoute
-  '/scholarship-report/sch-research': typeof ScholarshipReportSchResearchRoute
-  '/scholarship-report/sch-work': typeof ScholarshipReportSchWorkRoute
-  '/student-report/stu-enr-new-sex': typeof StudentReportStuEnrNewSexRoute
-  '/student-report/stu-enr-reg-sex': typeof StudentReportStuEnrRegSexRoute
-  '/student-report/stu-enr-sex': typeof StudentReportStuEnrSexRoute
-  '/student-report/stu-num-app-adm-cat-sex': typeof StudentReportStuNumAppAdmCatSexRoute
-  '/student-report/stu-num-app-cat-sex': typeof StudentReportStuNumAppCatSexRoute
-  '/student-report/stu-num-pass-fail-drop': typeof StudentReportStuNumPassFailDropRoute
-  '/student-report/stu-num-prog-sex': typeof StudentReportStuNumProgSexRoute
-  '/teacher-report/teach-list': typeof TeacherReportTeachListRoute
-  '/teacher-report/teach-num-acad': typeof TeacherReportTeachNumAcadRoute
-  '/teacher-report/teach-num-mod': typeof TeacherReportTeachNumModRoute
+  '/dashboard/dashboard': typeof DashboardDashboardRoute
+  '/dashboard/form-builder': typeof DashboardFormBuilderRoute
+  '/dashboard/table': typeof DashboardTableRoute
+  '/demo/$formId': typeof DemoFormIdRoute
+  '/graduates-report/$formId': typeof GraduatesReportFormIdRoute
+  '/scholarship-report/$formId': typeof ScholarshipReportFormIdRoute
+  '/student-report/$formId': typeof StudentReportFormIdRoute
+  '/teacher-report/$formId': typeof TeacherReportFormIdRoute
+  '/dashboard/reports/$templateId/$module': typeof DashboardReportsTemplateIdModuleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRouteRoute
   '/auth/login': typeof AuthLoginRoute
-  '/demo/storybook': typeof DemoStorybookRoute
-  '/demo/table': typeof DemoTableRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
-  '/graduates-report/grad-num-acad-sex': typeof GraduatesReportGradNumAcadSexRoute
-  '/graduates-report/grad-num-mod-sex': typeof GraduatesReportGradNumModSexRoute
-  '/scholarship-report/sch-assistants': typeof ScholarshipReportSchAssistantsRoute
-  '/scholarship-report/sch-boarding': typeof ScholarshipReportSchBoardingRoute
-  '/scholarship-report/sch-food-type-sex': typeof ScholarshipReportSchFoodTypeSexRoute
-  '/scholarship-report/sch-graduation': typeof ScholarshipReportSchGraduationRoute
-  '/scholarship-report/sch-lab': typeof ScholarshipReportSchLabRoute
-  '/scholarship-report/sch-research': typeof ScholarshipReportSchResearchRoute
-  '/scholarship-report/sch-work': typeof ScholarshipReportSchWorkRoute
-  '/student-report/stu-enr-new-sex': typeof StudentReportStuEnrNewSexRoute
-  '/student-report/stu-enr-reg-sex': typeof StudentReportStuEnrRegSexRoute
-  '/student-report/stu-enr-sex': typeof StudentReportStuEnrSexRoute
-  '/student-report/stu-num-app-adm-cat-sex': typeof StudentReportStuNumAppAdmCatSexRoute
-  '/student-report/stu-num-app-cat-sex': typeof StudentReportStuNumAppCatSexRoute
-  '/student-report/stu-num-pass-fail-drop': typeof StudentReportStuNumPassFailDropRoute
-  '/student-report/stu-num-prog-sex': typeof StudentReportStuNumProgSexRoute
-  '/teacher-report/teach-list': typeof TeacherReportTeachListRoute
-  '/teacher-report/teach-num-acad': typeof TeacherReportTeachNumAcadRoute
-  '/teacher-report/teach-num-mod': typeof TeacherReportTeachNumModRoute
+  '/dashboard/dashboard': typeof DashboardDashboardRoute
+  '/dashboard/form-builder': typeof DashboardFormBuilderRoute
+  '/dashboard/table': typeof DashboardTableRoute
+  '/demo/$formId': typeof DemoFormIdRoute
+  '/graduates-report/$formId': typeof GraduatesReportFormIdRoute
+  '/scholarship-report/$formId': typeof ScholarshipReportFormIdRoute
+  '/student-report/$formId': typeof StudentReportFormIdRoute
+  '/teacher-report/$formId': typeof TeacherReportFormIdRoute
+  '/dashboard/reports/$templateId/$module': typeof DashboardReportsTemplateIdModuleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRouteRoute
   '/auth/login': typeof AuthLoginRoute
-  '/demo/storybook': typeof DemoStorybookRoute
-  '/demo/table': typeof DemoTableRoute
-  '/demo/tanstack-query': typeof DemoTanstackQueryRoute
-  '/graduates-report/grad-num-acad-sex': typeof GraduatesReportGradNumAcadSexRoute
-  '/graduates-report/grad-num-mod-sex': typeof GraduatesReportGradNumModSexRoute
-  '/scholarship-report/sch-assistants': typeof ScholarshipReportSchAssistantsRoute
-  '/scholarship-report/sch-boarding': typeof ScholarshipReportSchBoardingRoute
-  '/scholarship-report/sch-food-type-sex': typeof ScholarshipReportSchFoodTypeSexRoute
-  '/scholarship-report/sch-graduation': typeof ScholarshipReportSchGraduationRoute
-  '/scholarship-report/sch-lab': typeof ScholarshipReportSchLabRoute
-  '/scholarship-report/sch-research': typeof ScholarshipReportSchResearchRoute
-  '/scholarship-report/sch-work': typeof ScholarshipReportSchWorkRoute
-  '/student-report/stu-enr-new-sex': typeof StudentReportStuEnrNewSexRoute
-  '/student-report/stu-enr-reg-sex': typeof StudentReportStuEnrRegSexRoute
-  '/student-report/stu-enr-sex': typeof StudentReportStuEnrSexRoute
-  '/student-report/stu-num-app-adm-cat-sex': typeof StudentReportStuNumAppAdmCatSexRoute
-  '/student-report/stu-num-app-cat-sex': typeof StudentReportStuNumAppCatSexRoute
-  '/student-report/stu-num-pass-fail-drop': typeof StudentReportStuNumPassFailDropRoute
-  '/student-report/stu-num-prog-sex': typeof StudentReportStuNumProgSexRoute
-  '/teacher-report/teach-list': typeof TeacherReportTeachListRoute
-  '/teacher-report/teach-num-acad': typeof TeacherReportTeachNumAcadRoute
-  '/teacher-report/teach-num-mod': typeof TeacherReportTeachNumModRoute
+  '/dashboard/dashboard': typeof DashboardDashboardRoute
+  '/dashboard/form-builder': typeof DashboardFormBuilderRoute
+  '/dashboard/table': typeof DashboardTableRoute
+  '/demo/$formId': typeof DemoFormIdRoute
+  '/graduates-report/$formId': typeof GraduatesReportFormIdRoute
+  '/scholarship-report/$formId': typeof ScholarshipReportFormIdRoute
+  '/student-report/$formId': typeof StudentReportFormIdRoute
+  '/teacher-report/$formId': typeof TeacherReportFormIdRoute
+  '/dashboard/reports/$templateId/$module': typeof DashboardReportsTemplateIdModuleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/dashboard'
     | '/auth/login'
-    | '/demo/storybook'
-    | '/demo/table'
-    | '/demo/tanstack-query'
-    | '/graduates-report/grad-num-acad-sex'
-    | '/graduates-report/grad-num-mod-sex'
-    | '/scholarship-report/sch-assistants'
-    | '/scholarship-report/sch-boarding'
-    | '/scholarship-report/sch-food-type-sex'
-    | '/scholarship-report/sch-graduation'
-    | '/scholarship-report/sch-lab'
-    | '/scholarship-report/sch-research'
-    | '/scholarship-report/sch-work'
-    | '/student-report/stu-enr-new-sex'
-    | '/student-report/stu-enr-reg-sex'
-    | '/student-report/stu-enr-sex'
-    | '/student-report/stu-num-app-adm-cat-sex'
-    | '/student-report/stu-num-app-cat-sex'
-    | '/student-report/stu-num-pass-fail-drop'
-    | '/student-report/stu-num-prog-sex'
-    | '/teacher-report/teach-list'
-    | '/teacher-report/teach-num-acad'
-    | '/teacher-report/teach-num-mod'
+    | '/dashboard/dashboard'
+    | '/dashboard/form-builder'
+    | '/dashboard/table'
+    | '/demo/$formId'
+    | '/graduates-report/$formId'
+    | '/scholarship-report/$formId'
+    | '/student-report/$formId'
+    | '/teacher-report/$formId'
+    | '/dashboard/reports/$templateId/$module'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/dashboard'
     | '/auth/login'
-    | '/demo/storybook'
-    | '/demo/table'
-    | '/demo/tanstack-query'
-    | '/graduates-report/grad-num-acad-sex'
-    | '/graduates-report/grad-num-mod-sex'
-    | '/scholarship-report/sch-assistants'
-    | '/scholarship-report/sch-boarding'
-    | '/scholarship-report/sch-food-type-sex'
-    | '/scholarship-report/sch-graduation'
-    | '/scholarship-report/sch-lab'
-    | '/scholarship-report/sch-research'
-    | '/scholarship-report/sch-work'
-    | '/student-report/stu-enr-new-sex'
-    | '/student-report/stu-enr-reg-sex'
-    | '/student-report/stu-enr-sex'
-    | '/student-report/stu-num-app-adm-cat-sex'
-    | '/student-report/stu-num-app-cat-sex'
-    | '/student-report/stu-num-pass-fail-drop'
-    | '/student-report/stu-num-prog-sex'
-    | '/teacher-report/teach-list'
-    | '/teacher-report/teach-num-acad'
-    | '/teacher-report/teach-num-mod'
+    | '/dashboard/dashboard'
+    | '/dashboard/form-builder'
+    | '/dashboard/table'
+    | '/demo/$formId'
+    | '/graduates-report/$formId'
+    | '/scholarship-report/$formId'
+    | '/student-report/$formId'
+    | '/teacher-report/$formId'
+    | '/dashboard/reports/$templateId/$module'
   id:
     | '__root__'
     | '/'
-    | '/dashboard'
     | '/auth/login'
-    | '/demo/storybook'
-    | '/demo/table'
-    | '/demo/tanstack-query'
-    | '/graduates-report/grad-num-acad-sex'
-    | '/graduates-report/grad-num-mod-sex'
-    | '/scholarship-report/sch-assistants'
-    | '/scholarship-report/sch-boarding'
-    | '/scholarship-report/sch-food-type-sex'
-    | '/scholarship-report/sch-graduation'
-    | '/scholarship-report/sch-lab'
-    | '/scholarship-report/sch-research'
-    | '/scholarship-report/sch-work'
-    | '/student-report/stu-enr-new-sex'
-    | '/student-report/stu-enr-reg-sex'
-    | '/student-report/stu-enr-sex'
-    | '/student-report/stu-num-app-adm-cat-sex'
-    | '/student-report/stu-num-app-cat-sex'
-    | '/student-report/stu-num-pass-fail-drop'
-    | '/student-report/stu-num-prog-sex'
-    | '/teacher-report/teach-list'
-    | '/teacher-report/teach-num-acad'
-    | '/teacher-report/teach-num-mod'
+    | '/dashboard/dashboard'
+    | '/dashboard/form-builder'
+    | '/dashboard/table'
+    | '/demo/$formId'
+    | '/graduates-report/$formId'
+    | '/scholarship-report/$formId'
+    | '/student-report/$formId'
+    | '/teacher-report/$formId'
+    | '/dashboard/reports/$templateId/$module'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DashboardRouteRoute: typeof DashboardRouteRoute
   AuthLoginRoute: typeof AuthLoginRoute
-  DemoStorybookRoute: typeof DemoStorybookRoute
-  DemoTableRoute: typeof DemoTableRoute
-  DemoTanstackQueryRoute: typeof DemoTanstackQueryRoute
-  GraduatesReportGradNumAcadSexRoute: typeof GraduatesReportGradNumAcadSexRoute
-  GraduatesReportGradNumModSexRoute: typeof GraduatesReportGradNumModSexRoute
-  ScholarshipReportSchAssistantsRoute: typeof ScholarshipReportSchAssistantsRoute
-  ScholarshipReportSchBoardingRoute: typeof ScholarshipReportSchBoardingRoute
-  ScholarshipReportSchFoodTypeSexRoute: typeof ScholarshipReportSchFoodTypeSexRoute
-  ScholarshipReportSchGraduationRoute: typeof ScholarshipReportSchGraduationRoute
-  ScholarshipReportSchLabRoute: typeof ScholarshipReportSchLabRoute
-  ScholarshipReportSchResearchRoute: typeof ScholarshipReportSchResearchRoute
-  ScholarshipReportSchWorkRoute: typeof ScholarshipReportSchWorkRoute
-  StudentReportStuEnrNewSexRoute: typeof StudentReportStuEnrNewSexRoute
-  StudentReportStuEnrRegSexRoute: typeof StudentReportStuEnrRegSexRoute
-  StudentReportStuEnrSexRoute: typeof StudentReportStuEnrSexRoute
-  StudentReportStuNumAppAdmCatSexRoute: typeof StudentReportStuNumAppAdmCatSexRoute
-  StudentReportStuNumAppCatSexRoute: typeof StudentReportStuNumAppCatSexRoute
-  StudentReportStuNumPassFailDropRoute: typeof StudentReportStuNumPassFailDropRoute
-  StudentReportStuNumProgSexRoute: typeof StudentReportStuNumProgSexRoute
-  TeacherReportTeachListRoute: typeof TeacherReportTeachListRoute
-  TeacherReportTeachNumAcadRoute: typeof TeacherReportTeachNumAcadRoute
-  TeacherReportTeachNumModRoute: typeof TeacherReportTeachNumModRoute
+  DashboardDashboardRoute: typeof DashboardDashboardRoute
+  DashboardFormBuilderRoute: typeof DashboardFormBuilderRoute
+  DashboardTableRoute: typeof DashboardTableRoute
+  DemoFormIdRoute: typeof DemoFormIdRoute
+  GraduatesReportFormIdRoute: typeof GraduatesReportFormIdRoute
+  ScholarshipReportFormIdRoute: typeof ScholarshipReportFormIdRoute
+  StudentReportFormIdRoute: typeof StudentReportFormIdRoute
+  TeacherReportFormIdRoute: typeof TeacherReportFormIdRoute
+  DashboardReportsTemplateIdModuleRoute: typeof DashboardReportsTemplateIdModuleRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -387,158 +183,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/teacher-report/teach-num-mod': {
-      id: '/teacher-report/teach-num-mod'
-      path: '/teacher-report/teach-num-mod'
-      fullPath: '/teacher-report/teach-num-mod'
-      preLoaderRoute: typeof TeacherReportTeachNumModRouteImport
+    '/teacher-report/$formId': {
+      id: '/teacher-report/$formId'
+      path: '/teacher-report/$formId'
+      fullPath: '/teacher-report/$formId'
+      preLoaderRoute: typeof TeacherReportFormIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/teacher-report/teach-num-acad': {
-      id: '/teacher-report/teach-num-acad'
-      path: '/teacher-report/teach-num-acad'
-      fullPath: '/teacher-report/teach-num-acad'
-      preLoaderRoute: typeof TeacherReportTeachNumAcadRouteImport
+    '/student-report/$formId': {
+      id: '/student-report/$formId'
+      path: '/student-report/$formId'
+      fullPath: '/student-report/$formId'
+      preLoaderRoute: typeof StudentReportFormIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/teacher-report/teach-list': {
-      id: '/teacher-report/teach-list'
-      path: '/teacher-report/teach-list'
-      fullPath: '/teacher-report/teach-list'
-      preLoaderRoute: typeof TeacherReportTeachListRouteImport
+    '/scholarship-report/$formId': {
+      id: '/scholarship-report/$formId'
+      path: '/scholarship-report/$formId'
+      fullPath: '/scholarship-report/$formId'
+      preLoaderRoute: typeof ScholarshipReportFormIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/student-report/stu-num-prog-sex': {
-      id: '/student-report/stu-num-prog-sex'
-      path: '/student-report/stu-num-prog-sex'
-      fullPath: '/student-report/stu-num-prog-sex'
-      preLoaderRoute: typeof StudentReportStuNumProgSexRouteImport
+    '/graduates-report/$formId': {
+      id: '/graduates-report/$formId'
+      path: '/graduates-report/$formId'
+      fullPath: '/graduates-report/$formId'
+      preLoaderRoute: typeof GraduatesReportFormIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/student-report/stu-num-pass-fail-drop': {
-      id: '/student-report/stu-num-pass-fail-drop'
-      path: '/student-report/stu-num-pass-fail-drop'
-      fullPath: '/student-report/stu-num-pass-fail-drop'
-      preLoaderRoute: typeof StudentReportStuNumPassFailDropRouteImport
+    '/demo/$formId': {
+      id: '/demo/$formId'
+      path: '/demo/$formId'
+      fullPath: '/demo/$formId'
+      preLoaderRoute: typeof DemoFormIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/student-report/stu-num-app-cat-sex': {
-      id: '/student-report/stu-num-app-cat-sex'
-      path: '/student-report/stu-num-app-cat-sex'
-      fullPath: '/student-report/stu-num-app-cat-sex'
-      preLoaderRoute: typeof StudentReportStuNumAppCatSexRouteImport
+    '/dashboard/table': {
+      id: '/dashboard/table'
+      path: '/dashboard/table'
+      fullPath: '/dashboard/table'
+      preLoaderRoute: typeof DashboardTableRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/student-report/stu-num-app-adm-cat-sex': {
-      id: '/student-report/stu-num-app-adm-cat-sex'
-      path: '/student-report/stu-num-app-adm-cat-sex'
-      fullPath: '/student-report/stu-num-app-adm-cat-sex'
-      preLoaderRoute: typeof StudentReportStuNumAppAdmCatSexRouteImport
+    '/dashboard/form-builder': {
+      id: '/dashboard/form-builder'
+      path: '/dashboard/form-builder'
+      fullPath: '/dashboard/form-builder'
+      preLoaderRoute: typeof DashboardFormBuilderRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/student-report/stu-enr-sex': {
-      id: '/student-report/stu-enr-sex'
-      path: '/student-report/stu-enr-sex'
-      fullPath: '/student-report/stu-enr-sex'
-      preLoaderRoute: typeof StudentReportStuEnrSexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/student-report/stu-enr-reg-sex': {
-      id: '/student-report/stu-enr-reg-sex'
-      path: '/student-report/stu-enr-reg-sex'
-      fullPath: '/student-report/stu-enr-reg-sex'
-      preLoaderRoute: typeof StudentReportStuEnrRegSexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/student-report/stu-enr-new-sex': {
-      id: '/student-report/stu-enr-new-sex'
-      path: '/student-report/stu-enr-new-sex'
-      fullPath: '/student-report/stu-enr-new-sex'
-      preLoaderRoute: typeof StudentReportStuEnrNewSexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/scholarship-report/sch-work': {
-      id: '/scholarship-report/sch-work'
-      path: '/scholarship-report/sch-work'
-      fullPath: '/scholarship-report/sch-work'
-      preLoaderRoute: typeof ScholarshipReportSchWorkRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/scholarship-report/sch-research': {
-      id: '/scholarship-report/sch-research'
-      path: '/scholarship-report/sch-research'
-      fullPath: '/scholarship-report/sch-research'
-      preLoaderRoute: typeof ScholarshipReportSchResearchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/scholarship-report/sch-lab': {
-      id: '/scholarship-report/sch-lab'
-      path: '/scholarship-report/sch-lab'
-      fullPath: '/scholarship-report/sch-lab'
-      preLoaderRoute: typeof ScholarshipReportSchLabRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/scholarship-report/sch-graduation': {
-      id: '/scholarship-report/sch-graduation'
-      path: '/scholarship-report/sch-graduation'
-      fullPath: '/scholarship-report/sch-graduation'
-      preLoaderRoute: typeof ScholarshipReportSchGraduationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/scholarship-report/sch-food-type-sex': {
-      id: '/scholarship-report/sch-food-type-sex'
-      path: '/scholarship-report/sch-food-type-sex'
-      fullPath: '/scholarship-report/sch-food-type-sex'
-      preLoaderRoute: typeof ScholarshipReportSchFoodTypeSexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/scholarship-report/sch-boarding': {
-      id: '/scholarship-report/sch-boarding'
-      path: '/scholarship-report/sch-boarding'
-      fullPath: '/scholarship-report/sch-boarding'
-      preLoaderRoute: typeof ScholarshipReportSchBoardingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/scholarship-report/sch-assistants': {
-      id: '/scholarship-report/sch-assistants'
-      path: '/scholarship-report/sch-assistants'
-      fullPath: '/scholarship-report/sch-assistants'
-      preLoaderRoute: typeof ScholarshipReportSchAssistantsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/graduates-report/grad-num-mod-sex': {
-      id: '/graduates-report/grad-num-mod-sex'
-      path: '/graduates-report/grad-num-mod-sex'
-      fullPath: '/graduates-report/grad-num-mod-sex'
-      preLoaderRoute: typeof GraduatesReportGradNumModSexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/graduates-report/grad-num-acad-sex': {
-      id: '/graduates-report/grad-num-acad-sex'
-      path: '/graduates-report/grad-num-acad-sex'
-      fullPath: '/graduates-report/grad-num-acad-sex'
-      preLoaderRoute: typeof GraduatesReportGradNumAcadSexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/tanstack-query': {
-      id: '/demo/tanstack-query'
-      path: '/demo/tanstack-query'
-      fullPath: '/demo/tanstack-query'
-      preLoaderRoute: typeof DemoTanstackQueryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/table': {
-      id: '/demo/table'
-      path: '/demo/table'
-      fullPath: '/demo/table'
-      preLoaderRoute: typeof DemoTableRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/storybook': {
-      id: '/demo/storybook'
-      path: '/demo/storybook'
-      fullPath: '/demo/storybook'
-      preLoaderRoute: typeof DemoStorybookRouteImport
+    '/dashboard/dashboard': {
+      id: '/dashboard/dashboard'
+      path: '/dashboard/dashboard'
+      fullPath: '/dashboard/dashboard'
+      preLoaderRoute: typeof DashboardDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/login': {
@@ -548,35 +246,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/reports/$templateId/$module': {
+      id: '/dashboard/reports/$templateId/$module'
+      path: '/dashboard/reports/$templateId/$module'
+      fullPath: '/dashboard/reports/$templateId/$module'
+      preLoaderRoute: typeof DashboardReportsTemplateIdModuleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DashboardRouteRoute: DashboardRouteRoute,
   AuthLoginRoute: AuthLoginRoute,
-  DemoStorybookRoute: DemoStorybookRoute,
-  DemoTableRoute: DemoTableRoute,
-  DemoTanstackQueryRoute: DemoTanstackQueryRoute,
-  GraduatesReportGradNumAcadSexRoute: GraduatesReportGradNumAcadSexRoute,
-  GraduatesReportGradNumModSexRoute: GraduatesReportGradNumModSexRoute,
-  ScholarshipReportSchAssistantsRoute: ScholarshipReportSchAssistantsRoute,
-  ScholarshipReportSchBoardingRoute: ScholarshipReportSchBoardingRoute,
-  ScholarshipReportSchFoodTypeSexRoute: ScholarshipReportSchFoodTypeSexRoute,
-  ScholarshipReportSchGraduationRoute: ScholarshipReportSchGraduationRoute,
-  ScholarshipReportSchLabRoute: ScholarshipReportSchLabRoute,
-  ScholarshipReportSchResearchRoute: ScholarshipReportSchResearchRoute,
-  ScholarshipReportSchWorkRoute: ScholarshipReportSchWorkRoute,
-  StudentReportStuEnrNewSexRoute: StudentReportStuEnrNewSexRoute,
-  StudentReportStuEnrRegSexRoute: StudentReportStuEnrRegSexRoute,
-  StudentReportStuEnrSexRoute: StudentReportStuEnrSexRoute,
-  StudentReportStuNumAppAdmCatSexRoute: StudentReportStuNumAppAdmCatSexRoute,
-  StudentReportStuNumAppCatSexRoute: StudentReportStuNumAppCatSexRoute,
-  StudentReportStuNumPassFailDropRoute: StudentReportStuNumPassFailDropRoute,
-  StudentReportStuNumProgSexRoute: StudentReportStuNumProgSexRoute,
-  TeacherReportTeachListRoute: TeacherReportTeachListRoute,
-  TeacherReportTeachNumAcadRoute: TeacherReportTeachNumAcadRoute,
-  TeacherReportTeachNumModRoute: TeacherReportTeachNumModRoute,
+  DashboardDashboardRoute: DashboardDashboardRoute,
+  DashboardFormBuilderRoute: DashboardFormBuilderRoute,
+  DashboardTableRoute: DashboardTableRoute,
+  DemoFormIdRoute: DemoFormIdRoute,
+  GraduatesReportFormIdRoute: GraduatesReportFormIdRoute,
+  ScholarshipReportFormIdRoute: ScholarshipReportFormIdRoute,
+  StudentReportFormIdRoute: StudentReportFormIdRoute,
+  TeacherReportFormIdRoute: TeacherReportFormIdRoute,
+  DashboardReportsTemplateIdModuleRoute: DashboardReportsTemplateIdModuleRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

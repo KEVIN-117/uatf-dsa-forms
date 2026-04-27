@@ -1,4 +1,9 @@
 import type { Faculty, Program } from "#/shared/types";
+import {
+  FormModules,
+  type FormResponseDef,
+  type FormTemplateDef,
+} from "../types/dynamic-form";
 import { db } from "./firebase";
 import { setDoc, doc } from "firebase/firestore";
 
@@ -930,6 +935,404 @@ export async function seedPrograms() {
   }
 }
 
+export async function seedFormFields() {
+  const templates: FormTemplateDef[] = [
+    {
+      id: "1",
+      title: "Numero de postulantes por modalidad y sexo",
+      description:
+        "Este es el formulario de numero de postulantes por modalidad y sexo",
+      module: FormModules.student,
+      isActive: true,
+      fields: [
+        {
+          id: "1",
+          name: "modalidad",
+          label: "Modalidad",
+          type: "select",
+          required: true,
+          options: [
+            { value: "1", label: "Curso de nivelación" },
+            { value: "2", label: "CIM" },
+            { value: "3", label: "Ingreso Directo" },
+            { value: "4", label: "Pre-universitario" },
+            { value: "5", label: "Reingreso" },
+            { value: "6", label: "Traslado" },
+            { value: "7", label: "Ingreso por Promoción" },
+            { value: "8", label: "Ingreso por Convenio" },
+            { value: "9", label: "Ingreso por Concurso" },
+            { value: "10", label: "Ingreso por Excelencia" },
+            { value: "11", label: "Ingreso por Mérito Deportivo" },
+            { value: "12", label: "Ingreso por Mérito Artístico" },
+          ],
+        },
+        {
+          id: "2",
+          name: "masculino",
+          label: "Masculino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "3",
+          name: "femenino",
+          label: "Femenino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "4",
+          name: "total",
+          label: "Total",
+          type: "number",
+          required: false,
+        },
+      ],
+    },
+    {
+      id: "2",
+      title: "Número de postulantes admitidos por modalidad y sexo",
+      description:
+        "Este es el formulario de número de postulantes admitidos por modalidad y sexo",
+      module: FormModules.student,
+      isActive: true,
+      fields: [
+        {
+          id: "1",
+          name: "modalidad",
+          label: "Modalidad",
+          type: "select",
+          required: true,
+          options: [
+            { value: "1", label: "Curso de nivelación" },
+            { value: "2", label: "CIM" },
+            { value: "3", label: "Ingreso Directo" },
+            { value: "4", label: "Pre-universitario" },
+            { value: "5", label: "Reingreso" },
+            { value: "6", label: "Traslado" },
+            { value: "7", label: "Ingreso por Promoción" },
+            { value: "8", label: "Ingreso por Convenio" },
+            { value: "9", label: "Ingreso por Concurso" },
+            { value: "10", label: "Ingreso por Excelencia" },
+            { value: "11", label: "Ingreso por Mérito Deportivo" },
+            { value: "12", label: "Ingreso por Mérito Artístico" },
+          ],
+        },
+        {
+          id: "2",
+          name: "masculino",
+          label: "Masculino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "3",
+          name: "femenino",
+          label: "Femenino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "4",
+          name: "total",
+          label: "Total",
+          type: "number",
+          required: false,
+        },
+      ],
+    },
+    {
+      id: "3",
+      title: "Matrícula estudiantil por sexo",
+      description: "Este es el formulario de matrícula estudiantil por sexo",
+      module: FormModules.student,
+      isActive: true,
+      fields: [
+        {
+          id: "1",
+          name: "masculino",
+          label: "Masculino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "2",
+          name: "femenino",
+          label: "Femenino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "3",
+          name: "total",
+          label: "Total",
+          type: "number",
+          required: false,
+        },
+      ],
+    },
+    {
+      id: "4",
+      title: "Número de graduados por modalidad y sexo",
+      description:
+        "Este es el formulario de número de graduados por modalidad y sexo",
+      module: FormModules.graduate,
+      isActive: true,
+      fields: [
+        {
+          id: "1",
+          name: "modalidad",
+          label: "Modalidad",
+          type: "select",
+          required: true,
+          options: [
+            { value: "1", label: "Curso de nivelación" },
+            { value: "2", label: "CIM" },
+            { value: "3", label: "Ingreso Directo" },
+            { value: "4", label: "Pre-universitario" },
+            { value: "5", label: "Reingreso" },
+            { value: "6", label: "Traslado" },
+            { value: "7", label: "Ingreso por Promoción" },
+            { value: "8", label: "Ingreso por Convenio" },
+            { value: "9", label: "Ingreso por Concurso" },
+            { value: "10", label: "Ingreso por Excelencia" },
+            { value: "11", label: "Ingreso por Mérito Deportivo" },
+            { value: "12", label: "Ingreso por Mérito Artístico" },
+          ],
+        },
+        {
+          id: "2",
+          name: "masculino",
+          label: "Masculino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "3",
+          name: "femenino",
+          label: "Femenino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "4",
+          name: "total",
+          label: "Total",
+          type: "number",
+          required: false,
+        },
+      ],
+    },
+    {
+      id: "5",
+      title: "Número de docentes",
+      description: "Este es el formulario de número de docentes",
+      module: FormModules.teacher,
+      isActive: true,
+      fields: [
+        {
+          id: "1",
+          name: "paterno",
+          label: "Paterno",
+          type: "text",
+          required: true,
+        },
+        {
+          id: "2",
+          name: "materno",
+          label: "Materno",
+          type: "text",
+          required: true,
+        },
+        {
+          id: "3",
+          name: "nombres",
+          label: "Nombres",
+          type: "text",
+          required: true,
+        },
+        {
+          id: "4",
+          name: "carnet",
+          label: "Número de carnet",
+          type: "text",
+          required: true,
+        },
+        {
+          id: "5",
+          name: "celular",
+          label: "Numero de celular",
+          type: "text",
+          required: true,
+        },
+        {
+          id: "6",
+          name: "cargaHoraria",
+          label: "Carga horaria",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "7",
+          name: "categoria",
+          label: "Categoria",
+          type: "select",
+          required: true,
+          options: [
+            { value: "1", label: "Tiempo Completo" },
+            { value: "2", label: "Tiempo Parcial" },
+            { value: "3", label: "Contratado" },
+            { value: "4", label: "Honorarios" },
+            { value: "5", label: "Asistente" },
+            { value: "6", label: "Consultor" },
+            { value: "7", label: "Interino" },
+            { value: "8", label: "Ad Honorem" },
+          ],
+        },
+        {
+          id: "8",
+          name: "nivelAcademico",
+          label: "Nivel Academico Alcanzado",
+          type: "text",
+          required: true,
+        },
+        {
+          id: "9",
+          name: "profesion",
+          label: "Profesión",
+          type: "text",
+          required: true,
+        },
+      ],
+    },
+    {
+      id: "6",
+      title: "Numero de beca alimentacion por tipo y sexo",
+      description:
+        "Este es el formulario de número de beca alimentacion por tipo y sexo",
+      module: FormModules.scholarships,
+      isActive: true,
+      fields: [
+        {
+          id: "1",
+          name: "tipoBeca",
+          label: "Tipo de beca",
+          type: "select",
+          required: true,
+          options: [
+            { value: "1", label: "Beca Alimentación" },
+            { value: "2", label: "Beca Movilidad" },
+            { value: "3", label: "Beca Excelencia" },
+            { value: "4", label: "Beca Deportiva" },
+            { value: "5", label: "Beca Artística" },
+            { value: "6", label: "Beca Cultural" },
+            { value: "7", label: "Beca de Investigación" },
+            { value: "8", label: "Beca de Postgrado" },
+            { value: "9", label: "Beca de Doctorado" },
+            { value: "10", label: "Beca de Maestría" },
+            { value: "11", label: "Beca de Intercambio" },
+            { value: "12", label: "Beca de Solidaridad" },
+          ],
+        },
+        {
+          id: "2",
+          name: "masculino",
+          label: "Masculino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "3",
+          name: "femenino",
+          label: "Femenino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "4",
+          name: "total",
+          label: "Total",
+          type: "number",
+          required: false,
+        },
+      ],
+    },
+  ];
+
+  try {
+    const batchPromises = templates.map((item) =>
+      // Al usar doc(db, collection, ID) garantizamos que no se creen duplicados si corres el seed varias veces
+      setDoc(doc(db, "form_templates", item.id), {
+        ...item,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+    );
+
+    await Promise.all(batchPromises);
+    console.log(`✅ ${templates.length} Form Templates sembrados exitosamente`);
+  } catch (error) {
+    console.error("❌ Error al sembrar los Form Templates:", error);
+  }
+}
+
+export async function seedFormResponses() {
+  console.log("🌱 Iniciando la siembra de datos en Firestore...");
+  const responses: FormResponseDef[] = [
+    {
+      id: "1",
+      templateId: "1",
+      module: FormModules.student,
+      submittedBy: "user1",
+      createdAt: Date.now(),
+      response: {
+        modalidad: "Interno",
+        masculino: 4500,
+        femenino: 5000,
+        total: 9500,
+      },
+    },
+    {
+      id: "2",
+      templateId: "4",
+      module: FormModules.graduate,
+      submittedBy: "user1",
+      createdAt: Date.now(),
+      response: {
+        modalidad: "Interno",
+        masculino: 4500,
+        femenino: 5000,
+        total: 9500,
+      },
+    },
+    {
+      id: "3",
+      templateId: "6",
+      module: FormModules.scholarships,
+      submittedBy: "user1",
+      createdAt: Date.now(),
+      response: {
+        tipoBeca: "Beca Alimentación",
+        masculino: 4500,
+        femenino: 5000,
+        total: 9500,
+      },
+    },
+  ];
+
+  try {
+    const batchPromises = responses.map((item) =>
+      // Guardamos cada respuesta en la colección de su módulo (student, graduate, etc.)
+      setDoc(doc(db, item.module, item.id), item),
+    );
+
+    await Promise.all(batchPromises);
+    console.log(`✅ ${responses.length} Form Responses sembradas exitosamente`);
+  } catch (error) {
+    console.error("❌ Error al sembrar los Form Responses:", error);
+  }
+}
+
 export async function runSeed() {
   console.log("🌱 Iniciando la siembra de datos en Firestore...");
 
@@ -938,6 +1341,8 @@ export async function runSeed() {
     await seedModalities();
     await seedFaculties();
     await seedPrograms();
+    await seedFormFields();
+    await seedFormResponses();
 
     console.log("🎉 Proceso de siembra finalizado con éxito.");
     process.exit(0); // Detiene la ejecución del script limpiamente
@@ -946,4 +1351,3 @@ export async function runSeed() {
     process.exit(1); // Detiene la ejecución indicando que hubo un error
   }
 }
-

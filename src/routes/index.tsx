@@ -1,3 +1,5 @@
+import { runSeed } from '#/shared/lib/seed'
+import { Button } from '#/shared/ui/button'
 import { createFileRoute } from '@tanstack/react-router'
 import { Calendar, MapPin } from 'lucide-react'
 
@@ -20,6 +22,9 @@ function HomePage() {
             <MapPin className="w-4 h-4" />
             <span>La Paz, Bolivia</span>
           </div>
+          <Button variant="outline" onClick={runSeed}>
+            Seed Responses
+          </Button>
 
           <h1 className="font-display text-6xl md:text-8xl font-bold text-cream mb-6 leading-tight ">
             Haute

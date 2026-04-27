@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Moon, Sun } from 'lucide-react'
+import { Button } from '#/shared/ui/button'
 
 type ThemeMode = 'light' | 'dark' | 'auto'
 
@@ -56,8 +57,8 @@ export default function ThemeToggle() {
   }, [mode])
 
   function toggleMode() {
-    const nextMode: ThemeMode =
-      mode === 'light' ? 'dark' : 'light'
+    // Si estaba en 'auto' o 'light', lo pasa a 'dark', de lo contrario a 'light'
+    const nextMode: ThemeMode = mode === 'light' ? 'dark' : 'light'
     setMode(nextMode)
     applyThemeMode(nextMode)
     window.localStorage.setItem('theme', nextMode)
@@ -65,22 +66,29 @@ export default function ThemeToggle() {
 
   const label =
     mode === 'dark'
-      ? 'Theme mode: dark (system). Click to switch to light mode.'
-      : `Theme mode: ${mode}. Click to switch mode.`
+      ? 'Modo oscuro activado. Haz clic para cambiar al modo claro.'
+      : `Modo ${mode} activado. Haz clic para cambiar de modo.`
 
   return (
-    <button
-      type="button"
+    <Button
+      variant="outline"
+      size="icon"
       onClick={toggleMode}
       aria-label={label}
       title={label}
-      className="rounded-full border border-(--chip-line) bg-(--chip-bg) px-3 py-1.5 text-sm font-semibold text-(--sea-ink) shadow-[0_8px_22px_rgba(30,90,72,0.08)] transition hover:translate-y-0.5 w-fit"
+      // Reemplazamos los estilos custom por las clases semánticas del tema educativo
+      className="relative rounded-full h-9 w-9 border-border bg-background text-foreground hover:bg-muted focus-academic transition-colors"
     >
-      {mode === 'dark' ? (
-        <Moon className="h-4 w-4" />
-      ) : (
-        <Sun className="h-4 w-4" />
-      )}
-    </button>
+      {/* Icono de Sol: Se oculta y gira cuando es dark */}
+      <Sun
+        className={`h-[1.2rem] w-[1.2rem] transition-all duration-300 ${mode === 'dark' ? 'scale-0 -rotate-90' : 'scale-100 rotate-0'
+          }`}
+      />
+      {/* Icono de Luna: Aparece y gira cuando es dark */}
+      <Moon
+        className={`absolute h-[1.2rem] w-[1.2rem] transition-all duration-300 ${mode === 'dark' ? 'scale-100 rotate-0' : 'scale-0 rotate-90'
+          }`}
+      />
+    </Button>
   )
 }

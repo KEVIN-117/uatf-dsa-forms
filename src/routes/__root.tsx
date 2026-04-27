@@ -1,10 +1,9 @@
 import {
   HeadContent,
-  Outlet, // Agregamos Outlet
+  Outlet,
   Scripts,
   createRootRouteWithContext,
 } from '@tanstack/react-router'
-import Header from '#/app/layout/Header'
 import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
@@ -14,6 +13,7 @@ import { DashboardSidebar } from '#/app/layout/DashboardSidebar'
 import { AuthProvider } from '#/features/auth/providers/AuthProvider'
 import { DirectorProfileGate } from '#/features/director-profile/components/DirectorProfileGate'
 import { DirectorProfileProvider } from '#/features/director-profile/providers/DirectorProfileProvider'
+import { Toaster } from "@/shared/ui/sonner"
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -54,10 +54,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               <DashboardSidebar />
               <div className="h-svh overflow-hidden lg:p-2 w-full">
                 <div className="lg:border lg:rounded-md overflow-hidden flex flex-col h-full w-full bg-background">
-                  <Header />
                   <main className="w-full flex-1 overflow-auto p-1">
                     {children}
                   </main>
+                  <Toaster />
                 </div>
               </div>
             </SidebarProvider>

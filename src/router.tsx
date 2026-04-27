@@ -6,12 +6,15 @@ import {
   getContext,
 } from '#/app/providers/query-provider'
 
-export function getRouter() {
+type RouterConfig = Parameters<typeof createTanStackRouter>[0]
+
+export function getRouter(options: Pick<RouterConfig, 'history'> = {}) {
   const context = getContext()
 
   const router = createTanStackRouter({
     routeTree,
     context,
+    history: options.history,
     scrollRestoration: true,
     defaultPreload: 'intent',
     defaultPreloadStaleTime: 0,

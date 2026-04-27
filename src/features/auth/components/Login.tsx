@@ -9,6 +9,7 @@ import { Button } from "#/shared/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "#/shared/ui/card";
 import { Input } from "#/shared/ui/input";
 import { Label } from "#/shared/ui/label";
+import { FirebaseError } from "firebase/app";
 
 interface LoginProps {
   onSuccess?: () => void;
@@ -47,17 +48,19 @@ export function Login({
         if (redirectTo) {
           navigate({ to: redirectTo });
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Error de autenticación:", error);
 
-        if (error.code === "auth/invalid-credential") {
-          setAuthError("El correo o la contraseña son incorrectos.");
-          return;
-        }
+        if (error instanceof FirebaseError) {
+          if (error.code === "auth/invalid-credential") {
+            setAuthError("El correo o la contraseña son incorrectos.");
+            return;
+          }
 
-        if (error.code === "auth/too-many-requests") {
-          setAuthError("Demasiados intentos fallidos. Intenta más tarde.");
-          return;
+          if (error.code === "auth/too-many-requests") {
+            setAuthError("Demasiados intentos fallidos. Intenta más tarde.");
+            return;
+          }
         }
 
         setAuthError("Ocurrió un error al intentar iniciar sesión.");
