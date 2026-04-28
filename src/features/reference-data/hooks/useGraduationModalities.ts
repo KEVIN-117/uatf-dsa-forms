@@ -12,13 +12,16 @@ import {
 } from "firebase/firestore";
 import { useEffect } from "react";
 import { db } from "#/shared/lib/firebase";
-import type { Modality } from "#/shared/types";
+import type { GraduationModality } from "#/shared/types";
 
-export const useModalities = () => {
+export const useGraduationModalities = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const q = query(collection(db, "modalities"), orderBy("id", "asc"));
+    const q = query(
+      collection(db, "graduation_modalities"),
+      orderBy("id", "asc"),
+    );
 
     const unsubscribe = onSnapshot(
       q,
@@ -26,12 +29,12 @@ export const useModalities = () => {
         const modalities = snapshot.docs.map((docSnap) => ({
           docId: docSnap.id,
           ...docSnap.data(),
-        })) as Modality[];
+        })) as GraduationModality[];
 
-        queryClient.setQueryData(["modalities"], modalities);
+        queryClient.setQueryData(["graduation_modalities"], modalities);
       },
       (error) => {
-        console.error("Error escuchando modalidades:", error);
+        console.error("Error escuchando modalidades de graduación:", error);
       },
     );
 
@@ -39,18 +42,18 @@ export const useModalities = () => {
   }, [queryClient]);
 
   return useQuery({
-    queryKey: ["modalities"],
+    queryKey: ["graduation_modalities"],
     queryFn: () =>
-      (queryClient.getQueryData(["modalities"]) as Modality[]) || [],
+      (queryClient.getQueryData(["graduation_modalities"]) as GraduationModality[]) || [],
     staleTime: Infinity,
   });
 };
 
-export const useAddModality = () => {
+export const useAddGraduationModality = () => {
   return useMutation({
-    mutationFn: async (newModality: Omit<Modality, "docId">) => {
-      const modalitiesRef = collection(db, "modalities");
-      return await addDoc(modalitiesRef, {
+    mutationFn: async (newModality: Omit<GraduationModality, "docId">) => {
+      const ref = collection(db, "graduation_modalities");
+      return await addDoc(ref, {
         ...newModality,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
@@ -59,10 +62,10 @@ export const useAddModality = () => {
   });
 };
 
-export const useUpdateModality = () => {
+export const useUpdateGraduationModality = () => {
   return useMutation({
-    mutationFn: async ({ docId, ...data }: Modality) => {
-      const docRef = doc(db, "modalities", docId);
+    mutationFn: async ({ docId, ...data }: GraduationModality) => {
+      const docRef = doc(db, "graduation_modalities", docId);
       return await updateDoc(docRef, {
         ...data,
         updatedAt: serverTimestamp(),
@@ -71,17 +74,11 @@ export const useUpdateModality = () => {
   });
 };
 
-export const useDeleteModality = () => {
+export const useDeleteGraduationModality = () => {
   return useMutation({
     mutationFn: async (docId: string) => {
-      const docRef = doc(db, "modalities", docId);
+      const docRef = doc(db, "graduation_modalities", docId);
       return await deleteDoc(docRef);
     },
   });
-};
-
-export const useModalityById = (modalityId: string) => {
-  const modalities = useModalities();
-
-  return modalities.data?.find((modality) => modality.id === modalityId);
 };

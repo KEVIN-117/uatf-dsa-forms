@@ -19,11 +19,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#
 import { Switch } from '#/shared/ui/switch';
 import { Textarea } from '#/shared/ui/textarea';
 import type { FormModules, FormFieldDef, FormTemplateDef } from '#/shared/types/dynamic-form';
-import { toast } from "sonner";
-import { createBlankTemplate, createDefaultField, generateTemplateId, moduleOptions, normalizeField, normalizeTemplate, toastStyles } from '#/features/dynamic-form/utils';
+import { createBlankTemplate, createDefaultField, generateTemplateId, moduleOptions, normalizeField, normalizeTemplate } from '#/features/dynamic-form/utils';
 import { BuilderSkeleton } from '#/features/dynamic-form/components/BuilderSkeleton';
 import { StatePanel } from '#/features/dynamic-form/components/StatePanel';
 import { FieldEditor } from '#/features/dynamic-form/components/FieldEditor';
+import { useToast } from '#/shared/components/Toast';
 
 export default function FormBuilderPanel() {
     const { isLoading, isAuthenticated } = useProtectedRoute();
@@ -61,17 +61,25 @@ export default function FormBuilderPanel() {
         const cleaned = normalizeTemplate(draft);
 
         if (!cleaned.id.trim() || !cleaned.title.trim()) {
-            toast.error('Campos incompletos', {
-                description: 'El identificador y el título son obligatorios.',
-                style: toastStyles.error,
+            useToast({
+                title: "Campos incompletos",
+                type: "error",
+                duration: 5000,
+                closeButton: true,
+                position: 'top-right',
+                message: "El identificador y el título son obligatorios.",
             });
             return;
         }
 
         if (cleaned.fields.length === 0) {
-            toast.warning('Plantilla vacía', {
-                description: 'Agrega al menos un campo antes de guardar.',
-                style: toastStyles.warning,
+            useToast({
+                title: "Plantilla vacía",
+                type: "warning",
+                duration: 5000,
+                closeButton: true,
+                position: 'top-right',
+                message: "Agrega al menos un campo antes de guardar.",
             });
             return;
         }
@@ -79,15 +87,22 @@ export default function FormBuilderPanel() {
         try {
             await upsertTemplate(cleaned);
             setSelectedTemplateId(cleaned.id);
-            toast.success('Plantilla guardada', {
-                description: 'Los cambios se han guardado correctamente en la base de datos.',
-                duration: 3000,
-                style: toastStyles.success,
+            useToast({
+                title: "Plantilla guardada",
+                type: "success",
+                duration: 5000,
+                closeButton: true,
+                position: 'top-right',
+                message: "Los cambios se han guardado correctamente en la base de datos.",
             });
         } catch (_err) {
-            toast.error('Error al guardar', {
-                description: 'Hubo un problema al intentar guardar la plantilla.',
-                style: toastStyles.error,
+            useToast({
+                title: "Error",
+                type: "error",
+                duration: 5000,
+                closeButton: true,
+                position: 'top-right',
+                message: "Hubo un problema al intentar guardar la plantilla.",
             });
         }
     };
@@ -109,9 +124,13 @@ export default function FormBuilderPanel() {
 
         setDraft(duplicated);
         setSelectedTemplateId('new');
-        toast.success('Plantilla duplicada', {
-            description: 'Revisa el nuevo identificador antes de guardar.',
-            style: toastStyles.success,
+        useToast({
+            title: "Plantilla duplicada",
+            type: "success",
+            duration: 5000,
+            closeButton: true,
+            position: 'top-right',
+            message: "Revisa el nuevo identificador antes de guardar.",
         });
     };
 
@@ -179,9 +198,13 @@ export default function FormBuilderPanel() {
             return { ...current, fields };
         });
 
-        toast.success('Campo clonado', {
-            description: 'El campo se ha copiado correctamente.',
-            style: toastStyles.success,
+        useToast({
+            title: "Campo clonado",
+            type: "success",
+            duration: 5000,
+            closeButton: true,
+            position: 'top-right',
+            message: "El campo se ha copiado correctamente.",
         });
     };
 
@@ -295,6 +318,7 @@ export default function FormBuilderPanel() {
                                     onMoveUp={() => moveField(field.id, 'up')}
                                     onMoveDown={() => moveField(field.id, 'down')}
                                     onClone={() => cloneField(field.id)}
+                                    module={draft.module}
                                 />
                             ))}
                         </CardContent>
@@ -311,9 +335,13 @@ export default function FormBuilderPanel() {
                             <DynamicForm
                                 template={previewTemplate}
                                 onSubmit={async () => {
-                                    toast.success('Vista previa enviada', {
-                                        description: 'Revisa la consola para ver la estructura de los datos.',
-                                        style: toastStyles.success
+                                    useToast({
+                                        title: "Vista previa enviada",
+                                        type: "success",
+                                        duration: 5000,
+                                        closeButton: true,
+                                        position: 'top-right',
+                                        message: "Revisa la consola para ver la estructura de los datos.",
                                     });
                                 }}
                             />

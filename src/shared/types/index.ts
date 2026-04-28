@@ -5,13 +5,22 @@ export interface Modality {
   code: string;
 }
 
+export interface GraduationModality {
+  docId: string;
+  id: string;
+  name: string;
+  code: string;
+}
+
 export interface Faculty {
+  docId: string;
   id: string; // id_facultad (A, B, C...)
   name: string; // facultad_completo
   code: string; // COD
 }
 
 export interface Program {
+  docId: string;
   id: string; // id_programa (APT, SIS, etc.)
   name: string; // programa
   code: string; // orden (ej: A11)

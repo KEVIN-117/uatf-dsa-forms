@@ -14,9 +14,6 @@ import {
 } from "@hugeicons/core-free-icons";
 import { useAllResponses } from "./useFormResponses";
 
-// Asumiendo que estos son tus hooks y types
-
-// 1. Definimos las interfaces esperadas por el Sidebar
 export interface MenuItem {
   id: string;
   name: string;
@@ -31,7 +28,6 @@ export interface MenuItemGroup {
   children: MenuItem[];
 }
 
-// 2. Diccionario de configuración visual por cada módulo
 const MODULE_CONFIG: Record<
   FormModules,
   { name: string; icon: any; path: string }
@@ -87,7 +83,6 @@ export const useDynamicMenuItemsGrouped = (): MenuItemGroup[] => {
           href: `/${config.path}/${template.id}`,
         }));
 
-        // Retornamos el grupo estructurado
         return {
           id: config.path,
           name: config.name,
@@ -110,7 +105,6 @@ export const useDynamicResultsMenuItemsGrouped = (): MenuItemGroup[] => {
   const menuGroups = useMemo(() => {
     if (!templatesQuery.data) return [];
 
-    // Paso A: Agrupamos exactamente igual
     const groupedData = templatesQuery.data.reduce(
       (acc, response) => {
         const mod = response.module;
@@ -120,20 +114,30 @@ export const useDynamicResultsMenuItemsGrouped = (): MenuItemGroup[] => {
       },
       {} as Record<FormModules, FormResponseDef[]>,
     );
+
     const menuArray = Object.entries(groupedData).map(
-      ([moduleKey, templates]) => {
+      ([moduleKey, responses]) => {
         const moduleEnum = moduleKey as FormModules;
         const config = MODULE_CONFIG[moduleEnum];
-        const childrenItems: MenuItem[] = templates.map((template) => ({
-          id: template.id,
+
+        const uniqueByTemplate = new Map<string, FormResponseDef>();
+        for (const resp of responses) {
+          if (!uniqueByTemplate.has(resp.templateId)) {
+            uniqueByTemplate.set(resp.templateId, resp);
+          }
+        }
+
+        const childrenItems: MenuItem[] = Array.from(
+          uniqueByTemplate.values(),
+        ).map((response) => ({
+          id: response.templateId,
           name:
-            allFormTemplates?.find((t) => t.id === template.templateId)
+            allFormTemplates?.find((t) => t.id === response.templateId)
               ?.title ?? "sin titulo",
           icon: Quiz03Icon,
-          href: `/dashboard/reports/${template.id}/${moduleEnum}`,
+          href: `/dashboard/reports/${response.templateId}/${moduleEnum}`,
         }));
 
-        // Retornamos el grupo estructurado
         return {
           id: config.path,
           name: config.name,
@@ -143,7 +147,7 @@ export const useDynamicResultsMenuItemsGrouped = (): MenuItemGroup[] => {
       },
     );
     return menuArray;
-  }, [templatesQuery.data, allFormTemplates?.find]);
+  }, [templatesQuery.data, allFormTemplates]);
 
   return menuGroups;
 };

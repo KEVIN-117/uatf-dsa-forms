@@ -1,14 +1,41 @@
 import type { FieldType, FormFieldDef } from "#/shared/types/dynamic-form";
 import { Label } from "#/shared/ui/label";
-import { Separator } from "#/shared/ui/separator";
 import { Textarea } from "#/shared/ui/textarea";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { fieldTypeOptions, parseOptions, serializeOptions } from "../utils";
 import { Button } from "#/shared/ui/button";
-import { ArrowDown, ArrowUp, Copy, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Copy, Loader2, Trash2 } from "lucide-react";
 import { Input } from "#/shared/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "#/shared/ui/select";
 import { Switch } from "#/shared/ui/switch";
+import { Divider } from "#/shared/components/Divider";
+
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { fetchDefaultOptions } from "#/shared/hooks/useDefaultOptions";
+
+const defaultOptions = [
+    {
+        label: "Tipos de Beca",
+        collection: "scholarships"
+    },
+    {
+        label: "Tipos de ingreso",
+        collection: "modalities"
+    },
+    {
+        label: "Facultad",
+        collection: "faculties"
+    },
+    {
+        label: "Carreras",
+        collection: "programs"
+    },
+    {
+        label: "Tipos de Modalidades de Graduación",
+        collection: "graduation_modalities"
+    }
+]
 
 export function FieldEditor({
     field,
@@ -30,6 +57,30 @@ export function FieldEditor({
     onClone: () => void;
 }) {
     const optionsText = useMemo(() => serializeOptions(field.options ?? []), [field.options]);
+
+    // 1. Instanciamos el queryClient y un estado local para saber qué botón está cargando
+    const queryClient = useQueryClient();
+    const [loadingCollection, setLoadingCollection] = useState<string | null>(null);
+
+    const handleLoadDefaultOptions = async (collectionName: string) => {
+        setLoadingCollection(collectionName);
+        try {
+            const data = await queryClient.fetchQuery({
+                queryKey: ['default-options', collectionName],
+                queryFn: () => fetchDefaultOptions(collectionName),
+                staleTime: 1000 * 60 * 60,
+            });
+
+            onChange({ options: data });
+            toast.success(`Opciones cargadas correctamente.`);
+
+        } catch (error) {
+            console.error(error);
+            toast.error("Hubo un error al cargar las opciones de la base de datos.");
+        } finally {
+            setLoadingCollection(null);
+        }
+    };
 
     return (
         <div className="rounded-xl border border-border bg-background p-4">
@@ -140,8 +191,31 @@ export function FieldEditor({
             </div>
 
             {field.type === 'select' ? (
-                <>
-                    <Separator className="my-4" />
+                <div className="mt-4 space-y-2">
+                    <Divider />
+                    <Label className="text-primary font-bold">Autocompletar con opciones del sistema:</Label>
+                    <div className="flex flex-wrap gap-2">
+                        {defaultOptions.map((m) => {
+                            const isLoading = loadingCollection === m.collection;
+                            return (
+                                <Button
+                                    variant="secondary"
+                                    size="sm"
+                                    className="text-xs"
+                                    key={m.collection}
+                                    disabled={loadingCollection !== null} // Deshabilita botones mientras carga
+                                    onClick={() => handleLoadDefaultOptions(m.collection)}
+                                >
+                                    {isLoading && <Loader2 className="mr-2 size-3 animate-spin" />}
+                                    {m.label}
+                                </Button>
+                            );
+                        })}
+                    </div>
+
+                    <Divider />
+                    <p className="text-xs text-muted-foreground font-medium">O define las opciones manualmente:</p>
+
                     <div className="space-y-2">
                         <Label>Opciones</Label>
                         <Textarea
@@ -153,7 +227,7 @@ export function FieldEditor({
                             Usa una linea por opcion con el formato <span className="font-medium">Etiqueta | valor</span>.
                         </p>
                     </div>
-                </>
+                </div>
             ) : null}
         </div>
     );

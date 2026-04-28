@@ -1,12 +1,7 @@
 import { useMemo } from 'react';
-import {
-    flexRender,
-    getCoreRowModel,
-    getPaginationRowModel,
-    useReactTable,
-    type ColumnDef,
-} from '@tanstack/react-table';
+import type { ColumnDef } from '@tanstack/react-table';
 import { FileSpreadsheet, Loader2 } from 'lucide-react';
+import { DataTable } from '#/shared/ui/data-table';
 
 import { useFormTemplates } from '#/shared/hooks/useFormBuilder';
 import { getResponsesById, useGetResponses } from '#/shared/hooks/useFormResponses';
@@ -69,17 +64,6 @@ export function ResponsesPanel({ formId, module }: ResponsePanelProps) {
     }, [template]);
 
 
-    const table = useReactTable({
-        data: responses,
-        columns,
-        filterFns: {
-            fuzzy: () => true, // Función dummy para satisfacer la interfaz global aumentada
-        },
-        getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        initialState: { pagination: { pageSize: 15 } }
-    });
-
     if (!isAuthenticated || !template) return <div className="p-8"><Loader2 className="animate-spin text-primary mx-auto" /></div>;
 
     return (
@@ -98,44 +82,13 @@ export function ResponsesPanel({ formId, module }: ResponsePanelProps) {
             </div>
 
             <Card className="shadow-md border-border">
-                <CardContent className="p-0 overflow-x-auto">
+                <CardContent className="p-4 sm:p-6">
                     {isLoadingResponses ? (
                         <div className="p-12 flex justify-center"><Loader2 className="animate-spin text-muted-foreground" /></div>
                     ) : (
-                        <table className="w-full text-sm text-left">
-                            <thead className="bg-muted/30 text-muted-foreground uppercase text-xs tracking-wider border-b border-border">
-                                {table.getHeaderGroups().map((headerGroup) => (
-                                    <tr key={headerGroup.id}>
-                                        {headerGroup.headers.map((header) => (
-                                            <th key={header.id} className="px-6 py-4 font-semibold whitespace-nowrap">
-                                                {flexRender(header.column.columnDef.header, header.getContext())}
-                                            </th>
-                                        ))}
-                                    </tr>
-                                ))}
-                            </thead>
-                            <tbody className="divide-y divide-border/50">
-                                {table.getRowModel().rows.map((row) => (
-                                    <tr key={row.id} className="hover:bg-muted/10 transition-colors">
-                                        {row.getVisibleCells().map((cell) => (
-                                            <td key={cell.id} className="px-6 py-4">
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                            </td>
-                                        ))}
-                                    </tr>
-                                ))}
-                                {responses.length === 0 && (
-                                    <tr>
-                                        <td colSpan={columns.length} className="px-6 py-12 text-center text-muted-foreground">
-                                            Aún no hay respuestas para este formulario.
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
+                        <DataTable columns={columns} data={responses} showColumnToggle />
                     )}
                 </CardContent>
-                {/* Aquí iría la paginación como en el ejemplo anterior */}
             </Card>
         </div>
     );

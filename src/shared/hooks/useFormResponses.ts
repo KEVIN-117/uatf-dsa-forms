@@ -11,8 +11,8 @@ import {
 } from "firebase/firestore";
 import { db } from "#/shared/lib/firebase";
 import { FormModules, type FormResponseDef } from "../types/dynamic-form";
-import { toast } from "sonner";
 import { useMemo } from "react";
+import { useToast } from "../components/Toast";
 
 export function useSubmitFormResponse() {
   const queryClient = useQueryClient();
@@ -35,11 +35,24 @@ export function useSubmitFormResponse() {
       queryClient.invalidateQueries({
         queryKey: ["responses", variables.module],
       });
-      toast.success("Respuesta enviada correctamente");
+      useToast({
+        title: "Éxito",
+        type: "success",
+        duration: 5000,
+        closeButton: true,
+        position: "top-right",
+        message: "Respuesta enviada correctamente",
+      });
     },
-    onError: (error) => {
-      toast.error("Error al enviar la respuesta", {
-        description: error.message,
+    onError: (_error) => {
+      useToast({
+        title: "Error",
+        type: "error",
+        duration: 5000,
+        closeButton: true,
+        position: "top-right",
+        message:
+          "Algo salio mal al guardar la respuesta, no te preocupes puedes volver a intentarlo",
       });
     },
   });

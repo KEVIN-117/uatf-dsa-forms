@@ -13,13 +13,11 @@ interface DynamicFormProps {
 }
 
 export function DynamicForm({ template, onSubmit }: DynamicFormProps) {
-    // 1. Generamos los valores iniciales vacíos basados en el JSON
     const defaultValues = template.fields.reduce((acc, field) => {
         acc[`${field.id}@${field.name}`] = field.type === 'number' ? '' : '';
         return acc;
     }, {} as Record<string, any>);
 
-    // 2. Inicializamos TanStack Form
     const form = useForm({
         defaultValues,
         onSubmit: async ({ value }) => {
@@ -27,9 +25,7 @@ export function DynamicForm({ template, onSubmit }: DynamicFormProps) {
         },
     });
 
-    // 3. Función auxiliar para renderizar el input correcto según el tipo
     const renderFieldInput = (fieldDef: FormFieldDef, fieldApi: any) => {
-        // Si es un SELECT
         if (fieldDef.type === 'select') {
             return (
                 <select
@@ -50,7 +46,6 @@ export function DynamicForm({ template, onSubmit }: DynamicFormProps) {
             );
         }
 
-        // Si es TEXT, NUMBER, EMAIL, PASSWORD (usamos tu Input de Shadcn)
         return (
             <Input
                 id={`${fieldDef.id}@${fieldDef.name}`}
@@ -61,7 +56,6 @@ export function DynamicForm({ template, onSubmit }: DynamicFormProps) {
                 onBlur={fieldApi.handleBlur}
                 onChange={(e) => {
                     const val = e.target.value;
-                    // Si es número, lo parseamos para no enviar strings a Firebase
                     fieldApi.handleChange(fieldDef.type === 'number' ? (val ? Number(val) : '') : val);
                 }}
                 className="focus-academic"
@@ -86,7 +80,6 @@ export function DynamicForm({ template, onSubmit }: DynamicFormProps) {
                         name={`${fieldDef.id}@${fieldDef.name}`}
                         validators={{
                             onChange: ({ value }) => {
-                                // Validación dinámica simple: Obligatorio
                                 if (fieldDef.required && (value === undefined || value === null || value === '')) {
                                     return 'Este campo es obligatorio';
                                 }

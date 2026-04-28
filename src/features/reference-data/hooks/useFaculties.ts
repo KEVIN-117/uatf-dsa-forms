@@ -5,6 +5,9 @@ import {
   onSnapshot,
   orderBy,
   addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
   serverTimestamp,
 } from "firebase/firestore";
 import { useEffect } from "react";
@@ -20,8 +23,9 @@ export const useFaculties = () => {
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
-        const faculties = snapshot.docs.map((doc) => ({
-          ...doc.data(),
+        const faculties = snapshot.docs.map((docSnap) => ({
+          docId: docSnap.id,
+          ...docSnap.data(),
         })) as Faculty[];
 
         queryClient.setQueryData(["faculties"], faculties);
@@ -49,13 +53,34 @@ export const useFacultiesById = (facultyId: string) => {
 
 export const useAddFaculty = () => {
   return useMutation({
-    mutationFn: async (newFaculty: Omit<Faculty, "docId" | "createdAt">) => {
+    mutationFn: async (newFaculty: Omit<Faculty, "docId">) => {
       const facultiesRef = collection(db, "faculties");
       return await addDoc(facultiesRef, {
         ...newFaculty,
         createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
       });
     },
   });
 };
 
+export const useUpdateFaculty = () => {
+  return useMutation({
+    mutationFn: async ({ docId, ...data }: Faculty) => {
+      const docRef = doc(db, "faculties", docId);
+      return await updateDoc(docRef, {
+        ...data,
+        updatedAt: serverTimestamp(),
+      });
+    },
+  });
+};
+
+export const useDeleteFaculty = () => {
+  return useMutation({
+    mutationFn: async (docId: string) => {
+      const docRef = doc(db, "faculties", docId);
+      return await deleteDoc(docRef);
+    },
+  });
+};

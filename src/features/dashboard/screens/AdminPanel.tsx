@@ -1,36 +1,67 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '#/shared/ui/card';
-import { useProtectedRoute } from '#/features/auth/hooks/useProtectedRoute';
+import { Link } from "@tanstack/react-router"
+import { useProtectedRoute } from "#/features/auth/hooks/useProtectedRoute"
+import { Card, CardDescription, CardHeader, CardTitle } from "#/shared/ui/card"
+import { Building2, GraduationCap, DoorOpen, Award } from "lucide-react"
 
+const adminLinks = [
+    {
+        title: "Facultades",
+        description: "Gestionar las facultades de la universidad",
+        href: "/dashboard/faculties",
+        icon: Building2,
+    },
+    {
+        title: "Carreras / Programas",
+        description: "Gestionar carreras y programas académicos",
+        href: "/dashboard/programs",
+        icon: GraduationCap,
+    },
+    {
+        title: "Modalidades de Ingreso",
+        description: "Gestionar las modalidades de ingreso",
+        href: "/dashboard/modalities",
+        icon: DoorOpen,
+    },
+    {
+        title: "Modalidades de Graduación",
+        description: "Gestionar las modalidades de graduación",
+        href: "/dashboard/graduation-modalities",
+        icon: Award,
+    },
+]
 
 export function AdminPanel() {
-    // 1. Llamamos a nuestra protección de ruta
-    const { isLoading, isAuthenticated } = useProtectedRoute();
+    const { isLoading, isAuthenticated } = useProtectedRoute()
 
-    // 2. Mientras Firebase revisa la sesión, mostramos un cargador (evita destellos de pantalla)
     if (isLoading) {
-        return <div className="flex h-full items-center justify-center">Verificando sesión...</div>;
+        return <div className="flex h-full items-center justify-center">Verificando sesión...</div>
     }
+    if (!isAuthenticated) return null
 
-    // 3. Si no está autenticado, devolvemos null (el hook useProtectedRoute ya lo está redirigiendo)
-    if (!isAuthenticated) return null;
-
-    // 4. Si todo está bien, mostramos la página
     return (
-        <div className="flex items-center justify-center min-h-full p-4 bg-background">
-            <Card className="w-full max-w-md shadow-lg border-border">
-                <CardHeader className="space-y-2">
-                    <CardTitle className="text-2xl text-center font-display text-primary">
-                        Panel de Administrador
-                    </CardTitle>
-                    <CardDescription className="text-center font-body text-muted-foreground">
-                        Aquí puedes gestionar los formularios
-                    </CardDescription>
-                </CardHeader>
+        <div className="p-6 space-y-6">
+            <div>
+                <h1 className="text-3xl font-display font-bold text-primary">Panel de Administración</h1>
+                <p className="text-muted-foreground mt-1">Gestiona los datos de referencia de la universidad</p>
+            </div>
 
-                <CardContent>
-                    Panel de Administrador
-                </CardContent>
-            </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {adminLinks.map((link) => (
+                    <Link key={link.href} to={link.href} className="block group">
+                        <Card className="h-full transition-all hover:shadow-md hover:border-primary/30 group-hover:bg-muted/20">
+                            <CardHeader className="flex flex-row items-center gap-4 space-y-0">
+                                <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                    <link.icon className="size-6" />
+                                </div>
+                                <div>
+                                    <CardTitle className="text-lg">{link.title}</CardTitle>
+                                    <CardDescription>{link.description}</CardDescription>
+                                </div>
+                            </CardHeader>
+                        </Card>
+                    </Link>
+                ))}
+            </div>
         </div>
     )
 }

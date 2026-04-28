@@ -35,7 +35,11 @@ import {
     Settings01Icon,
     UserAdd01Icon,
     Home02Icon,
-    Logout01Icon
+    Logout01Icon,
+    SchoolIcon,
+    UserAccountIcon,
+    DoorIcon,
+    AwardIcon,
 } from "@hugeicons/core-free-icons";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "#/features/auth/providers/AuthProvider";
@@ -217,6 +221,57 @@ export function DashboardSidebar({
                                                     <span>Crear formulario</span>
                                                 </Link>
                                             </SidebarMenuButton>
+                                        </SidebarMenuItem>
+                                    </SidebarMenu>
+                                </SidebarGroupContent>
+                            </SidebarGroup>
+                            <SidebarGroup className="p-0 mt-4">
+                                <SidebarGroupLabel className="flex items-center justify-between px-0 h-6">
+                                    <span className="text-[10px] font-medium tracking-wider text-muted-foreground">
+                                        Administración
+                                    </span>
+                                </SidebarGroupLabel>
+                                <SidebarGroupContent>
+                                    <SidebarMenu>
+                                        <SidebarMenuItem>
+                                            <Link to="/dashboard/admin">
+                                                <SidebarMenuButton className="h-7 text-sm">
+                                                    <HugeiconsIcon icon={Settings01Icon} className="size-3.5" />
+                                                    <span>Panel Admin</span>
+                                                </SidebarMenuButton>
+                                            </Link>
+                                        </SidebarMenuItem>
+                                        <SidebarMenuItem>
+                                            <Link to="/dashboard/faculties">
+                                                <SidebarMenuButton className="h-7 text-sm">
+                                                    <HugeiconsIcon icon={SchoolIcon} className="size-3.5" />
+                                                    <span>Facultades</span>
+                                                </SidebarMenuButton>
+                                            </Link>
+                                        </SidebarMenuItem>
+                                        <SidebarMenuItem>
+                                            <Link to="/dashboard/programs">
+                                                <SidebarMenuButton className="h-7 text-sm">
+                                                    <HugeiconsIcon icon={UserAccountIcon} className="size-3.5" />
+                                                    <span>Carreras</span>
+                                                </SidebarMenuButton>
+                                            </Link>
+                                        </SidebarMenuItem>
+                                        <SidebarMenuItem>
+                                            <Link to="/dashboard/modalities">
+                                                <SidebarMenuButton className="h-7 text-sm">
+                                                    <HugeiconsIcon icon={DoorIcon} className="size-3.5" />
+                                                    <span>Mod. Ingreso</span>
+                                                </SidebarMenuButton>
+                                            </Link>
+                                        </SidebarMenuItem>
+                                        <SidebarMenuItem>
+                                            <Link to="/dashboard/graduation-modalities">
+                                                <SidebarMenuButton className="h-7 text-sm">
+                                                    <HugeiconsIcon icon={AwardIcon} className="size-3.5" />
+                                                    <span>Mod. Graduación</span>
+                                                </SidebarMenuButton>
+                                            </Link>
                                         </SidebarMenuItem>
                                     </SidebarMenu>
                                 </SidebarGroupContent>

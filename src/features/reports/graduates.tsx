@@ -6,7 +6,9 @@ import { useFormTemplateByModuleAndId } from "#/shared/hooks/useFormBuilder";
 import { useDirectorProfile } from "../director-profile/providers/DirectorProfileProvider";
 import { useSubmitFormResponse } from "#/shared/hooks/useFormResponses";
 import type { FormModules } from "#/shared/types/dynamic-form";
-import { toast } from "sonner";
+import { useToast } from "#/shared/components/Toast";
+import { AlertDialogCustom } from "#/shared/components/Dialog";
+import { useState } from "react";
 
 interface GraduatesReportProps {
     formId: string;
@@ -17,14 +19,22 @@ export function GraduatesReport({ formId }: GraduatesReportProps) {
     const { mutateAsync } = useSubmitFormResponse();
     const { profile } = useDirectorProfile();
 
-    const handleFormSubmit = async (
-        data: Record<string, unknown>,
-        module: string,
-    ) => {
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [pendingData, setPendingData] = useState<{ data: Record<string, unknown>, module: string } | null>(null);
+
+    const handleFormSubmitRequest = async (data: Record<string, unknown>, module: string) => {
+        setPendingData({ data, module });
+        setIsDialogOpen(true);
+    };
+
+    const executeSubmit = async () => {
+        if (!pendingData || !template || !profile) return;
+
+        const { data, module } = pendingData;
         try {
             const tranformedData = Object.entries(data).reduce((acc, [key, value]) => {
                 const [_id, name] = key.split('@');
-                acc[name] = value;
+                acc[name || key] = value;
                 return acc;
             }, {} as Record<string, unknown>);
 
@@ -34,7 +44,8 @@ export function GraduatesReport({ formId }: GraduatesReportProps) {
             if (!profile) {
                 throw new Error('Profile no encontrado');
             }
-            mutateAsync({
+
+            await mutateAsync({
                 id: crypto.randomUUID(),
                 templateId: template?.id,
                 module: module as FormModules,
@@ -43,20 +54,23 @@ export function GraduatesReport({ formId }: GraduatesReportProps) {
                 response: tranformedData,
             });
 
-            toast.success("Reporte guardado exitosamente", {
+            useToast({
+                title: "Reporte guardado exitosamente",
+                type: "success",
                 duration: 5000,
-                closeButton: true,
                 position: 'top-right',
-                className: "bg-primary",
-                description: `El reporte ha sido guardado correctamente. ${profile?.fullName} con estos datos: ${JSON.stringify(data, null, 2)}  `,
+                message: `El reporte ha sido guardado correctamente. ${profile?.fullName}`,
             });
+
+            setPendingData(null);
         } catch (error: unknown) {
-            toast.error("Error al guardar el reporte", {
+            useToast({
+                title: "Error",
+                type: "error",
                 duration: 5000,
                 closeButton: true,
                 position: 'top-right',
-                className: "bg-primary",
-                description: error instanceof Error ? error.message : "Error desconocido",
+                message: error instanceof Error ? error.message : "Error desconocido",
             });
         }
     };
@@ -83,17 +97,32 @@ export function GraduatesReport({ formId }: GraduatesReportProps) {
     }
 
     return (
-        <div className="container mx-auto py-10">
+        <div className="w-full max-w-6xl mx-auto py-10">
             <div className="mb-8">
                 <span className="text-xs font-bold uppercase tracking-widest text-primary/60">
                     Módulo: {template.module.replace('_', ' ')}
                 </span>
                 <h1 className="text-3xl font-display font-bold mt-2">Gestión de Reportes</h1>
             </div>
-
             <DynamicForm
                 template={template}
-                onSubmit={handleFormSubmit}
+                onSubmit={handleFormSubmitRequest}
+            />
+            <AlertDialogCustom
+                open={isDialogOpen}
+                onOpenChange={setIsDialogOpen}
+                message="Confirmar envío"
+                description={`Estás a punto de enviar el formulario para el registro de Egresados. Revisa que los datos sean correctos antes de continuar.`}
+                actionLabel="Enviar Reporte"
+                cancelLabel="Revisar de nuevo"
+                onConfirm={() => {
+                    setIsDialogOpen(false);
+                    executeSubmit();
+                }}
+                onCancel={() => {
+                    setIsDialogOpen(false);
+                    setPendingData(null);
+                }}
             />
         </div>
     );

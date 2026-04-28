@@ -7,93 +7,1001 @@ import {
 import { db } from "./firebase";
 import { setDoc, doc } from "firebase/firestore";
 
-interface Modality {
+export interface Modality {
   id: string;
   modality: string;
   code: string;
 }
 
-export async function seedModalities() {
-  const data: Modality[] = [
-    {
-      id: "1",
-      modality: "EXAMEN P.S.A.",
-      code: "PSA",
-    },
-    {
-      id: "2",
-      modality: "CURSO PRE - UNIVERSITARIO",
-      code: "CPU",
-    },
-    {
-      id: "3",
-      modality: "INGRESO DIRECTO",
-      code: "ID",
-    },
-    {
-      id: "4",
-      modality: "ADMISION POR EXCELENCIA ACADEMICA",
-      code: "ADEA",
-    },
-    {
-      id: "5",
-      modality: "ADMISION EXTRAORDINARIA DEPORTIVA",
-      code: "ADED",
-    },
-    {
-      id: "6",
-      modality: "ADMISION ESPECIAL (PROFESIONALES)",
-      code: "AEP",
-    },
-    {
-      id: "7",
-      modality: "ADMISIÓN DIRECTA POR CONVENIO",
-      code: "ADC",
-    },
-    {
-      id: "8",
-      modality: "ESTUDIOS SIMULTANEOS DE DOS CARRERAS",
-      code: "ESC",
-    },
-    {
-      id: "9",
-      modality: "CAMBIO DE CARRERA",
-      code: "CC",
-    },
-    {
-      id: "10",
-      modality: "ADMISION POR TRANSFERENCIA (SUB SEDES)",
-      code: "APTSS",
-    },
-    {
-      id: "11",
-      modality: "ADMISION OLIMPIADAS CIENTIFICAS",
-      code: "ADGOC",
-    },
-    {
-      id: "12",
-      modality: "ADMISION POR TRASPASO DE UNIVERSIDAD",
-      code: "APTU",
-    },
-    {
-      id: "13",
-      modality: "ADMISION ESTUDIANTES INDIGENAS ORIGINARIOS CAMPESINOS",
-      code: "ADEIOC",
-    },
-    {
-      id: "14",
-      modality: "ADMISION PERSONAS CON CAPACIDADES DIFERENTES O DISCAPACIDAD",
-      code: "AEPD",
-    },
-    {
-      id: "15",
-      modality: "ADMISION ESPECIAL POR TRABAJO DE INVESTIGACION",
-      code: "AEPTI",
-    },
-  ];
+const modalities: Modality[] = [
+  {
+    id: "1",
+    modality: "EXAMEN P.S.A.",
+    code: "PSA",
+  },
+  {
+    id: "2",
+    modality: "CURSO PRE - UNIVERSITARIO",
+    code: "CPU",
+  },
+  {
+    id: "3",
+    modality: "INGRESO DIRECTO",
+    code: "ID",
+  },
+  {
+    id: "4",
+    modality: "ADMISION POR EXCELENCIA ACADEMICA",
+    code: "ADEA",
+  },
+  {
+    id: "5",
+    modality: "ADMISION EXTRAORDINARIA DEPORTIVA",
+    code: "ADED",
+  },
+  {
+    id: "6",
+    modality: "ADMISION ESPECIAL (PROFESIONALES)",
+    code: "AEP",
+  },
+  {
+    id: "7",
+    modality: "ADMISIÓN DIRECTA POR CONVENIO",
+    code: "ADC",
+  },
+  {
+    id: "8",
+    modality: "ESTUDIOS SIMULTANEOS DE DOS CARRERAS",
+    code: "ESC",
+  },
+  {
+    id: "9",
+    modality: "CAMBIO DE CARRERA",
+    code: "CC",
+  },
+  {
+    id: "10",
+    modality: "ADMISION POR TRANSFERENCIA (SUB SEDES)",
+    code: "APTSS",
+  },
+  {
+    id: "11",
+    modality: "ADMISION OLIMPIADAS CIENTIFICAS",
+    code: "ADGOC",
+  },
+  {
+    id: "12",
+    modality: "ADMISION POR TRASPASO DE UNIVERSIDAD",
+    code: "APTU",
+  },
+  {
+    id: "13",
+    modality: "ADMISION ESTUDIANTES INDIGENAS ORIGINARIOS CAMPESINOS",
+    code: "ADEIOC",
+  },
+  {
+    id: "14",
+    modality: "ADMISION PERSONAS CON CAPACIDADES DIFERENTES O DISCAPACIDAD",
+    code: "AEPD",
+  },
+  {
+    id: "15",
+    modality: "ADMISION ESPECIAL POR TRABAJO DE INVESTIGACION",
+    code: "AEPTI",
+  },
+];
 
+const faculties: Faculty[] = [
+  {
+    docId: "A",
+    id: "A",
+    name: "FACULTAD DE ARTES",
+    code: "FAC. DE ARTES",
+  },
+  {
+    docId: "B",
+    id: "B",
+    name: "FACULTAD DE CIENCIAS AGRICOLAS Y PECUARIAS",
+    code: "FAC. DE CC. AA. Y P.P.",
+  },
+  {
+    docId: "C",
+    id: "C",
+    name: "FACULTAD DE CIENCIAS ECONOMICAS FINANCIERAS Y ADMINISTRATIVAS",
+    code: "FAC. DE CC. EE., FF. Y AA.",
+  },
+  {
+    docId: "D",
+    id: "D",
+    name: "FACULTAD DE CIENCIAS PURAS",
+    code: "FAC. DE CIENCIAS PURAS",
+  },
+  {
+    docId: "E",
+    id: "E",
+    name: "FACULTAD DE CIENCIAS SOCIALES Y HUMANISTICAS",
+    code: "FAC. DE CC. SS. Y HH.",
+  },
+  {
+    docId: "F",
+    id: "F",
+    name: "FACULTAD DE DERECHO",
+    code: "FAC. DE DERECHO",
+  },
+  {
+    docId: "G",
+    id: "G",
+    name: "FACULTAD DE INGENIERIA",
+    code: "FAC. DE INGENIERIA",
+  },
+  {
+    docId: "H",
+    id: "H",
+    name: "FACULTAD DE INGENIERIA GEOLOGICA",
+    code: "FAC. DE ING. GEOLOGICA",
+  },
+  {
+    docId: "I",
+    id: "I",
+    name: "FACULTAD DE INGENIERIA MINERA",
+    code: "FAC. DE ING. MINERA",
+  },
+  {
+    docId: "J",
+    id: "J",
+    name: "FACULTAD DE INGENIERIA TECNOLOGICA",
+    code: "FAC. DE ING. TECNOLOGICA",
+  },
+  {
+    docId: "K",
+    id: "K",
+    name: "FACULTAD DE CIENCIAS DE LA SALUD",
+    code: "FAC. DE CIENCIAS DE LA SALUD",
+  },
+  {
+    docId: "L",
+    id: "L",
+    name: "FACULTAD DE MEDICINA",
+    code: "FAC. DE MEDICINA",
+  },
+  {
+    docId: "M",
+    id: "M",
+    name: "VICERRECTORADO",
+    code: "VICERRECTORADO",
+  },
+];
+
+const programs: Program[] = [
+  // --- FACULTAD A: ARTES ---
+  {
+    docId: "APT",
+    id: "APT",
+    name: "ARTES PLASTICAS",
+    code: "A11",
+    facultyId: "A",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "ARM",
+    id: "ARM",
+    name: "ARTES MUSICALES",
+    code: "A14",
+    facultyId: "A",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "ARQ",
+    id: "ARQ",
+    name: "ARQUITECTURA",
+    code: "A17",
+    facultyId: "A",
+    campusId: "1",
+    level: "LIC",
+  },
+
+  // --- FACULTAD B: CIENCIAS AGRICOLAS Y PECUARIAS ---
+  {
+    docId: "AGR",
+    id: "AGR",
+    name: "INGENIERIA AGRONOMICA",
+    code: "B11",
+    facultyId: "B",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "IAI",
+    id: "IAI",
+    name: "INGENIERIA AGROINDUSTRIAL",
+    code: "B13",
+    facultyId: "B",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "IDR",
+    id: "IDR",
+    name: "INGENIERIA EN DESARROLLO RURAL",
+    code: "B15",
+    facultyId: "B",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "IDT",
+    id: "IDT",
+    name: "INGENIERIA EN DESARROLLO TERRITORIAL",
+    code: "B16",
+    facultyId: "B",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "VAG",
+    id: "VAG",
+    name: "INGENIERIA AGROPECUARIA - VILLAZON",
+    code: "B17",
+    facultyId: "B",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "MVZ",
+    id: "MVZ",
+    name: "MED. VETERINARIA Y ZOOTECNIA - TUPIZA",
+    code: "B19",
+    facultyId: "B",
+    campusId: "1",
+    level: "LIC",
+  },
+
+  // --- FACULTAD C: CIENCIAS ECONOMICAS FINANCIERAS Y ADMINISTRATIVAS ---
+  {
+    docId: "ADM",
+    id: "ADM",
+    name: "ADMINISTRACION DE EMPRESAS",
+    code: "C11",
+    facultyId: "C",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "COP",
+    id: "COP",
+    name: "AUDITORIA - CONTADURIA PUBLICA",
+    code: "C13",
+    facultyId: "C",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "TAS",
+    id: "TAS",
+    name: "TUS EN CONTABILIDAD",
+    code: "C15",
+    facultyId: "C",
+    campusId: "1",
+    level: "TUS",
+  },
+  {
+    docId: "CTT",
+    id: "CTT",
+    name: "CONTADURIA PUBLICA - TUPIZA",
+    code: "C17",
+    facultyId: "C",
+    campusId: "1",
+    level: "LIC",
+  },
+  // Nota: El ID "TST" se repite más abajo en la Facultad J (Electrónica). En Firestore el ID debe ser único.
+  // Te sugiero cambiar este a "TST_C" o similar si hay conflicto.
+  {
+    docId: "TST",
+    id: "TST",
+    name: "TUS EN CONTABILIDAD - TUPIZA",
+    code: "C19",
+    facultyId: "C",
+    campusId: "1",
+    level: "TUS",
+  },
+  {
+    docId: "LAT",
+    id: "LAT",
+    name: "LICENCIATURA EN AUTORIA - TUPIZA",
+    code: "C20",
+    facultyId: "C",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "CTB",
+    id: "CTB",
+    name: "CONTABILIDAD Y FINANZAS",
+    code: "C21",
+    facultyId: "C",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "TSC",
+    id: "TSC",
+    name: "TUS. CONTADOR GENERAL",
+    code: "C23",
+    facultyId: "C",
+    campusId: "1",
+    level: "TUS",
+  },
+  {
+    docId: "ECO",
+    id: "ECO",
+    name: "ECONOMIA",
+    code: "C25",
+    facultyId: "C",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "CEC",
+    id: "CEC",
+    name: "ECONOMIA - UNCIA",
+    code: "C27",
+    facultyId: "C",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "UEC",
+    id: "UEC",
+    name: "ECONOMIA - UYUNI",
+    code: "C29",
+    facultyId: "C",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "ICO",
+    id: "ICO",
+    name: "INGENIERIA COMERCIAL",
+    code: "C31",
+    facultyId: "C",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "VCI",
+    id: "VCI",
+    name: "COMERCIO INTERNACIONAL - VILLAZON",
+    code: "C33",
+    facultyId: "C",
+    campusId: "1",
+    level: "LIC",
+  },
+
+  // --- FACULTAD D: CIENCIAS PURAS ---
+  {
+    docId: "EST",
+    id: "EST",
+    name: "ESTADISTICA",
+    code: "D11",
+    facultyId: "D",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "FIS",
+    id: "FIS",
+    name: "FISICA",
+    code: "D13",
+    facultyId: "D",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "INF",
+    id: "INF",
+    name: "INGENIERIA INFORMATICA",
+    code: "D15",
+    facultyId: "D",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "TSR",
+    id: "TSR",
+    name: "ING. INFORMATICA - TECNICO SUPERIOR EN REDES Y CIBERSEGURIDAD",
+    code: "D16",
+    facultyId: "D",
+    campusId: "1",
+    level: "TUS",
+  },
+  {
+    docId: "TSS",
+    id: "TSS",
+    name: "ING. INFORMATICA - TECNICO SUPERIOR EN SISTEMAS INFORMATICOS",
+    code: "D17",
+    facultyId: "D",
+    campusId: "1",
+    level: "TUS",
+  },
+  {
+    docId: "CIN",
+    id: "CIN",
+    name: "PROGRAMA INGENIERIA INFORMATICA - UNCIA",
+    code: "D18",
+    facultyId: "D",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "MAT",
+    id: "MAT",
+    name: "MATEMATICA",
+    code: "D19",
+    facultyId: "D",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "QMC",
+    id: "QMC",
+    name: "QUIMICA",
+    code: "D21",
+    facultyId: "D",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "QUI",
+    id: "QUI",
+    name: "QUIMICA - UYUNI",
+    code: "D3",
+    facultyId: "D",
+    campusId: "1",
+    level: "LIC",
+  },
+
+  // --- FACULTAD E: CIENCIAS SOCIALES Y HUMANISTICAS ---
+  {
+    docId: "COM",
+    id: "COM",
+    name: "CIENCIAS DE LA COMUNICACION",
+    code: "E11",
+    facultyId: "E",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "LEI",
+    id: "LEI",
+    name: "LINGUISTICA E IDIOMAS",
+    code: "E13",
+    facultyId: "E",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "ULI",
+    id: "ULI",
+    name: "LINGUISTICA E IDIOMAS - UYUNI",
+    code: "E15",
+    facultyId: "E",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "CLI",
+    id: "CLI",
+    name: "PROGRAMA LINGUISTICA E IDIOMAS - UNCIA",
+    code: "E17",
+    facultyId: "E",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "TCS",
+    id: "TCS",
+    name: "TRABAJO SOCIAL",
+    code: "E19",
+    facultyId: "E",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "CTS",
+    id: "CTS",
+    name: "TRABAJO SOCIAL - UNCIA",
+    code: "E21",
+    facultyId: "E",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "TUR",
+    id: "TUR",
+    name: "TURISMO",
+    code: "E23",
+    facultyId: "E",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "TUU",
+    id: "TUU",
+    name: "TURISMO - UYUNI",
+    code: "E25",
+    facultyId: "E",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "EXQ",
+    id: "EXQ",
+    name: "EXTENSION LIBRE - QUECHUA",
+    code: "E31",
+    facultyId: "E",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "EXI",
+    id: "EXI",
+    name: "EXTENSION LIBRE - INGLES",
+    code: "E32",
+    facultyId: "E",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "EDI",
+    id: "EDI",
+    name: "ESCUELA DE IDIOMAS",
+    code: "E33",
+    facultyId: "E",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "EDT",
+    id: "EDT",
+    name: "ESCUELA DE IDIOMAS - TUPIZA",
+    code: "E34",
+    facultyId: "E",
+    campusId: "1",
+    level: "LIC",
+  },
+
+  // --- FACULTAD F: DERECHO ---
+  {
+    docId: "DER",
+    id: "DER",
+    name: "DERECHO",
+    code: "F11",
+    facultyId: "F",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "DET",
+    id: "DET",
+    name: "DERECHO - TUPIZA",
+    code: "F13",
+    facultyId: "F",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "CDE",
+    id: "CDE",
+    name: "DERECHO - UNCIA",
+    code: "F15",
+    facultyId: "F",
+    campusId: "1",
+    level: "LIC",
+  },
+
+  // --- FACULTAD G: INGENIERIA ---
+  {
+    docId: "CIV",
+    id: "CIV",
+    name: "INGENIERIA CIVIL",
+    code: "G11",
+    facultyId: "G",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "GYT",
+    id: "GYT",
+    name: "ING. EN GEODESIA Y TOPOGRAFIA",
+    code: "G13",
+    facultyId: "G",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "CCV",
+    id: "CCV",
+    name: "TUS. CONSTRUCCIONES CIVILES",
+    code: "G15",
+    facultyId: "G",
+    campusId: "1",
+    level: "TUS",
+  },
+
+  // --- FACULTAD H: INGENIERIA GEOLOGICA ---
+  {
+    docId: "IGO",
+    id: "IGO",
+    name: "INGENIERIA GEOLOGICA",
+    code: "H11",
+    facultyId: "H",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "IAM",
+    id: "IAM",
+    name: "INGENERIA AMBIENTAL",
+    code: "H12",
+    facultyId: "H",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "IMA",
+    id: "IMA",
+    name: "INGENIERIA DEL MEDIO AMBIENTE",
+    code: "H13",
+    facultyId: "H",
+    campusId: "1",
+    level: "LIC",
+  },
+
+  // --- FACULTAD I: INGENIERIA MINERA ---
+  {
+    docId: "IMI",
+    id: "IMI",
+    name: "INGENIERIA MINERA",
+    code: "I11",
+    facultyId: "I",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "MIN",
+    id: "MIN",
+    name: "INGENIERIA DE MINAS",
+    code: "I12",
+    facultyId: "I",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "PMM",
+    id: "PMM",
+    name: "ING. DE PROCESOS DE MAT. PRIMAS MIN.",
+    code: "I13",
+    facultyId: "I",
+    campusId: "1",
+    level: "LIC",
+  },
+
+  // --- FACULTAD J: INGENIERIA TECNOLOGICA ---
+  {
+    docId: "ELE",
+    id: "ELE",
+    name: "INGENIERIA ELECTRICA",
+    code: "J11",
+    facultyId: "J",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "TUE",
+    id: "TUE",
+    name: "TUS. ELECTRICIDAD",
+    code: "J13",
+    facultyId: "J",
+    campusId: "1",
+    level: "TUS",
+  },
+  {
+    docId: "TED",
+    id: "TED",
+    name: "TEC. MEDIO ELECTRICIDAD",
+    code: "J15",
+    facultyId: "J",
+    campusId: "1",
+    level: "TUM",
+  },
+  {
+    docId: "TSE",
+    id: "TSE",
+    name: "INGENIERIA ELECTRICA - SAN CRISTOBAL",
+    code: "J16",
+    facultyId: "J",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "IET",
+    id: "IET",
+    name: "INGENIERIA ELECTRONICA",
+    code: "J17",
+    facultyId: "J",
+    campusId: "1",
+    level: "LIC",
+  },
+  // Este es el segundo "TST". Recomiendo cambiar uno de los dos IDs si los usas como llaves primarias de Firestore.
+  {
+    docId: "TST_ELEC",
+    id: "TST_ELEC",
+    name: "TUS. ELECTRONICA",
+    code: "J19",
+    facultyId: "J",
+    campusId: "1",
+    level: "TUS",
+  },
+  {
+    docId: "TEA",
+    id: "TEA",
+    name: "TEC. MEDIO ELECTRONICA",
+    code: "J21",
+    facultyId: "J",
+    campusId: "1",
+    level: "TUM",
+  },
+  {
+    docId: "IND",
+    id: "IND",
+    name: "INGENIERIA INDUSTRIAL",
+    code: "J22",
+    facultyId: "J",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "IMC",
+    id: "IMC",
+    name: "INGENIERIA MECANICA",
+    code: "J23",
+    facultyId: "J",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "TUM",
+    id: "TUM",
+    name: "TUS. EN MECANICA GENERAL",
+    code: "J25",
+    facultyId: "J",
+    campusId: "1",
+    level: "TUS",
+  },
+  {
+    docId: "TMG",
+    id: "TMG",
+    name: "TEC. MEDIO MECANICA GENERAL",
+    code: "J27",
+    facultyId: "J",
+    campusId: "1",
+    level: "TUM",
+  },
+  {
+    docId: "TSM",
+    id: "TSM",
+    name: "INGENIERIA MECANICA - SAN CRISTOBAL",
+    code: "J28",
+    facultyId: "J",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "IMT",
+    id: "IMT",
+    name: "INGENIERIA MECATRONICA",
+    code: "J29",
+    facultyId: "J",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "TMC",
+    id: "TMC",
+    name: "TUS. EN MECATRONICA",
+    code: "J31",
+    facultyId: "J",
+    campusId: "1",
+    level: "TUS",
+  },
+  {
+    docId: "MAU",
+    id: "MAU",
+    name: "TUS. EN MECANICA AUTOMOTRIZ",
+    code: "J33",
+    facultyId: "J",
+    campusId: "1",
+    level: "TUS",
+  },
+  {
+    docId: "TMA",
+    id: "TMA",
+    name: "TEC. MEDIO MECANICA AUTOMOTRIZ",
+    code: "J35",
+    facultyId: "J",
+    campusId: "1",
+    level: "TUM",
+  },
+  {
+    docId: "LMA",
+    id: "LMA",
+    name: "TEC. MEDIO MECANICA AUTOMOTRIZ - LLICA",
+    code: "J36",
+    facultyId: "J",
+    campusId: "1",
+    level: "TUM",
+  },
+  {
+    docId: "TSA",
+    id: "TSA",
+    name: "TUS. EN MECANICA AUTOMOTRIZ - SAN CRISTOBAL",
+    code: "J33",
+    facultyId: "J",
+    campusId: "1",
+    level: "TUS",
+  },
+
+  // --- FACULTAD K: CIENCIAS DE LA SALUD ---
+  {
+    docId: "ENF",
+    id: "ENF",
+    name: "ENFERMERIA",
+    code: "K11",
+    facultyId: "K",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "TMF",
+    id: "TMF",
+    name: "TEC. MEDIO ENFERMERIA",
+    code: "K12",
+    facultyId: "K",
+    campusId: "1",
+    level: "TUM",
+  },
+  {
+    docId: "PEN",
+    id: "PEN",
+    name: "PROG. DE AUXILIARES DE ENFERMERIA",
+    code: "K13",
+    facultyId: "K",
+    campusId: "1",
+    level: "TUM",
+  },
+  {
+    docId: "LEF",
+    id: "LEF",
+    name: "TEC. MEDIO ENFERMERIA - LLICA",
+    code: "K15",
+    facultyId: "K",
+    campusId: "1",
+    level: "TUM",
+  },
+  {
+    docId: "SEN",
+    id: "SEN",
+    name: "ENFERMERIA - SACACA",
+    code: "K17",
+    facultyId: "K",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "UEN",
+    id: "UEN",
+    name: "ENFERMERIA - UYUNI",
+    code: "K19",
+    facultyId: "K",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "UTE",
+    id: "UTE",
+    name: "TEC. MEDIO ENFERMERIA - UYUNI",
+    code: "K21",
+    facultyId: "K",
+    campusId: "1",
+    level: "TUM",
+  },
+  {
+    docId: "VEF",
+    id: "VEF",
+    name: "ENFERMERIA - VILLAZON",
+    code: "K23",
+    facultyId: "K",
+    campusId: "1",
+    level: "LIC",
+  },
+
+  // --- FACULTAD L: MEDICINA ---
+  {
+    docId: "MED",
+    id: "MED",
+    name: "MEDICINA",
+    code: "L11",
+    facultyId: "L",
+    campusId: "1",
+    level: "LIC",
+  },
+
+  // --- FACULTAD M: VICERRECTORADO ---
+  {
+    docId: "SIS",
+    id: "SIS",
+    name: "INGENIERIA DE SISTEMAS",
+    code: "M11",
+    facultyId: "M",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "DPD",
+    id: "DPD",
+    name: "INGENIERIA EN DISEÑO Y PROGRAMACION DIGITAL",
+    code: "M13",
+    facultyId: "M",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "SIT",
+    id: "SIT",
+    name: "INGENIERIA DE SISTEMAS - TUPIZA",
+    code: "M15",
+    facultyId: "M",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "ODO",
+    id: "ODO",
+    name: "ODONTOLOGIA",
+    code: "M17",
+    facultyId: "M",
+    campusId: "1",
+    level: "LIC",
+  },
+  {
+    docId: "PIC",
+    id: "PIC",
+    name: "PROGRAMA DE PEDAGOGIA INTERCULTURAL",
+    code: "M19",
+    facultyId: "M",
+    campusId: "1",
+    level: "LIC",
+  },
+];
+
+const graduationModalities = [
+  { id: "1", name: "TESIS DE GRADO", code: "TG" },
+  { id: "2", name: "PROYECTO DE GRADO", code: "PG" },
+  { id: "3", name: "TRABAJO DIRIGIDO", code: "TD" },
+  { id: "4", name: "EXAMEN DE GRADO", code: "EG" },
+  { id: "5", name: "INTERNADO ROTATORIO", code: "IR" },
+  { id: "6", name: "ADSCRIPCION", code: "ADS" },
+  { id: "7", name: "GRADUACION POR EXCELENCIA", code: "GE" },
+  { id: "8", name: "MODALIDAD ESPECIAL DE TITULACION", code: "MET" },
+  { id: "9", name: "DIPLOMADO DE GRADUACION", code: "DG" },
+  { id: "10", name: "PRACTICA PROFESIONAL", code: "PP" },
+];
+
+export async function seedModalities() {
   try {
-    for (const item of data) {
+    for (const item of modalities) {
       await setDoc(doc(db, "modalities", item.id), {
         ...item,
         createdAt: new Date(),
@@ -107,77 +1015,8 @@ export async function seedModalities() {
 }
 
 export async function seedFaculties() {
-  const data: Faculty[] = [
-    {
-      id: "A",
-      name: "FACULTAD DE ARTES",
-      code: "FAC. DE ARTES",
-    },
-    {
-      id: "B",
-      name: "FACULTAD DE CIENCIAS AGRICOLAS Y PECUARIAS",
-      code: "FAC. DE CC. AA. Y P.P.",
-    },
-    {
-      id: "C",
-      name: "FACULTAD DE CIENCIAS ECONOMICAS FINANCIERAS Y ADMINISTRATIVAS",
-      code: "FAC. DE CC. EE., FF. Y AA.",
-    },
-    {
-      id: "D",
-      name: "FACULTAD DE CIENCIAS PURAS",
-      code: "FAC. DE CIENCIAS PURAS",
-    },
-    {
-      id: "E",
-      name: "FACULTAD DE CIENCIAS SOCIALES Y HUMANISTICAS",
-      code: "FAC. DE CC. SS. Y HH.",
-    },
-    {
-      id: "F",
-      name: "FACULTAD DE DERECHO",
-      code: "FAC. DE DERECHO",
-    },
-    {
-      id: "G",
-      name: "FACULTAD DE INGENIERIA",
-      code: "FAC. DE INGENIERIA",
-    },
-    {
-      id: "H",
-      name: "FACULTAD DE INGENIERIA GEOLOGICA",
-      code: "FAC. DE ING. GEOLOGICA",
-    },
-    {
-      id: "I",
-      name: "FACULTAD DE INGENIERIA MINERA",
-      code: "FAC. DE ING. MINERA",
-    },
-    {
-      id: "J",
-      name: "FACULTAD DE INGENIERIA TECNOLOGICA",
-      code: "FAC. DE ING. TECNOLOGICA",
-    },
-    {
-      id: "K",
-      name: "FACULTAD DE CIENCIAS DE LA SALUD",
-      code: "FAC. DE CIENCIAS DE LA SALUD",
-    },
-    {
-      id: "L",
-      name: "FACULTAD DE MEDICINA",
-      code: "FAC. DE MEDICINA",
-    },
-    {
-      id: "M",
-      name: "VICERRECTORADO",
-      code: "VICERRECTORADO",
-    },
-  ];
-
   try {
-    for (const item of data) {
-      // Usamos setDoc con el ID manual para que sea predecible
+    for (const item of faculties) {
       await setDoc(doc(db, "faculties", item.id), {
         ...item,
         createdAt: new Date(),
@@ -191,736 +1030,8 @@ export async function seedFaculties() {
 }
 
 export async function seedPrograms() {
-  const data: Program[] = [
-    // --- FACULTAD A: ARTES ---
-    {
-      id: "APT",
-      name: "ARTES PLASTICAS",
-      code: "A11",
-      facultyId: "A",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "ARM",
-      name: "ARTES MUSICALES",
-      code: "A14",
-      facultyId: "A",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "ARQ",
-      name: "ARQUITECTURA",
-      code: "A17",
-      facultyId: "A",
-      campusId: "1",
-      level: "LIC",
-    },
-
-    // --- FACULTAD B: CIENCIAS AGRICOLAS Y PECUARIAS ---
-    {
-      id: "AGR",
-      name: "INGENIERIA AGRONOMICA",
-      code: "B11",
-      facultyId: "B",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "IAI",
-      name: "INGENIERIA AGROINDUSTRIAL",
-      code: "B13",
-      facultyId: "B",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "IDR",
-      name: "INGENIERIA EN DESARROLLO RURAL",
-      code: "B15",
-      facultyId: "B",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "IDT",
-      name: "INGENIERIA EN DESARROLLO TERRITORIAL",
-      code: "B16",
-      facultyId: "B",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "VAG",
-      name: "INGENIERIA AGROPECUARIA - VILLAZON",
-      code: "B17",
-      facultyId: "B",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "MVZ",
-      name: "MED. VETERINARIA Y ZOOTECNIA - TUPIZA",
-      code: "B19",
-      facultyId: "B",
-      campusId: "1",
-      level: "LIC",
-    },
-
-    // --- FACULTAD C: CIENCIAS ECONOMICAS FINANCIERAS Y ADMINISTRATIVAS ---
-    {
-      id: "ADM",
-      name: "ADMINISTRACION DE EMPRESAS",
-      code: "C11",
-      facultyId: "C",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "COP",
-      name: "AUDITORIA - CONTADURIA PUBLICA",
-      code: "C13",
-      facultyId: "C",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "TAS",
-      name: "TUS EN CONTABILIDAD",
-      code: "C15",
-      facultyId: "C",
-      campusId: "1",
-      level: "TUS",
-    },
-    {
-      id: "CTT",
-      name: "CONTADURIA PUBLICA - TUPIZA",
-      code: "C17",
-      facultyId: "C",
-      campusId: "1",
-      level: "LIC",
-    },
-    // Nota: El ID "TST" se repite más abajo en la Facultad J (Electrónica). En Firestore el ID debe ser único.
-    // Te sugiero cambiar este a "TST_C" o similar si hay conflicto.
-    {
-      id: "TST",
-      name: "TUS EN CONTABILIDAD - TUPIZA",
-      code: "C19",
-      facultyId: "C",
-      campusId: "1",
-      level: "TUS",
-    },
-    {
-      id: "LAT",
-      name: "LICENCIATURA EN AUTORIA - TUPIZA",
-      code: "C20",
-      facultyId: "C",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "CTB",
-      name: "CONTABILIDAD Y FINANZAS",
-      code: "C21",
-      facultyId: "C",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "TSC",
-      name: "TUS. CONTADOR GENERAL",
-      code: "C23",
-      facultyId: "C",
-      campusId: "1",
-      level: "TUS",
-    },
-    {
-      id: "ECO",
-      name: "ECONOMIA",
-      code: "C25",
-      facultyId: "C",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "CEC",
-      name: "ECONOMIA - UNCIA",
-      code: "C27",
-      facultyId: "C",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "UEC",
-      name: "ECONOMIA - UYUNI",
-      code: "C29",
-      facultyId: "C",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "ICO",
-      name: "INGENIERIA COMERCIAL",
-      code: "C31",
-      facultyId: "C",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "VCI",
-      name: "COMERCIO INTERNACIONAL - VILLAZON",
-      code: "C33",
-      facultyId: "C",
-      campusId: "1",
-      level: "LIC",
-    },
-
-    // --- FACULTAD D: CIENCIAS PURAS ---
-    {
-      id: "EST",
-      name: "ESTADISTICA",
-      code: "D11",
-      facultyId: "D",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "FIS",
-      name: "FISICA",
-      code: "D13",
-      facultyId: "D",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "INF",
-      name: "INGENIERIA INFORMATICA",
-      code: "D15",
-      facultyId: "D",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "TSR",
-      name: "ING. INFORMATICA - TECNICO SUPERIOR EN REDES Y CIBERSEGURIDAD",
-      code: "D16",
-      facultyId: "D",
-      campusId: "1",
-      level: "TUS",
-    },
-    {
-      id: "TSS",
-      name: "ING. INFORMATICA - TECNICO SUPERIOR EN SISTEMAS INFORMATICOS",
-      code: "D17",
-      facultyId: "D",
-      campusId: "1",
-      level: "TUS",
-    },
-    {
-      id: "CIN",
-      name: "PROGRAMA INGENIERIA INFORMATICA - UNCIA",
-      code: "D18",
-      facultyId: "D",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "MAT",
-      name: "MATEMATICA",
-      code: "D19",
-      facultyId: "D",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "QMC",
-      name: "QUIMICA",
-      code: "D21",
-      facultyId: "D",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "QUI",
-      name: "QUIMICA - UYUNI",
-      code: "D3",
-      facultyId: "D",
-      campusId: "1",
-      level: "LIC",
-    },
-
-    // --- FACULTAD E: CIENCIAS SOCIALES Y HUMANISTICAS ---
-    {
-      id: "COM",
-      name: "CIENCIAS DE LA COMUNICACION",
-      code: "E11",
-      facultyId: "E",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "LEI",
-      name: "LINGUISTICA E IDIOMAS",
-      code: "E13",
-      facultyId: "E",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "ULI",
-      name: "LINGUISTICA E IDIOMAS - UYUNI",
-      code: "E15",
-      facultyId: "E",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "CLI",
-      name: "PROGRAMA LINGUISTICA E IDIOMAS - UNCIA",
-      code: "E17",
-      facultyId: "E",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "TCS",
-      name: "TRABAJO SOCIAL",
-      code: "E19",
-      facultyId: "E",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "CTS",
-      name: "TRABAJO SOCIAL - UNCIA",
-      code: "E21",
-      facultyId: "E",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "TUR",
-      name: "TURISMO",
-      code: "E23",
-      facultyId: "E",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "TUU",
-      name: "TURISMO - UYUNI",
-      code: "E25",
-      facultyId: "E",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "EXQ",
-      name: "EXTENSION LIBRE - QUECHUA",
-      code: "E31",
-      facultyId: "E",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "EXI",
-      name: "EXTENSION LIBRE - INGLES",
-      code: "E32",
-      facultyId: "E",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "EDI",
-      name: "ESCUELA DE IDIOMAS",
-      code: "E33",
-      facultyId: "E",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "EDT",
-      name: "ESCUELA DE IDIOMAS - TUPIZA",
-      code: "E34",
-      facultyId: "E",
-      campusId: "1",
-      level: "LIC",
-    },
-
-    // --- FACULTAD F: DERECHO ---
-    {
-      id: "DER",
-      name: "DERECHO",
-      code: "F11",
-      facultyId: "F",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "DET",
-      name: "DERECHO - TUPIZA",
-      code: "F13",
-      facultyId: "F",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "CDE",
-      name: "DERECHO - UNCIA",
-      code: "F15",
-      facultyId: "F",
-      campusId: "1",
-      level: "LIC",
-    },
-
-    // --- FACULTAD G: INGENIERIA ---
-    {
-      id: "CIV",
-      name: "INGENIERIA CIVIL",
-      code: "G11",
-      facultyId: "G",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "GYT",
-      name: "ING. EN GEODESIA Y TOPOGRAFIA",
-      code: "G13",
-      facultyId: "G",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "CCV",
-      name: "TUS. CONSTRUCCIONES CIVILES",
-      code: "G15",
-      facultyId: "G",
-      campusId: "1",
-      level: "TUS",
-    },
-
-    // --- FACULTAD H: INGENIERIA GEOLOGICA ---
-    {
-      id: "IGO",
-      name: "INGENIERIA GEOLOGICA",
-      code: "H11",
-      facultyId: "H",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "IAM",
-      name: "INGENERIA AMBIENTAL",
-      code: "H12",
-      facultyId: "H",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "IMA",
-      name: "INGENIERIA DEL MEDIO AMBIENTE",
-      code: "H13",
-      facultyId: "H",
-      campusId: "1",
-      level: "LIC",
-    },
-
-    // --- FACULTAD I: INGENIERIA MINERA ---
-    {
-      id: "IMI",
-      name: "INGENIERIA MINERA",
-      code: "I11",
-      facultyId: "I",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "MIN",
-      name: "INGENIERIA DE MINAS",
-      code: "I12",
-      facultyId: "I",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "PMM",
-      name: "ING. DE PROCESOS DE MAT. PRIMAS MIN.",
-      code: "I13",
-      facultyId: "I",
-      campusId: "1",
-      level: "LIC",
-    },
-
-    // --- FACULTAD J: INGENIERIA TECNOLOGICA ---
-    {
-      id: "ELE",
-      name: "INGENIERIA ELECTRICA",
-      code: "J11",
-      facultyId: "J",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "TUE",
-      name: "TUS. ELECTRICIDAD",
-      code: "J13",
-      facultyId: "J",
-      campusId: "1",
-      level: "TUS",
-    },
-    {
-      id: "TED",
-      name: "TEC. MEDIO ELECTRICIDAD",
-      code: "J15",
-      facultyId: "J",
-      campusId: "1",
-      level: "TUM",
-    },
-    {
-      id: "TSE",
-      name: "INGENIERIA ELECTRICA - SAN CRISTOBAL",
-      code: "J16",
-      facultyId: "J",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "IET",
-      name: "INGENIERIA ELECTRONICA",
-      code: "J17",
-      facultyId: "J",
-      campusId: "1",
-      level: "LIC",
-    },
-    // Este es el segundo "TST". Recomiendo cambiar uno de los dos IDs si los usas como llaves primarias de Firestore.
-    {
-      id: "TST_ELEC",
-      name: "TUS. ELECTRONICA",
-      code: "J19",
-      facultyId: "J",
-      campusId: "1",
-      level: "TUS",
-    },
-    {
-      id: "TEA",
-      name: "TEC. MEDIO ELECTRONICA",
-      code: "J21",
-      facultyId: "J",
-      campusId: "1",
-      level: "TUM",
-    },
-    {
-      id: "IND",
-      name: "INGENIERIA INDUSTRIAL",
-      code: "J22",
-      facultyId: "J",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "IMC",
-      name: "INGENIERIA MECANICA",
-      code: "J23",
-      facultyId: "J",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "TUM",
-      name: "TUS. EN MECANICA GENERAL",
-      code: "J25",
-      facultyId: "J",
-      campusId: "1",
-      level: "TUS",
-    },
-    {
-      id: "TMG",
-      name: "TEC. MEDIO MECANICA GENERAL",
-      code: "J27",
-      facultyId: "J",
-      campusId: "1",
-      level: "TUM",
-    },
-    {
-      id: "TSM",
-      name: "INGENIERIA MECANICA - SAN CRISTOBAL",
-      code: "J28",
-      facultyId: "J",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "IMT",
-      name: "INGENIERIA MECATRONICA",
-      code: "J29",
-      facultyId: "J",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "TMC",
-      name: "TUS. EN MECATRONICA",
-      code: "J31",
-      facultyId: "J",
-      campusId: "1",
-      level: "TUS",
-    },
-    {
-      id: "MAU",
-      name: "TUS. EN MECANICA AUTOMOTRIZ",
-      code: "J33",
-      facultyId: "J",
-      campusId: "1",
-      level: "TUS",
-    },
-    {
-      id: "TMA",
-      name: "TEC. MEDIO MECANICA AUTOMOTRIZ",
-      code: "J35",
-      facultyId: "J",
-      campusId: "1",
-      level: "TUM",
-    },
-    {
-      id: "LMA",
-      name: "TEC. MEDIO MECANICA AUTOMOTRIZ - LLICA",
-      code: "J36",
-      facultyId: "J",
-      campusId: "1",
-      level: "TUM",
-    },
-    {
-      id: "TSA",
-      name: "TUS. EN MECANICA AUTOMOTRIZ - SAN CRISTOBAL",
-      code: "J33",
-      facultyId: "J",
-      campusId: "1",
-      level: "TUS",
-    },
-
-    // --- FACULTAD K: CIENCIAS DE LA SALUD ---
-    {
-      id: "ENF",
-      name: "ENFERMERIA",
-      code: "K11",
-      facultyId: "K",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "TMF",
-      name: "TEC. MEDIO ENFERMERIA",
-      code: "K12",
-      facultyId: "K",
-      campusId: "1",
-      level: "TUM",
-    },
-    {
-      id: "PEN",
-      name: "PROG. DE AUXILIARES DE ENFERMERIA",
-      code: "K13",
-      facultyId: "K",
-      campusId: "1",
-      level: "TUM",
-    },
-    {
-      id: "LEF",
-      name: "TEC. MEDIO ENFERMERIA - LLICA",
-      code: "K15",
-      facultyId: "K",
-      campusId: "1",
-      level: "TUM",
-    },
-    {
-      id: "SEN",
-      name: "ENFERMERIA - SACACA",
-      code: "K17",
-      facultyId: "K",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "UEN",
-      name: "ENFERMERIA - UYUNI",
-      code: "K19",
-      facultyId: "K",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "UTE",
-      name: "TEC. MEDIO ENFERMERIA - UYUNI",
-      code: "K21",
-      facultyId: "K",
-      campusId: "1",
-      level: "TUM",
-    },
-    {
-      id: "VEF",
-      name: "ENFERMERIA - VILLAZON",
-      code: "K23",
-      facultyId: "K",
-      campusId: "1",
-      level: "LIC",
-    },
-
-    // --- FACULTAD L: MEDICINA ---
-    {
-      id: "MED",
-      name: "MEDICINA",
-      code: "L11",
-      facultyId: "L",
-      campusId: "1",
-      level: "LIC",
-    },
-
-    // --- FACULTAD M: VICERRECTORADO ---
-    {
-      id: "SIS",
-      name: "INGENIERIA DE SISTEMAS",
-      code: "M11",
-      facultyId: "M",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "DPD",
-      name: "INGENIERIA EN DISEÑO Y PROGRAMACION DIGITAL",
-      code: "M13",
-      facultyId: "M",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "SIT",
-      name: "INGENIERIA DE SISTEMAS - TUPIZA",
-      code: "M15",
-      facultyId: "M",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "ODO",
-      name: "ODONTOLOGIA",
-      code: "M17",
-      facultyId: "M",
-      campusId: "1",
-      level: "LIC",
-    },
-    {
-      id: "PIC",
-      name: "PROGRAMA DE PEDAGOGIA INTERCULTURAL",
-      code: "M19",
-      facultyId: "M",
-      campusId: "1",
-      level: "LIC",
-    },
-  ];
-
   try {
-    const batchPromises = data.map((item) =>
-      // Al usar doc(db, collection, ID) garantizamos que no se creen duplicados si corres el seed varias veces
+    const batchPromises = programs.map((item) =>
       setDoc(doc(db, "programs", item.id), {
         ...item,
         createdAt: new Date(),
@@ -929,7 +1040,7 @@ export async function seedPrograms() {
     );
 
     await Promise.all(batchPromises);
-    console.log(`✅ ${data.length} Programas sembrados exitosamente`);
+    console.log(`✅ ${programs.length} Programas sembrados exitosamente`);
   } catch (error) {
     console.error("❌ Error al sembrar los programas:", error);
   }
@@ -951,20 +1062,10 @@ export async function seedFormFields() {
           label: "Modalidad",
           type: "select",
           required: true,
-          options: [
-            { value: "1", label: "Curso de nivelación" },
-            { value: "2", label: "CIM" },
-            { value: "3", label: "Ingreso Directo" },
-            { value: "4", label: "Pre-universitario" },
-            { value: "5", label: "Reingreso" },
-            { value: "6", label: "Traslado" },
-            { value: "7", label: "Ingreso por Promoción" },
-            { value: "8", label: "Ingreso por Convenio" },
-            { value: "9", label: "Ingreso por Concurso" },
-            { value: "10", label: "Ingreso por Excelencia" },
-            { value: "11", label: "Ingreso por Mérito Deportivo" },
-            { value: "12", label: "Ingreso por Mérito Artístico" },
-          ],
+          options: modalities.map((modality) => ({
+            value: modality.id,
+            label: modality.modality,
+          })),
         },
         {
           id: "2",
@@ -1003,20 +1104,10 @@ export async function seedFormFields() {
           label: "Modalidad",
           type: "select",
           required: true,
-          options: [
-            { value: "1", label: "Curso de nivelación" },
-            { value: "2", label: "CIM" },
-            { value: "3", label: "Ingreso Directo" },
-            { value: "4", label: "Pre-universitario" },
-            { value: "5", label: "Reingreso" },
-            { value: "6", label: "Traslado" },
-            { value: "7", label: "Ingreso por Promoción" },
-            { value: "8", label: "Ingreso por Convenio" },
-            { value: "9", label: "Ingreso por Concurso" },
-            { value: "10", label: "Ingreso por Excelencia" },
-            { value: "11", label: "Ingreso por Mérito Deportivo" },
-            { value: "12", label: "Ingreso por Mérito Artístico" },
-          ],
+          options: modalities.map((modality) => ({
+            value: modality.id,
+            label: modality.modality,
+          })),
         },
         {
           id: "2",
@@ -1085,20 +1176,10 @@ export async function seedFormFields() {
           label: "Modalidad",
           type: "select",
           required: true,
-          options: [
-            { value: "1", label: "Curso de nivelación" },
-            { value: "2", label: "CIM" },
-            { value: "3", label: "Ingreso Directo" },
-            { value: "4", label: "Pre-universitario" },
-            { value: "5", label: "Reingreso" },
-            { value: "6", label: "Traslado" },
-            { value: "7", label: "Ingreso por Promoción" },
-            { value: "8", label: "Ingreso por Convenio" },
-            { value: "9", label: "Ingreso por Concurso" },
-            { value: "10", label: "Ingreso por Excelencia" },
-            { value: "11", label: "Ingreso por Mérito Deportivo" },
-            { value: "12", label: "Ingreso por Mérito Artístico" },
-          ],
+          options: graduationModalities.map((modality) => ({
+            value: modality.id,
+            label: modality.name,
+          })),
         },
         {
           id: "2",
@@ -1278,58 +1359,122 @@ export async function seedFormFields() {
 
 export async function seedFormResponses() {
   console.log("🌱 Iniciando la siembra de datos en Firestore...");
-  const responses: FormResponseDef[] = [
-    {
-      id: "1",
-      templateId: "1",
-      module: FormModules.student,
-      submittedBy: "user1",
-      createdAt: Date.now(),
-      response: {
-        modalidad: "Interno",
-        masculino: 4500,
-        femenino: 5000,
-        total: 9500,
-      },
-    },
-    {
-      id: "2",
-      templateId: "4",
-      module: FormModules.graduate,
-      submittedBy: "user1",
-      createdAt: Date.now(),
-      response: {
-        modalidad: "Interno",
-        masculino: 4500,
-        femenino: 5000,
-        total: 9500,
-      },
-    },
-    {
-      id: "3",
-      templateId: "6",
-      module: FormModules.scholarships,
-      submittedBy: "user1",
-      createdAt: Date.now(),
-      response: {
-        tipoBeca: "Beca Alimentación",
-        masculino: 4500,
-        femenino: 5000,
-        total: 9500,
-      },
-    },
+  const responses: FormResponseDef[] = [];
+
+  const modalities = [
+    "Examen de Ingreso",
+    "Curso Preuniversitario",
+    "Ingreso Directo",
+    "Excelencia Académica",
+    "Traspaso",
+  ];
+  const scholarshipTypes = [
+    "Beca Alimentación",
+    "Beca Trabajo",
+    "Beca Comedor",
+    "Beca Excelencia",
+    "Beca Deporte",
+  ];
+  const users = [
+    "admin@uatf.edu.bo",
+    "encargado@uatf.edu.bo",
+    "registro@uatf.edu.bo",
+    "usuario_prueba@uatf.edu.bo",
   ];
 
-  try {
-    const batchPromises = responses.map((item) =>
-      // Guardamos cada respuesta en la colección de su módulo (student, graduate, etc.)
-      setDoc(doc(db, item.module, item.id), item),
-    );
+  // Generar 150 registros de prueba
+  for (let i = 1; i <= 150; i++) {
+    // Distribuir entre los 3 módulos principales
+    const moduleType = i % 3;
+    const isStudent = moduleType === 0;
+    const isGraduate = moduleType === 1;
 
-    await Promise.all(batchPromises);
+    const masculino = Math.floor(Math.random() * 5000) + 100;
+    const femenino = Math.floor(Math.random() * 5000) + 100;
+    const total = masculino + femenino;
+
+    const submittedBy = users[Math.floor(Math.random() * users.length)];
+    // Fecha aleatoria en los últimos 30 días
+    const createdAt =
+      Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000);
+
+    if (isStudent) {
+      responses.push({
+        id: `mock-resp-${i}`,
+        templateId: "1",
+        module: FormModules.student,
+        submittedBy,
+        createdAt,
+        response: {
+          modalidad: modalities[Math.floor(Math.random() * modalities.length)],
+          masculino,
+          femenino,
+          total,
+        },
+      });
+    } else if (isGraduate) {
+      responses.push({
+        id: `mock-resp-${i}`,
+        templateId: "4",
+        module: FormModules.graduate,
+        submittedBy,
+        createdAt,
+        response: {
+          modalidad: modalities[Math.floor(Math.random() * modalities.length)],
+          masculino,
+          femenino,
+          total,
+        },
+      });
+    } else {
+      responses.push({
+        id: `mock-resp-${i}`,
+        templateId: "6",
+        module: FormModules.scholarships,
+        submittedBy,
+        createdAt,
+        response: {
+          tipoBeca:
+            scholarshipTypes[
+              Math.floor(Math.random() * scholarshipTypes.length)
+            ],
+          masculino,
+          femenino,
+          total,
+        },
+      });
+    }
+  }
+
+  try {
+    // Procesar en lotes más pequeños si son muchos datos
+    const batchSize = 50;
+    for (let i = 0; i < responses.length; i += batchSize) {
+      const batch = responses.slice(i, i + batchSize);
+      const batchPromises = batch.map((item) =>
+        setDoc(doc(db, item.module, item.id), item),
+      );
+      await Promise.all(batchPromises);
+    }
+
     console.log(`✅ ${responses.length} Form Responses sembradas exitosamente`);
   } catch (error) {
     console.error("❌ Error al sembrar los Form Responses:", error);
+  }
+}
+
+export async function seedGraduationModalities() {
+  try {
+    for (const item of graduationModalities) {
+      await setDoc(doc(db, "graduation_modalities", item.id), {
+        ...item,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    }
+    console.log("✅ Modalidades de graduación sembradas exitosamente");
+  } catch (error) {
+    console.error("❌ Error al sembrar modalidades de graduación:", error);
   }
 }
 
@@ -1337,8 +1482,8 @@ export async function runSeed() {
   console.log("🌱 Iniciando la siembra de datos en Firestore...");
 
   try {
-    // Es recomendable ejecutarlos en orden si hay dependencias
     await seedModalities();
+    await seedGraduationModalities();
     await seedFaculties();
     await seedPrograms();
     await seedFormFields();
@@ -1351,3 +1496,5 @@ export async function runSeed() {
     process.exit(1); // Detiene la ejecución indicando que hubo un error
   }
 }
+
+runSeed();

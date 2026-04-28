@@ -21,25 +21,6 @@ const fieldTypeOptions: Array<{ label: string; value: FieldType }> = [
   { label: "Select", value: "select" },
 ];
 
-// Estilos predefinidos para inyectar en Sonner garantizando los colores requeridos
-const toastStyles = {
-  success: {
-    backgroundColor: "#22c55e",
-    color: "#ffffff",
-    border: "1px solid #16a34a",
-  }, // Verde
-  error: {
-    backgroundColor: "#ef4444",
-    color: "#ffffff",
-    border: "1px solid #dc2626",
-  }, // Rojo
-  warning: {
-    backgroundColor: "#eab308",
-    color: "#ffffff",
-    border: "1px solid #ca8a04",
-  }, // Amarillo
-};
-
 function createBlankTemplate(): FormTemplateDef {
   return {
     id: crypto.randomUUID(),
@@ -53,6 +34,7 @@ function createBlankTemplate(): FormTemplateDef {
 
 function createDefaultField(index: number): FormFieldDef {
   return {
+    name: `field_${index}`,
     id: `${index}`,
     label: `Campo ${index}`,
     type: "text",
@@ -118,7 +100,6 @@ function generateTemplateId(seed: string) {
 export {
   moduleOptions,
   fieldTypeOptions,
-  toastStyles,
   createBlankTemplate,
   createDefaultField,
   normalizeTemplate,
