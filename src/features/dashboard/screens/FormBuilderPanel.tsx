@@ -318,7 +318,6 @@ export default function FormBuilderPanel() {
                                     onMoveUp={() => moveField(field.id, 'up')}
                                     onMoveDown={() => moveField(field.id, 'down')}
                                     onClone={() => cloneField(field.id)}
-                                    module={draft.module}
                                 />
                             ))}
                         </CardContent>

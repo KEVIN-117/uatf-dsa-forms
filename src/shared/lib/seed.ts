@@ -13,6 +13,40 @@ export interface Modality {
   code: string;
 }
 
+export interface ScholarshipsType {
+  docId: string;
+  id: string;
+  name: string;
+}
+
+const scholarshipsTypes: ScholarshipsType[] = [
+  {
+    docId: "1",
+    id: "1",
+    name: "BECA ALIMENTACION",
+  },
+  {
+    docId: "2",
+    id: "2",
+    name: "BECA AUXILIAR DE DOCENCIA",
+  },
+  {
+    docId: "3",
+    id: "3",
+    name: "BECA INVESTIGACION",
+  },
+  {
+    docId: "4",
+    id: "4",
+    name: "BECA GRADUACION",
+  },
+  {
+    docId: "5",
+    id: "5",
+    name: "BECA TRABAJO",
+  },
+];
+
 const modalities: Modality[] = [
   {
     id: "1",
@@ -1046,6 +1080,21 @@ export async function seedPrograms() {
   }
 }
 
+export async function seedScholarshipsTypes() {
+  try {
+    for (const item of scholarshipsTypes) {
+      await setDoc(doc(db, "scholarshipsTypes", item.id), {
+        ...item,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    }
+    console.log("✅ Scholarships types sembradas exitosamente");
+  } catch (error) {
+    console.error("❌ Error al sembrar scholarships types:", error);
+  }
+}
+
 export async function seedFormFields() {
   const templates: FormTemplateDef[] = [
     {
@@ -1486,6 +1535,7 @@ export async function runSeed() {
     await seedGraduationModalities();
     await seedFaculties();
     await seedPrograms();
+    await seedScholarshipsTypes();
     await seedFormFields();
     await seedFormResponses();
 

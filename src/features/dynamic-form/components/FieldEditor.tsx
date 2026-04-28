@@ -17,7 +17,7 @@ import { fetchDefaultOptions } from "#/shared/hooks/useDefaultOptions";
 const defaultOptions = [
     {
         label: "Tipos de Beca",
-        collection: "scholarships"
+        collection: "scholarshipsTypes"
     },
     {
         label: "Tipos de ingreso",
@@ -58,7 +58,6 @@ export function FieldEditor({
 }) {
     const optionsText = useMemo(() => serializeOptions(field.options ?? []), [field.options]);
 
-    // 1. Instanciamos el queryClient y un estado local para saber qué botón está cargando
     const queryClient = useQueryClient();
     const [loadingCollection, setLoadingCollection] = useState<string | null>(null);
 
