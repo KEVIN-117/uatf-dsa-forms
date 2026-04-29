@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { type ColumnDef } from "@tanstack/react-table"
 import { Pencil, Trash2, Plus } from "lucide-react"
-import { toast } from "sonner"
 
 import { useProtectedRoute } from "#/features/auth/hooks/useProtectedRoute"
 import {
@@ -17,6 +16,7 @@ import { Button } from "#/shared/ui/button"
 import { Input } from "#/shared/ui/input"
 import { Label } from "#/shared/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "#/shared/ui/card"
+import { useToast } from "#/shared/components/Toast"
 
 type GradFormData = Omit<GraduationModality, "docId">
 const emptyForm: GradFormData = { id: "", name: "", code: "" }
@@ -44,19 +44,60 @@ export function GraduationModalitiesCrud() {
         try {
             if (editing) {
                 await updateMut.mutateAsync({ ...form, docId: editing.docId })
-                toast.success("Modalidad de graduación actualizada")
+                useToast({
+                    title: "Modalidad actualizada",
+                    type: "success",
+                    duration: 5000,
+                    closeButton: true,
+                    position: 'top-right',
+                    message: "Modalidad de graduación actualizada correctamente.",
+                });
             } else {
                 await addMut.mutateAsync(form)
-                toast.success("Modalidad de graduación creada")
+                useToast({
+                    title: "Modalidad creada",
+                    type: "success",
+                    duration: 5000,
+                    closeButton: true,
+                    position: 'top-right',
+                    message: "Modalidad de graduación creada correctamente.",
+                });
             }
             setSheetOpen(false); setForm(emptyForm)
-        } catch { toast.error("Error al guardar") }
+        } catch {
+            useToast({
+                title: "Error al guardar",
+                type: "error",
+                duration: 5000,
+                closeButton: true,
+                position: 'top-right',
+                message: "Error al guardar la modalidad.",
+            });
+        }
     }
 
     const handleDelete = async (item: GraduationModality) => {
         if (!confirm(`¿Eliminar "${item.name}"?`)) return
-        try { await deleteMut.mutateAsync(item.docId); toast.success("Eliminada") }
-        catch { toast.error("Error al eliminar") }
+        try {
+            await deleteMut.mutateAsync(item.docId);
+            useToast({
+                title: "Modalidad eliminada",
+                type: "success",
+                duration: 5000,
+                closeButton: true,
+                position: 'top-right',
+                message: "Modalidad de graduación eliminada correctamente.",
+            });
+        } catch {
+            useToast({
+                title: "Error al eliminar",
+                type: "error",
+                duration: 5000,
+                closeButton: true,
+                position: 'top-right',
+                message: "Error al eliminar la modalidad.",
+            });
+        }
     }
 
     const columns: ColumnDef<GraduationModality>[] = [

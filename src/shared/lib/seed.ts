@@ -1536,8 +1536,8 @@ export async function runSeed() {
     await seedFaculties();
     await seedPrograms();
     await seedScholarshipsTypes();
-    await seedFormFields();
-    await seedFormResponses();
+    // await seedFormFields();
+    // await seedFormResponses();
 
     console.log("🎉 Proceso de siembra finalizado con éxito.");
     process.exit(0); // Detiene la ejecución del script limpiamente
