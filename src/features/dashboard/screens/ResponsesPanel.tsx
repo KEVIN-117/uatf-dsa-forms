@@ -3,8 +3,8 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { FileSpreadsheet, Loader2 } from 'lucide-react';
 import { DataTable } from '#/shared/ui/data-table';
 
-import { useFormTemplates } from '#/shared/hooks/useFormBuilder';
-import { getResponsesById, useGetResponses } from '#/shared/hooks/useFormResponses';
+import { useFormTemplateById } from '#/shared/hooks/useFormBuilder';
+import { useGetResponses } from '#/shared/hooks/useFormResponses';
 import { useProtectedRoute } from '#/features/auth/hooks/useProtectedRoute';
 
 import { Card, CardContent } from '#/shared/ui/card';
@@ -19,13 +19,12 @@ interface ResponsePanelProps {
 export function ResponsesPanel({ formId, module }: ResponsePanelProps) {
     const { isAuthenticated } = useProtectedRoute();
 
-    const { data: formResponse } = getResponsesById(formId, module as FormModules)
-    const { data: templates } = useFormTemplates();
-    const template = templates?.find((t) => t.id === formResponse?.templateId);
+    // formId IS the templateId — look it up directly from the templates cache
+    const { template } = useFormTemplateById(formId);
 
     const { data: responses = [], isLoading: isLoadingResponses } = useGetResponses(
-        template?.module as FormModules,
-        template?.id as string
+        module as FormModules,
+        formId
     );
     const columns = useMemo<ColumnDef<FormResponseDef, any>[]>(() => {
         if (!template) return [];

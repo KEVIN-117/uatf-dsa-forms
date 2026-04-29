@@ -45,7 +45,7 @@ export function StudentReport({ formId }: StudentReportProps) {
             if (!profile) {
                 throw new Error('Profile no encontrado');
             }
-            mutateAsync({
+            await mutateAsync({
                 id: crypto.randomUUID(),
                 templateId: template?.id,
                 module: module as FormModules,

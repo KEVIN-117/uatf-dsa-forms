@@ -25,10 +25,8 @@ function DynamicReportPage() {
       console.log('template', template);
       console.log('currentUser', currentUser);
 
-      alert('El reporte se ha guardado correctamente en la base de datos.');
     } catch (error) {
       console.error('Error al guardar en Firestore:', error);
-      alert('Hubo un error al procesar el reporte.');
     }
   };
 

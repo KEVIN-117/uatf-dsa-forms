@@ -1576,7 +1576,7 @@ export async function seedFormFields() {
           name: "paterno",
           label: "Apellido Paterno",
           type: "text",
-          required: true,
+          required: false,
         },
         {
           id: "2",
@@ -1879,12 +1879,13 @@ export async function seedFormResponses() {
     "usuario_prueba@uatf.edu.bo",
   ];
 
-  // Generar 150 registros de prueba
-  for (let i = 1; i <= 150; i++) {
-    // Distribuir entre los 3 módulos principales
-    const moduleType = i % 3;
+  // Generar 200 registros de prueba (50 por módulo)
+  for (let i = 1; i <= 200; i++) {
+    // Distribuir entre los 4 módulos principales
+    const moduleType = i % 4;
     const isStudent = moduleType === 0;
     const isGraduate = moduleType === 1;
+    const isTeacher = moduleType === 2;
 
     const masculino = Math.floor(Math.random() * 5000) + 100;
     const femenino = Math.floor(Math.random() * 5000) + 100;
@@ -1896,6 +1897,7 @@ export async function seedFormResponses() {
       Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000);
 
     if (isStudent) {
+      // Student templates: "1" through "6"
       responses.push({
         id: `mock-resp-${i}`,
         templateId: "1",
@@ -1910,9 +1912,10 @@ export async function seedFormResponses() {
         },
       });
     } else if (isGraduate) {
+      // Graduate templates: "7" and "8"
       responses.push({
         id: `mock-resp-${i}`,
-        templateId: "4",
+        templateId: "7",
         module: FormModules.graduate,
         submittedBy,
         createdAt,
@@ -1923,18 +1926,63 @@ export async function seedFormResponses() {
           total,
         },
       });
-    } else {
+    } else if (isTeacher) {
+      // Teacher template: "9"
+      const surnames = [
+        "García",
+        "López",
+        "Mamani",
+        "Quispe",
+        "Fernández",
+        "Condori",
+        "Vargas",
+        "Rojas",
+      ];
+      const names = [
+        "Juan",
+        "María",
+        "Carlos",
+        "Ana",
+        "Pedro",
+        "Luisa",
+        "José",
+        "Rosa",
+      ];
       responses.push({
         id: `mock-resp-${i}`,
-        templateId: "6",
+        templateId: "9",
+        module: FormModules.teacher,
+        submittedBy,
+        createdAt,
+        response: {
+          paterno: surnames[Math.floor(Math.random() * surnames.length)],
+          materno: surnames[Math.floor(Math.random() * surnames.length)],
+          nombres: names[Math.floor(Math.random() * names.length)],
+          ci: `${Math.floor(Math.random() * 9000000) + 1000000}`,
+          cel: `${Math.floor(Math.random() * 9000000) + 60000000}`,
+          carga_horaria: `${Math.floor(Math.random() * 3) + 1}`,
+          categoria: `${Math.floor(Math.random() * 3) + 1}`,
+          nivel_academico: `${Math.floor(Math.random() * 4) + 1}`,
+          profesion: [
+            "Ing. Sistemas",
+            "Lic. Matemáticas",
+            "Ing. Civil",
+            "Lic. Física",
+          ][Math.floor(Math.random() * 4)],
+        },
+      });
+    } else {
+      // Scholarship templates: "10" through "14"
+      responses.push({
+        id: `mock-resp-${i}`,
+        templateId: "10",
         module: FormModules.scholarships,
         submittedBy,
         createdAt,
         response: {
-          tipoBeca:
-            scholarshipTypes[
-              Math.floor(Math.random() * scholarshipTypes.length)
-            ],
+          tipo: scholarshipTypes[
+            Math.floor(Math.random() * scholarshipTypes.length)
+          ],
           masculino,
           femenino,
           total,
@@ -2033,6 +2081,7 @@ export async function runSeed() {
     await seedTeachingAcademicLevels();
     await seedScholarshipsTypes();
     await seedFormFields();
+    // await seedFormResponses();
 
     console.log("🎉 Proceso de siembra finalizado con éxito.");
     process.exit(0); // Detiene la ejecución del script limpiamente

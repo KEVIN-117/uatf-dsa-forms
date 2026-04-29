@@ -113,8 +113,12 @@ export const getResponsesById = (id: string, module: FormModules) => {
     queryKey: ["responses", "by-id", id],
     queryFn: async () => {
       const snapshot = await getDoc(doc(db, module, id));
+      if (!snapshot.exists()) {
+        return null;
+      }
       return snapshot.data() as FormResponseDef;
     },
+    enabled: !!id && !!module,
   });
 };
 
