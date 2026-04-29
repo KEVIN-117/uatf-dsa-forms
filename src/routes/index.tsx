@@ -21,11 +21,15 @@ function HomePage() {
             <span>Vicerrectorado • UATF</span>
           </div>
 
-          <h1 className="font-display text-4xl md:text-6xl font-bold text-cream mb-6 leading-tight">
-            Dirección de Servicios<br />
-            Académicos
-            <span className="block text-gold italic">UATF</span>
+          <h1 className="font-display text-2xl md:text-4xl font-bold text-cream mb-6 leading-tight">
+            UNIVERSIDAD AUTÓNOMA "TOMÁS FRÍAS"
           </h1>
+          <h1 className="font-display text-xl md:text-4xl font-bold text-cream mb-6 leading-tight">
+            VICERRECTORADO
+          </h1>
+          <h2 className="font-display text-xl md:text-4xl font-bold text-cream mb-6 leading-tight">
+            Dirección de Servicios Académicos
+          </h2>
 
           <p className="text-xl md:text-2xl text-cream/80 font-body max-w-3xl mx-auto mb-10 leading-relaxed">
             Gestión de postulaciones, inscripciones y trámites académicos de la Universidad Autónoma Tomás Frías.
@@ -67,6 +71,7 @@ function HomePage() {
           <div className="my-8 text-sm text-cream/60">
             Dirección de Servicios Académicos • Vicerrectorado UATF<br />
             Ciudadela Universitaria, Potosí • <span className="text-copper-light">direccion_academica@uatf.edu.bo</span>
+            • <span className="text-copper-light">Telefono: 6227323</span>
           </div>
         </div>
       </section>

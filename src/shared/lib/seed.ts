@@ -19,6 +19,34 @@ export interface ScholarshipsType {
   name: string;
 }
 
+export interface AcademicLevel {
+  docId: string;
+  id: string;
+  name: string;
+  code: string;
+}
+
+const academicLevels: AcademicLevel[] = [
+  {
+    docId: "1",
+    id: "1",
+    name: "LICENCIATURA",
+    code: "LIC",
+  },
+  {
+    docId: "2",
+    id: "2",
+    name: "TECNICO SUPERIOR",
+    code: "TEC. SUP.",
+  },
+  {
+    docId: "3",
+    id: "3",
+    name: "TECNICO UNIVERSITARIO MEDIO",
+    code: "TUM",
+  },
+];
+
 const scholarshipsTypes: ScholarshipsType[] = [
   {
     docId: "1",
@@ -1094,9 +1122,23 @@ export async function seedScholarshipsTypes() {
     console.error("❌ Error al sembrar scholarships types:", error);
   }
 }
+export async function seedAcademicLevels() {
+  try {
+    for (const item of academicLevels) {
+      await setDoc(doc(db, "academicLevels", item.id), {
+        ...item,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    }
+    console.log("✅ Scholarships types sembradas exitosamente");
+  } catch (error) {
+    console.error("❌ Error al sembrar scholarships types:", error);
+  }
+}
 
 export async function seedFormFields() {
-  const templates: FormTemplateDef[] = [
+  const studentFormTemplates: FormTemplateDef[] = [
     {
       id: "1",
       title: "Numero de postulantes por modalidad y sexo",
@@ -1213,6 +1255,110 @@ export async function seedFormFields() {
     },
     {
       id: "4",
+      title: "Matricula estudiantes nuevos por sexo",
+      description:
+        "Este es el formulario de matricula estudiantes nuevos por sexo",
+      module: FormModules.student,
+      isActive: true,
+      fields: [
+        {
+          id: "1",
+          name: "masculino",
+          label: "Masculino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "2",
+          name: "femenino",
+          label: "Femenino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "3",
+          name: "total",
+          label: "Total",
+          type: "number",
+          required: false,
+        },
+      ],
+    },
+    {
+      id: "5",
+      title: "Número de estudiantes programados por sexo",
+      description:
+        "Este es el formulario de número de estudiantes programados por sexo",
+      module: FormModules.student,
+      isActive: true,
+      fields: [
+        {
+          id: "1",
+          name: "masculino",
+          label: "Masculino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "2",
+          name: "femenino",
+          label: "Femenino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "3",
+          name: "total",
+          label: "Total",
+          type: "number",
+          required: false,
+        },
+      ],
+    },
+    {
+      id: "6",
+      title:
+        "Número de estudiantes aprobados, reprobados y abandonos de materias",
+      description:
+        "Este es el formulario de número de estudiantes aprobados, reprobados y abandonos de materias",
+      module: FormModules.student,
+      isActive: true,
+      fields: [
+        {
+          id: "1",
+          name: "aprobados",
+          label: "Aprobados",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "2",
+          name: "reprobados",
+          label: "Reprobados",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "3",
+          name: "abandonos",
+          label: "Abandonos",
+          type: "number",
+          required: false,
+        },
+        {
+          id: "4",
+          name: "total",
+          label: "Total",
+          type: "number",
+          required: false,
+        },
+      ],
+    },
+  ];
+
+  const graduateFormTemplates: FormTemplateDef[] = [
+    {
+      id: "7",
       title: "Número de graduados por modalidad y sexo",
       description:
         "Este es el formulario de número de graduados por modalidad y sexo",
@@ -1254,115 +1400,23 @@ export async function seedFormFields() {
       ],
     },
     {
-      id: "5",
-      title: "Número de docentes",
-      description: "Este es el formulario de número de docentes",
-      module: FormModules.teacher,
-      isActive: true,
-      fields: [
-        {
-          id: "1",
-          name: "paterno",
-          label: "Paterno",
-          type: "text",
-          required: true,
-        },
-        {
-          id: "2",
-          name: "materno",
-          label: "Materno",
-          type: "text",
-          required: true,
-        },
-        {
-          id: "3",
-          name: "nombres",
-          label: "Nombres",
-          type: "text",
-          required: true,
-        },
-        {
-          id: "4",
-          name: "carnet",
-          label: "Número de carnet",
-          type: "text",
-          required: true,
-        },
-        {
-          id: "5",
-          name: "celular",
-          label: "Numero de celular",
-          type: "text",
-          required: true,
-        },
-        {
-          id: "6",
-          name: "cargaHoraria",
-          label: "Carga horaria",
-          type: "number",
-          required: true,
-        },
-        {
-          id: "7",
-          name: "categoria",
-          label: "Categoria",
-          type: "select",
-          required: true,
-          options: [
-            { value: "1", label: "Tiempo Completo" },
-            { value: "2", label: "Tiempo Parcial" },
-            { value: "3", label: "Contratado" },
-            { value: "4", label: "Honorarios" },
-            { value: "5", label: "Asistente" },
-            { value: "6", label: "Consultor" },
-            { value: "7", label: "Interino" },
-            { value: "8", label: "Ad Honorem" },
-          ],
-        },
-        {
-          id: "8",
-          name: "nivelAcademico",
-          label: "Nivel Academico Alcanzado",
-          type: "text",
-          required: true,
-        },
-        {
-          id: "9",
-          name: "profesion",
-          label: "Profesión",
-          type: "text",
-          required: true,
-        },
-      ],
-    },
-    {
-      id: "6",
-      title: "Numero de beca alimentacion por tipo y sexo",
+      id: "8",
+      title: "Número de graduados por nivel académico y sexo",
       description:
-        "Este es el formulario de número de beca alimentacion por tipo y sexo",
-      module: FormModules.scholarships,
+        "Este es el formulario de número de graduados por nivel académico y sexo",
+      module: FormModules.graduate,
       isActive: true,
       fields: [
         {
           id: "1",
-          name: "tipoBeca",
-          label: "Tipo de beca",
+          name: "academic_level",
+          label: "Nivel Académico",
           type: "select",
           required: true,
-          options: [
-            { value: "1", label: "Beca Alimentación" },
-            { value: "2", label: "Beca Movilidad" },
-            { value: "3", label: "Beca Excelencia" },
-            { value: "4", label: "Beca Deportiva" },
-            { value: "5", label: "Beca Artística" },
-            { value: "6", label: "Beca Cultural" },
-            { value: "7", label: "Beca de Investigación" },
-            { value: "8", label: "Beca de Postgrado" },
-            { value: "9", label: "Beca de Doctorado" },
-            { value: "10", label: "Beca de Maestría" },
-            { value: "11", label: "Beca de Intercambio" },
-            { value: "12", label: "Beca de Solidaridad" },
-          ],
+          options: academicLevels.map((level) => ({
+            value: level.id,
+            label: level.name,
+          })),
         },
         {
           id: "2",
@@ -1389,8 +1443,260 @@ export async function seedFormFields() {
     },
   ];
 
+  const teacherFormTemplates: FormTemplateDef[] = [
+    {
+      id: "9",
+      title: "Número de docentes por nivel académico",
+      description:
+        "Este es el formulario de número de docentes por nivel académico",
+      module: FormModules.teacher,
+      isActive: true,
+      fields: [
+        {
+          id: "1",
+          name: "paterno",
+          label: "Apellido Paterno",
+          type: "text",
+          required: true,
+        },
+        {
+          id: "2",
+          name: "materno",
+          label: "Apellido Materno",
+          type: "text",
+          required: true,
+        },
+        {
+          id: "3",
+          name: "nombres",
+          label: "Nombres",
+          type: "text",
+          required: true,
+        },
+        {
+          id: "4",
+          name: "ci",
+          label: "Nro. Carnet",
+          type: "text",
+          required: true,
+        },
+        {
+          id: "5",
+          name: "cel",
+          label: "Nro. Celular",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "6",
+          name: "carga_horaria",
+          label: "Carga Horaria",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "7",
+          name: "categoria",
+          label: "Categoría",
+          type: "text",
+          required: true,
+        },
+        {
+          id: "8",
+          name: "nivel_academico",
+          label: "Nivel académico alcanzado",
+          type: "text",
+          required: true,
+        },
+        {
+          id: "9",
+          name: "profesion",
+          label: "Profesión",
+          type: "text",
+          required: true,
+        },
+      ],
+    },
+  ];
+
+  const scholarshipFormTemplates: FormTemplateDef[] = [
+    {
+      id: "10",
+      title: "Número de beca alimentacion por tipo y sexo",
+      description:
+        "Este es el formulario de número de beca alimentacion por tipo y sexo",
+      module: FormModules.scholarships,
+      isActive: true,
+      fields: [
+        {
+          id: "1",
+          name: "tipo",
+          label: "Tipo",
+          type: "select",
+          required: true,
+          options: scholarshipsTypes.map((scholarshipType) => ({
+            value: scholarshipType.id,
+            label: scholarshipType.name,
+          })),
+        },
+        {
+          id: "2",
+          name: "masculino",
+          label: "Masculino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "3",
+          name: "femenino",
+          label: "Femenino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "4",
+          name: "total",
+          label: "Total",
+          type: "number",
+          required: true,
+        },
+      ],
+    },
+    {
+      id: "11",
+      title: "Número de auxiliares de docencia (Titulares y Invitados)",
+      description: "Este es el formulario de número de auxiliares de docencia",
+      module: FormModules.scholarships,
+      isActive: true,
+      fields: [
+        {
+          id: "1",
+          name: "tipo",
+          label: "Tipo",
+          type: "select",
+          required: true,
+          options: [
+            { value: "titulares", label: "Titulares" },
+            { value: "invitados", label: "Invitados" },
+          ],
+        },
+        {
+          id: "2",
+          name: "masculino",
+          label: "Masculino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "3",
+          name: "femenino",
+          label: "Femenino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "4",
+          name: "total",
+          label: "Total",
+          type: "number",
+          required: true,
+        },
+      ],
+    },
+    {
+      id: "12",
+      title: "Número de beca investigación",
+      description: "Este es el formulario de número beca investigación",
+      module: FormModules.scholarships,
+      isActive: true,
+      fields: [
+        {
+          id: "1",
+          name: "masculino",
+          label: "Masculino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "2",
+          name: "femenino",
+          label: "Femenino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "3",
+          name: "total",
+          label: "Total",
+          type: "number",
+          required: true,
+        },
+      ],
+    },
+    {
+      id: "13",
+      title: "Número de beca graduación",
+      description: "Este es el formulario de número beca graduación",
+      module: FormModules.scholarships,
+      isActive: true,
+      fields: [
+        {
+          id: "1",
+          name: "masculino",
+          label: "Masculino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "2",
+          name: "femenino",
+          label: "Femenino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "3",
+          name: "total",
+          label: "Total",
+          type: "number",
+          required: true,
+        },
+      ],
+    },
+    {
+      id: "14",
+      title: "Número de beca trabajo",
+      description: "Este es el formulario de número beca trabajo",
+      module: FormModules.scholarships,
+      isActive: true,
+      fields: [
+        {
+          id: "1",
+          name: "masculino",
+          label: "Masculino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "2",
+          name: "femenino",
+          label: "Femenino",
+          type: "number",
+          required: true,
+        },
+        {
+          id: "3",
+          name: "total",
+          label: "Total",
+          type: "number",
+          required: true,
+        },
+      ],
+    },
+  ];
+
   try {
-    const batchPromises = templates.map((item) =>
+    const batchPromisesStudents = studentFormTemplates.map((item) =>
       // Al usar doc(db, collection, ID) garantizamos que no se creen duplicados si corres el seed varias veces
       setDoc(doc(db, "form_templates", item.id), {
         ...item,
@@ -1399,7 +1705,46 @@ export async function seedFormFields() {
       }),
     );
 
-    await Promise.all(batchPromises);
+    const batchPromisesGraduates = graduateFormTemplates.map((item) =>
+      // Al usar doc(db, collection, ID) garantizamos que no se creen duplicados si corres el seed varias veces
+      setDoc(doc(db, "form_templates", item.id), {
+        ...item,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+    );
+
+    const batchPromisesTeachers = teacherFormTemplates.map((item) =>
+      // Al usar doc(db, collection, ID) garantizamos que no se creen duplicados si corres el seed varias veces
+      setDoc(doc(db, "form_templates", item.id), {
+        ...item,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+    );
+
+    const batchPromisesScholarships = scholarshipFormTemplates.map((item) =>
+      // Al usar doc(db, collection, ID) garantizamos que no se creen duplicados si corres el seed varias veces
+      setDoc(doc(db, "form_templates", item.id), {
+        ...item,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+    );
+
+    const templates = [
+      ...studentFormTemplates,
+      ...graduateFormTemplates,
+      ...teacherFormTemplates,
+      ...scholarshipFormTemplates,
+    ];
+
+    await Promise.all([
+      batchPromisesStudents,
+      batchPromisesGraduates,
+      batchPromisesTeachers,
+      batchPromisesScholarships,
+    ]);
     console.log(`✅ ${templates.length} Form Templates sembrados exitosamente`);
   } catch (error) {
     console.error("❌ Error al sembrar los Form Templates:", error);
@@ -1536,8 +1881,7 @@ export async function runSeed() {
     await seedFaculties();
     await seedPrograms();
     await seedScholarshipsTypes();
-    // await seedFormFields();
-    // await seedFormResponses();
+    await seedFormFields();
 
     console.log("🎉 Proceso de siembra finalizado con éxito.");
     process.exit(0); // Detiene la ejecución del script limpiamente

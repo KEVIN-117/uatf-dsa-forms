@@ -214,7 +214,7 @@ export function DirectorLogin({ onSuccess }: DirectorLoginProps) {
 
                     return (
                       <div className="space-y-2">
-                        <Label htmlFor={field.name}>Carrera</Label>
+                        <Label htmlFor={field.name}>Carrera y/o Programa</Label>
                         <Select
                           value={field.state.value || undefined}
                           onValueChange={(value) => {
@@ -252,8 +252,8 @@ export function DirectorLogin({ onSuccess }: DirectorLoginProps) {
                           </p>
                         ) : null}
                         {facultyId &&
-                        !filteredPrograms.length &&
-                        !isLoadingPrograms ? (
+                          !filteredPrograms.length &&
+                          !isLoadingPrograms ? (
                           <p className="text-sm text-muted-foreground">
                             No hay carreras disponibles para la facultad seleccionada.
                           </p>
