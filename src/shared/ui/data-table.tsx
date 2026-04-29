@@ -11,6 +11,7 @@ import {
     getSortedRowModel,
     useReactTable,
     type FilterFn,
+    type PaginationState,
 } from "@tanstack/react-table"
 import { rankItem } from '@tanstack/match-sorter-utils'
 
@@ -57,6 +58,10 @@ export function DataTable<TData, TValue>({
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = React.useState({})
     const [globalFilter, setGlobalFilter] = React.useState("")
+    const [pagination, setPagination] = React.useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 5,
+    })
 
     const table = useReactTable({
         data,
@@ -80,6 +85,7 @@ export function DataTable<TData, TValue>({
             columnVisibility,
             rowSelection,
             globalFilter,
+            pagination,
         },
     })
 
@@ -234,16 +240,16 @@ export function DataTable<TData, TValue>({
                     <div className="flex items-center space-x-2">
                         <p className="text-sm font-medium">Filas por página</p>
                         <Select
-                            value={`${table.getState().pagination.pageSize}`}
+                            value={`${pagination.pageSize}`}
                             onValueChange={(value) => {
-                                table.setPageSize(Number(value))
+                                setPagination({ pageIndex: 0, pageSize: Number(value) })
                             }}
                         >
                             <SelectTrigger className="h-8 w-[70px]">
-                                <SelectValue placeholder={table.getState().pagination.pageSize} />
+                                <SelectValue placeholder={pagination.pageSize} />
                             </SelectTrigger>
-                            <SelectContent side="top">
-                                {[10, 20, 30, 40, 50].map((pageSize) => (
+                            <SelectContent side="top" className="bg-background">
+                                {[5, 10, 20, 30, 40, 50].map((pageSize) => (
                                     <SelectItem key={pageSize} value={`${pageSize}`}>
                                         {pageSize}
                                     </SelectItem>
@@ -252,14 +258,14 @@ export function DataTable<TData, TValue>({
                         </Select>
                     </div>
                     <div className="flex items-center justify-center text-sm font-medium">
-                        Página {table.getState().pagination.pageIndex + 1} de{" "}
+                        Página {pagination.pageIndex + 1} de{" "}
                         {table.getPageCount() || 1}
                     </div>
                     <div className="flex items-center space-x-2">
                         <Button
                             variant="outline"
                             className="hidden h-8 w-8 p-0 lg:flex"
-                            onClick={() => table.setPageIndex(0)}
+                            onClick={() => setPagination({ pageIndex: 0, pageSize: pagination.pageSize })}
                             disabled={!table.getCanPreviousPage()}
                         >
                             <span className="sr-only">Ir a primera página</span>
@@ -268,7 +274,7 @@ export function DataTable<TData, TValue>({
                         <Button
                             variant="outline"
                             className="h-8 w-8 p-0"
-                            onClick={() => table.previousPage()}
+                            onClick={() => setPagination({ pageIndex: pagination.pageIndex - 1, pageSize: pagination.pageSize })}
                             disabled={!table.getCanPreviousPage()}
                         >
                             <span className="sr-only">Ir a página anterior</span>
@@ -277,7 +283,7 @@ export function DataTable<TData, TValue>({
                         <Button
                             variant="outline"
                             className="h-8 w-8 p-0"
-                            onClick={() => table.nextPage()}
+                            onClick={() => setPagination({ pageIndex: pagination.pageIndex + 1, pageSize: pagination.pageSize })}
                             disabled={!table.getCanNextPage()}
                         >
                             <span className="sr-only">Ir a página siguiente</span>
@@ -286,7 +292,7 @@ export function DataTable<TData, TValue>({
                         <Button
                             variant="outline"
                             className="hidden h-8 w-8 p-0 lg:flex"
-                            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+                            onClick={() => setPagination({ pageIndex: table.getPageCount() - 1, pageSize: pagination.pageSize })}
                             disabled={!table.getCanNextPage()}
                         >
                             <span className="sr-only">Ir a última página</span>

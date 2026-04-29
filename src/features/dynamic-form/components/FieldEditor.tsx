@@ -34,6 +34,22 @@ const defaultOptions = [
     {
         label: "Tipos de Modalidades de Graduación",
         collection: "graduation_modalities"
+    },
+    {
+        label: "Nivel Académico",
+        collection: "academicLevels"
+    },
+    {
+        label: "Carga Horaria",
+        collection: "workloads"
+    },
+    {
+        label: "Categoría Docente",
+        collection: "teachingCategories"
+    },
+    {
+        label: "Nivel Académico Docente",
+        collection: "teachingAcademicLevels"
     }
 ]
 
@@ -145,7 +161,7 @@ export function FieldEditor({
                         <SelectTrigger className="w-full">
                             <SelectValue placeholder="Tipo de campo" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-background">
                             {fieldTypeOptions.map((option) => (
                                 <SelectItem key={option.value} value={option.value}>
                                     {option.label}

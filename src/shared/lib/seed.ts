@@ -26,6 +26,125 @@ export interface AcademicLevel {
   code: string;
 }
 
+export interface Workload {
+  docId: string;
+  id: string;
+  name: string;
+  code: string;
+}
+
+export interface TeachingCategory {
+  docId: string;
+  id: string;
+  name: string;
+  code: string;
+}
+
+const workloads: Workload[] = [
+  {
+    docId: "1",
+    id: "1",
+    name: "TIEMPO COMPLETO",
+    code: "TC",
+  },
+  {
+    docId: "2",
+    id: "2",
+    name: "MEDIO HORARIO",
+    code: "MH",
+  },
+];
+
+const teachingAcademicLevels: AcademicLevel[] = [
+  {
+    docId: "1",
+    id: "1",
+    name: "DOCTORADO",
+    code: "PhD",
+  },
+  {
+    docId: "2",
+    id: "2",
+    name: "MAESTRIA",
+    code: "MSc",
+  },
+  {
+    docId: "3",
+    id: "3",
+    name: "ESPECIALIDAD",
+    code: "ESP",
+  },
+  {
+    docId: "4",
+    id: "4",
+    name: "DIPLOMADO",
+    code: "DIP",
+  },
+  {
+    docId: "5",
+    id: "5",
+    name: "LICENCIATURA",
+    code: "LIC",
+  },
+  {
+    docId: "6",
+    id: "6",
+    name: "TECNICO SUPERIOR UNIVERSITARIO",
+    code: "TUS",
+  },
+  {
+    docId: "7",
+    id: "7",
+    name: "TECNICO UNIVERSITARIO MEDIO",
+    code: "TUM",
+  },
+];
+
+const teachingCategories: TeachingCategory[] = [
+  {
+    docId: "1",
+    id: "1",
+    name: "CATEGRATICO",
+    code: "CAT",
+  },
+  {
+    docId: "2",
+    id: "2",
+    name: "ADJUNTO",
+    code: "ADJ",
+  },
+  {
+    docId: "3",
+    id: "3",
+    name: "EXTRAORDINARIO",
+    code: "EXT",
+  },
+  {
+    docId: "4",
+    id: "4",
+    name: "INVITADO",
+    code: "INV",
+  },
+  {
+    docId: "5",
+    id: "5",
+    name: "ASISTENTE",
+    code: "ASIS",
+  },
+  {
+    docId: "6",
+    id: "6",
+    name: "ASISTENTE A.I.",
+    code: "ASIS.A.I.",
+  },
+  {
+    docId: "7",
+    id: "7",
+    name: "CONSULTOR",
+    code: "CONS",
+  },
+];
+
 const academicLevels: AcademicLevel[] = [
   {
     docId: "1",
@@ -1491,22 +1610,34 @@ export async function seedFormFields() {
           id: "6",
           name: "carga_horaria",
           label: "Carga Horaria",
-          type: "number",
-          required: true,
+          type: "select",
+          required: false,
+          options: workloads.map((workload) => ({
+            value: workload.id,
+            label: workload.name,
+          })),
         },
         {
           id: "7",
           name: "categoria",
           label: "Categoría",
-          type: "text",
-          required: true,
+          type: "select",
+          required: false,
+          options: teachingCategories.map((category) => ({
+            value: category.id,
+            label: category.name,
+          })),
         },
         {
           id: "8",
           name: "nivel_academico",
           label: "Nivel académico alcanzado",
-          type: "text",
+          type: "select",
           required: true,
+          options: teachingAcademicLevels.map((level) => ({
+            value: level.id,
+            label: level.name,
+          })),
         },
         {
           id: "9",
@@ -1696,56 +1827,28 @@ export async function seedFormFields() {
   ];
 
   try {
-    const batchPromisesStudents = studentFormTemplates.map((item) =>
-      // Al usar doc(db, collection, ID) garantizamos que no se creen duplicados si corres el seed varias veces
-      setDoc(doc(db, "form_templates", item.id), {
-        ...item,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }),
-    );
-
-    const batchPromisesGraduates = graduateFormTemplates.map((item) =>
-      // Al usar doc(db, collection, ID) garantizamos que no se creen duplicados si corres el seed varias veces
-      setDoc(doc(db, "form_templates", item.id), {
-        ...item,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }),
-    );
-
-    const batchPromisesTeachers = teacherFormTemplates.map((item) =>
-      // Al usar doc(db, collection, ID) garantizamos que no se creen duplicados si corres el seed varias veces
-      setDoc(doc(db, "form_templates", item.id), {
-        ...item,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }),
-    );
-
-    const batchPromisesScholarships = scholarshipFormTemplates.map((item) =>
-      // Al usar doc(db, collection, ID) garantizamos que no se creen duplicados si corres el seed varias veces
-      setDoc(doc(db, "form_templates", item.id), {
-        ...item,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }),
-    );
-
-    const templates = [
+    // 1. Unimos todos los templates en un solo arreglo gigante
+    const allTemplates = [
       ...studentFormTemplates,
       ...graduateFormTemplates,
       ...teacherFormTemplates,
       ...scholarshipFormTemplates,
     ];
 
-    await Promise.all([
-      batchPromisesStudents,
-      batchPromisesGraduates,
-      batchPromisesTeachers,
-      batchPromisesScholarships,
-    ]);
-    console.log(`✅ ${templates.length} Form Templates sembrados exitosamente`);
+    // 2. Creamos todas las promesas de Firebase de una sola vez
+    const uploadPromises = allTemplates.map((item) =>
+      setDoc(doc(db, "form_templates", item.id), {
+        ...item,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }),
+    );
+
+    // 3. Ahora sí, esperamos a que TODAS las promesas (que ya están en un solo array plano) terminen
+    await Promise.all(uploadPromises);
+    console.log(
+      `✅ ${allTemplates.length} Form Templates sembrados exitosamente`,
+    );
   } catch (error) {
     console.error("❌ Error al sembrar los Form Templates:", error);
   }
@@ -1872,6 +1975,50 @@ export async function seedGraduationModalities() {
   }
 }
 
+export async function seedTeachingCategories() {
+  try {
+    for (const item of teachingCategories) {
+      await setDoc(doc(db, "teachingCategories", item.id), {
+        ...item,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    }
+    console.log("✅ Categorías de docencia sembradas exitosamente");
+  } catch (error) {
+    console.error("❌ Error al sembrar categorías de docencia:", error);
+  }
+}
+export async function seedWorkloads() {
+  try {
+    for (const item of workloads) {
+      await setDoc(doc(db, "workloads", item.id), {
+        ...item,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    }
+    console.log("✅ Categorías de docencia sembradas exitosamente");
+  } catch (error) {
+    console.error("❌ Error al sembrar categorías de docencia:", error);
+  }
+}
+
+export async function seedTeachingAcademicLevels() {
+  try {
+    for (const item of teachingAcademicLevels) {
+      await setDoc(doc(db, "teachingAcademicLevels", item.id), {
+        ...item,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+    }
+    console.log("✅ Categorías de docencia sembradas exitosamente");
+  } catch (error) {
+    console.error("❌ Error al sembrar categorías de docencia:", error);
+  }
+}
+
 export async function runSeed() {
   console.log("🌱 Iniciando la siembra de datos en Firestore...");
 
@@ -1880,6 +2027,10 @@ export async function runSeed() {
     await seedGraduationModalities();
     await seedFaculties();
     await seedPrograms();
+    await seedAcademicLevels();
+    await seedTeachingCategories();
+    await seedWorkloads();
+    await seedTeachingAcademicLevels();
     await seedScholarshipsTypes();
     await seedFormFields();
 
