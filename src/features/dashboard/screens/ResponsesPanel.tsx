@@ -17,15 +17,14 @@ interface ResponsePanelProps {
 }
 
 export function ResponsesPanel({ formId, module }: ResponsePanelProps) {
+    // 1. HOOK ZONE
     const { isAuthenticated } = useProtectedRoute();
-
-    // formId IS the templateId — look it up directly from the templates cache
     const { template } = useFormTemplateById(formId);
-
     const { data: responses = [], isLoading: isLoadingResponses } = useGetResponses(
         module as FormModules,
         formId
     );
+
     const columns = useMemo<ColumnDef<FormResponseDef, any>[]>(() => {
         if (!template) return [];
 
@@ -62,9 +61,18 @@ export function ResponsesPanel({ formId, module }: ResponsePanelProps) {
         return [...baseColumns, ...dynamicColumns];
     }, [template]);
 
+    // 2. FUNCTIONS AND LOGIC
 
-    if (!isAuthenticated || !template) return <div className="p-8"><Loader2 className="animate-spin text-primary mx-auto" /></div>;
+    // 3. EARLY RETURNS
+    if (!isAuthenticated || !template) {
+        return (
+            <div className="p-8">
+                <Loader2 className="animate-spin text-primary mx-auto" />
+            </div>
+        );
+    }
 
+    // 4. MAIN RENDER
     return (
         <div className="container mx-auto py-8 font-body space-y-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">

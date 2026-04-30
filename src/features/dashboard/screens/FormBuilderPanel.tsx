@@ -26,6 +26,7 @@ import { FieldEditor } from '#/features/dynamic-form/components/FieldEditor';
 import { useToast } from '#/shared/components/Toast';
 
 export default function FormBuilderPanel() {
+    // 1. HOOK ZONE
     const { isLoading, isAuthenticated } = useProtectedRoute();
     const { data: templates = [], isPending, isError, error } = useFormTemplates();
     const { mutateAsync: upsertTemplate, isPending: isPendingUpsertTemplate } = useUpsertFormTemplate();
@@ -45,18 +46,7 @@ export default function FormBuilderPanel() {
 
     const previewTemplate = useMemo(() => normalizeTemplate(draft), [draft]);
 
-    if (isLoading || isPending) return <BuilderSkeleton />;
-    if (!isAuthenticated) return null;
-
-    if (isError) {
-        return (
-            <StatePanel
-                title="No se pudo cargar el builder"
-                description={error instanceof Error ? error.message : 'No fue posible leer las plantillas desde Firestore.'}
-            />
-        );
-    }
-
+    // 2. FUNCTIONS AND LOGIC
     const handleSave = async () => {
         const cleaned = normalizeTemplate(draft);
 
@@ -208,6 +198,20 @@ export default function FormBuilderPanel() {
         });
     };
 
+    // 3. EARLY RETURNS
+    if (isLoading || isPending) return <BuilderSkeleton />;
+    if (!isAuthenticated) return null;
+
+    if (isError) {
+        return (
+            <StatePanel
+                title="No se pudo cargar el builder"
+                description={error instanceof Error ? error.message : 'No fue posible leer las plantillas desde Firestore.'}
+            />
+        );
+    }
+
+    // 4. MAIN RENDER
     return (
         <div className="container mx-auto py-8">
             <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -409,6 +413,15 @@ export default function FormBuilderPanel() {
                                     </Select>
                                 </div>
 
+                                <div className="space-y-2">
+                                    <Label>Step</Label>
+                                    <Input
+                                        type="number"
+                                        value={draft.step}
+                                        onChange={(event) => updateTemplate({ step: Number(event.target.value) })}
+                                    />
+                                </div>
+
                                 <div className="flex items-center justify-between rounded-lg border border-border px-3 py-2">
                                     <div>
                                         <p className="text-sm font-medium">Activo</p>
@@ -427,6 +440,3 @@ export default function FormBuilderPanel() {
         </div>
     );
 }
-
-
-

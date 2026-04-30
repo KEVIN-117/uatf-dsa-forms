@@ -23,6 +23,7 @@ type FacultyFormData = Omit<Faculty, "docId">
 const emptyForm: FacultyFormData = { id: "", name: "", code: "" }
 
 export function FacultiesCrud() {
+    // 1. HOOK ZONE
     const { isLoading: authLoading, isAuthenticated } = useProtectedRoute()
     const { data: faculties = [], isLoading } = useFaculties()
     const addMutation = useAddFaculty()
@@ -33,6 +34,7 @@ export function FacultiesCrud() {
     const [editingItem, setEditingItem] = useState<Faculty | null>(null)
     const [form, setForm] = useState<FacultyFormData>(emptyForm)
 
+    // 2. FUNCTIONS AND LOGIC
     const openCreateSheet = () => {
         setEditingItem(null)
         setForm(emptyForm)
@@ -148,11 +150,13 @@ export function FacultiesCrud() {
         },
     ]
 
+    // 3. EARLY RETURNS
     if (authLoading) {
         return <div className="flex h-full items-center justify-center">Verificando sesión...</div>
     }
     if (!isAuthenticated) return null
 
+    // 4. MAIN RENDER
     return (
         <div className="p-6 space-y-6">
             <Card>

@@ -10,9 +10,11 @@ export const Route = createFileRoute('/demo/$formId')({
 });
 
 function DynamicReportPage() {
+  // 1. HOOK ZONE
   const { formId } = Route.useParams();
   const { template, isPending, isError, error } = useFormTemplateById(formId);
 
+  // 2. FUNCTIONS AND LOGIC
   const handleFormSubmit = async (
     data: Record<string, unknown>,
     module: string,
@@ -30,6 +32,7 @@ function DynamicReportPage() {
     }
   };
 
+  // 3. EARLY RETURNS
   if (isPending) {
     return <DynamicReportPageSkeleton />;
   }
@@ -51,6 +54,7 @@ function DynamicReportPage() {
     throw notFound();
   }
 
+  // 4. MAIN RENDER
   return (
     <div className="container max-w-3xl mx-auto py-10">
       <div className="mb-8">

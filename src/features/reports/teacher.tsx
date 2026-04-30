@@ -1,5 +1,5 @@
 import { DynamicForm } from "#/shared/components/DynamicForm";
-import { notFound } from '@tanstack/react-router';
+import { notFound, useNavigate } from '@tanstack/react-router';
 import { DynamicReportPageSkeleton } from "#/shared/components/DynamicReportPageSkeleton";
 import { DynamicReportPageState } from "#/shared/components/DynamicReportPageState";
 import { useFormTemplateByModuleAndId } from "#/shared/hooks/useFormBuilder";
@@ -9,6 +9,8 @@ import { useDirectorProfile } from "../director-profile/providers/DirectorProfil
 import { useState } from "react";
 import { AlertDialogCustom } from "#/shared/components/Dialog";
 import { useToast } from "#/shared/components/Toast";
+import { useGetNextTemplateUrl } from "#/shared/hooks/useNextFormRoute";
+import { useMarkStepCompleted } from "#/shared/hooks/useDirectorProgress";
 
 interface TeacherReportProps {
     formId: string;
@@ -16,9 +18,11 @@ interface TeacherReportProps {
 
 export function TeacherReport({ formId }: TeacherReportProps) {
     const { template, isPending, isError, error } = useFormTemplateByModuleAndId('teacher', formId);
-
     const { mutateAsync } = useSubmitFormResponse();
+    const { mutateAsync: markStepCompleted } = useMarkStepCompleted();
     const { profile } = useDirectorProfile();
+    const navigate = useNavigate();
+    const nextUrl = useGetNextTemplateUrl(formId);
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [pendingData, setPendingData] = useState<{ data: Record<string, unknown>, module: string } | null>(null);
@@ -53,6 +57,7 @@ export function TeacherReport({ formId }: TeacherReportProps) {
                 createdAt: Date.now(),
                 response: tranformedData,
             });
+            await markStepCompleted(template.step);
 
             useToast({
                 title: "Reporte guardado exitosamente",
@@ -62,6 +67,16 @@ export function TeacherReport({ formId }: TeacherReportProps) {
                 message: `El reporte ha sido guardado correctamente. ${profile?.fullName}`,
             });
             setPendingData(null);
+            if (nextUrl) {
+                navigate({ to: nextUrl, replace: true });
+            } else {
+                useToast({
+                    title: "¡Proceso Completado!",
+                    type: "success",
+                    message: "Has finalizado todos los formularios requeridos.",
+                });
+                navigate({ to: '/formStatus/success', replace: true });
+            }
         } catch (error: unknown) {
             useToast({
                 title: "Error",

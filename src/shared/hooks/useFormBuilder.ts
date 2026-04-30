@@ -17,7 +17,7 @@ import type { FormTemplateDef } from "../types/dynamic-form";
 const formTemplatesQueryKey = ["formTemplates"] as const;
 
 const createFormTemplatesQuery = () =>
-  query(collection(db, "form_templates"), orderBy("id", "asc"));
+  query(collection(db, "form_templates"), orderBy("step", "asc"));
 
 export const useFormTemplates = () => {
   const queryClient = useQueryClient();
@@ -134,4 +134,16 @@ export const useFormTemplateByModuleAndId = (module: string, id: string) => {
     ...templatesQuery,
     template,
   };
+};
+
+export const useGetNextTemplate = (module: string, id: string) => {
+  const { data: templates } = useFormTemplates();
+  const { template: currentTemplate } = useFormTemplateByModuleAndId(
+    module,
+    id,
+  );
+  const nextTemplate = templates?.find(
+    (t) => t.step === (currentTemplate?.step || 0) + 1,
+  );
+  return nextTemplate;
 };

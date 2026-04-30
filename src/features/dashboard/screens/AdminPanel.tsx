@@ -31,13 +31,18 @@ const adminLinks = [
 ]
 
 export function AdminPanel() {
+    // 1. HOOK ZONE
     const { isLoading, isAuthenticated } = useProtectedRoute()
 
+    // 2. FUNCTIONS AND LOGIC
+
+    // 3. EARLY RETURNS
     if (isLoading) {
         return <div className="flex h-full items-center justify-center">Verificando sesión...</div>
     }
     if (!isAuthenticated) return null
 
+    // 4. MAIN RENDER
     return (
         <div className="p-6 space-y-6">
             <div>

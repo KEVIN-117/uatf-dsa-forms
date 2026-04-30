@@ -43,16 +43,18 @@ export type IconSvgObject =
       },
     ])[];
 
-export type MenuItem = {
+export interface MenuItem {
   id: string;
   name: string;
-  icon: IconSvgObject;
+  icon: any;
   href: string;
-};
+  isLocked: boolean;
+  isCompleted: boolean;
+}
 
-export type MenuItemGroup = {
+export interface MenuItemGroup {
   id: string;
   name: string;
-  icon: IconSvgObject;
+  icon: any;
   children: MenuItem[];
-};
+}

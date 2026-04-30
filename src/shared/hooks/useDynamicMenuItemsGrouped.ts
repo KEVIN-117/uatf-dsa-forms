@@ -13,20 +13,9 @@ import {
   TeachingFreeIcons,
 } from "@hugeicons/core-free-icons";
 import { useAllResponses } from "./useFormResponses";
-
-export interface MenuItem {
-  id: string;
-  name: string;
-  icon: any;
-  href: string;
-}
-
-export interface MenuItemGroup {
-  id: string;
-  name: string;
-  icon: any;
-  children: MenuItem[];
-}
+import { useDirectorProgress } from "./useDirectorProgress";
+import { CheckCircle2, Lock } from "lucide-react";
+import type { MenuItem, MenuItemGroup } from "#/shared/types";
 
 const MODULE_CONFIG: Record<
   FormModules,
@@ -56,9 +45,23 @@ const MODULE_CONFIG: Record<
 
 export const useDynamicMenuItemsGrouped = (): MenuItemGroup[] => {
   const templatesQuery = useFormTemplates();
+  const progressQuery = useDirectorProgress();
 
   const menuGroups = useMemo(() => {
     if (!templatesQuery.data) return [];
+
+    const completedSteps = progressQuery.data?.completedSteps || [];
+    const allSortedTemplates = [...templatesQuery.data].sort(
+      (a, b) => a.step - b.step,
+    );
+
+    const nextaAvailableTemplate = allSortedTemplates.find(
+      (t) => !completedSteps.includes(t.step),
+    );
+
+    const currentActiveStep = nextaAvailableTemplate
+      ? nextaAvailableTemplate.step
+      : Infinity;
 
     const groupedData = templatesQuery.data.reduce(
       (acc, template) => {
@@ -76,12 +79,25 @@ export const useDynamicMenuItemsGrouped = (): MenuItemGroup[] => {
       ([moduleKey, templates]) => {
         const moduleEnum = moduleKey as FormModules;
         const config = MODULE_CONFIG[moduleEnum];
-        const childrenItems: MenuItem[] = templates.map((template) => ({
-          id: template.id,
-          name: template.title.replace(/_/g, " "),
-          icon: Quiz03Icon,
-          href: `/${config.path}/${template.id}`,
-        }));
+        const childrenItems: MenuItem[] = templates
+          .sort((a, b) => a.step - b.step)
+          .map((template) => {
+            const isCompleted = completedSteps.includes(template.step);
+            const isLocked = !isCompleted && template.step > currentActiveStep;
+            let statusIcon = CheckCircle2;
+            if (isLocked) {
+              statusIcon = Lock;
+            }
+
+            return {
+              id: template.id,
+              name: template.title.replace(/_/g, " "),
+              icon: statusIcon,
+              href: isLocked ? "#" : `/${config.path}/${template.id}`,
+              isLocked,
+              isCompleted,
+            };
+          });
 
         return {
           id: config.path,
@@ -93,7 +109,7 @@ export const useDynamicMenuItemsGrouped = (): MenuItemGroup[] => {
     );
 
     return menuArray;
-  }, [templatesQuery.data]);
+  }, [templatesQuery.data, progressQuery.data]);
 
   return menuGroups;
 };
@@ -136,6 +152,8 @@ export const useDynamicResultsMenuItemsGrouped = (): MenuItemGroup[] => {
               ?.title ?? "sin titulo",
           icon: Quiz03Icon,
           href: `/dashboard/reports/${response.templateId}/${moduleEnum}`,
+          isLocked: false,
+          isCompleted: true,
         }));
 
         return {

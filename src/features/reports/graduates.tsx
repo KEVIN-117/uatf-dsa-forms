@@ -1,5 +1,5 @@
 import { DynamicForm } from "#/shared/components/DynamicForm";
-import { notFound } from '@tanstack/react-router';
+import { notFound, useNavigate } from '@tanstack/react-router';
 import { DynamicReportPageSkeleton } from "#/shared/components/DynamicReportPageSkeleton";
 import { DynamicReportPageState } from "#/shared/components/DynamicReportPageState";
 import { useFormTemplateByModuleAndId } from "#/shared/hooks/useFormBuilder";
@@ -9,19 +9,26 @@ import type { FormModules } from "#/shared/types/dynamic-form";
 import { useToast } from "#/shared/components/Toast";
 import { AlertDialogCustom } from "#/shared/components/Dialog";
 import { useState } from "react";
+import { useGetNextTemplateUrl } from "#/shared/hooks/useNextFormRoute";
+import { useMarkStepCompleted } from "#/shared/hooks/useDirectorProgress";
 
 interface GraduatesReportProps {
     formId: string;
 }
 
 export function GraduatesReport({ formId }: GraduatesReportProps) {
+    // 1. HOOK ZONE
     const { template, isPending, isError, error } = useFormTemplateByModuleAndId('graduate', formId);
     const { mutateAsync } = useSubmitFormResponse();
+    const { mutateAsync: markStepCompleted } = useMarkStepCompleted();
     const { profile } = useDirectorProfile();
+    const navigate = useNavigate()
+    const nextUrl = useGetNextTemplateUrl(formId);
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [pendingData, setPendingData] = useState<{ data: Record<string, unknown>, module: string } | null>(null);
 
+    // 2. FUNCTIONS AND LOGIC
     const handleFormSubmitRequest = async (data: Record<string, unknown>, module: string) => {
         setPendingData({ data, module });
         setIsDialogOpen(true);
@@ -53,6 +60,8 @@ export function GraduatesReport({ formId }: GraduatesReportProps) {
                 createdAt: Date.now(),
                 response: tranformedData,
             });
+            await markStepCompleted(template.step);
+
 
             useToast({
                 title: "Reporte guardado exitosamente",
@@ -63,6 +72,16 @@ export function GraduatesReport({ formId }: GraduatesReportProps) {
             });
 
             setPendingData(null);
+            if (nextUrl) {
+                navigate({ to: nextUrl, replace: true });
+            } else {
+                useToast({
+                    title: "¡Proceso Completado!",
+                    type: "success",
+                    message: "Has finalizado todos los formularios requeridos.",
+                });
+                navigate({ to: '/formStatus/success', replace: true });
+            }
         } catch (error: unknown) {
             useToast({
                 title: "Error",
@@ -75,6 +94,7 @@ export function GraduatesReport({ formId }: GraduatesReportProps) {
         }
     };
 
+    // 3. EARLY RETURNS
     if (isPending) {
         return <DynamicReportPageSkeleton />;
     }
@@ -96,6 +116,7 @@ export function GraduatesReport({ formId }: GraduatesReportProps) {
         throw notFound();
     }
 
+    // 4. MAIN RENDER
     return (
         <div className="w-full max-w-6xl mx-auto py-10">
             <div className="mb-8">

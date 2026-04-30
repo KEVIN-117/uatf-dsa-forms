@@ -25,6 +25,7 @@ type ProgramFormData = Omit<Program, "docId">
 const emptyForm: ProgramFormData = { id: "", name: "", code: "", facultyId: "", campusId: "1", level: "LIC" }
 
 export function ProgramsCrud() {
+    // 1. HOOK ZONE
     const { isLoading: authLoading, isAuthenticated } = useProtectedRoute()
     const { data: programs = [], isLoading } = usePrograms()
     const { data: faculties = [] } = useFaculties()
@@ -36,6 +37,7 @@ export function ProgramsCrud() {
     const [editingItem, setEditingItem] = useState<Program | null>(null)
     const [form, setForm] = useState<ProgramFormData>(emptyForm)
 
+    // 2. FUNCTIONS AND LOGIC
     const openCreateSheet = () => {
         setEditingItem(null)
         setForm(emptyForm)
@@ -176,11 +178,13 @@ export function ProgramsCrud() {
         },
     ]
 
+    // 3. EARLY RETURNS
     if (authLoading) {
         return <div className="flex h-full items-center justify-center">Verificando sesión...</div>
     }
     if (!isAuthenticated) return null
 
+    // 4. MAIN RENDER
     return (
         <div className="p-6 space-y-6">
             <Card>

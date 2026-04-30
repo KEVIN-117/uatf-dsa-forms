@@ -1260,11 +1260,11 @@ export async function seedFormFields() {
   const studentFormTemplates: FormTemplateDef[] = [
     {
       id: "1",
-      title: "Numero de postulantes por modalidad y sexo",
-      description:
-        "Este es el formulario de numero de postulantes por modalidad y sexo",
+      title: "Postulantes",
+      description: "Número de postulantes por modalidad y sexo",
       module: FormModules.student,
       isActive: true,
+      step: 1,
       fields: [
         {
           id: "1",
@@ -1302,11 +1302,11 @@ export async function seedFormFields() {
     },
     {
       id: "2",
-      title: "Número de postulantes admitidos por modalidad y sexo",
-      description:
-        "Este es el formulario de número de postulantes admitidos por modalidad y sexo",
+      title: "Postulantes admitidos",
+      description: "Número de postulantes admitidos por modalidad y sexo",
       module: FormModules.student,
       isActive: true,
+      step: 2,
       fields: [
         {
           id: "1",
@@ -1344,10 +1344,11 @@ export async function seedFormFields() {
     },
     {
       id: "3",
-      title: "Matrícula estudiantil por sexo",
-      description: "Este es el formulario de matrícula estudiantil por sexo",
+      title: "Matrícula",
+      description: "Matrícula estudiantil por sexo",
       module: FormModules.student,
       isActive: true,
+      step: 3,
       fields: [
         {
           id: "1",
@@ -1374,11 +1375,11 @@ export async function seedFormFields() {
     },
     {
       id: "4",
-      title: "Matricula estudiantes nuevos por sexo",
-      description:
-        "Este es el formulario de matricula estudiantes nuevos por sexo",
+      title: "Matricula nuevos",
+      description: "Matricula estudiantes nuevos por sexo",
       module: FormModules.student,
       isActive: true,
+      step: 4,
       fields: [
         {
           id: "1",
@@ -1405,11 +1406,11 @@ export async function seedFormFields() {
     },
     {
       id: "5",
-      title: "Número de estudiantes programados por sexo",
-      description:
-        "Este es el formulario de número de estudiantes programados por sexo",
+      title: "Estudiantes programados",
+      description: "Número de estudiantes programados por sexo",
       module: FormModules.student,
       isActive: true,
+      step: 5,
       fields: [
         {
           id: "1",
@@ -1436,12 +1437,12 @@ export async function seedFormFields() {
     },
     {
       id: "6",
-      title:
-        "Número de estudiantes aprobados, reprobados y abandonos de materias",
+      title: "Evaluacion Quantitativa",
       description:
-        "Este es el formulario de número de estudiantes aprobados, reprobados y abandonos de materias",
+        "Número de estudiantes aprobados, reprobados y abandonos de materias",
       module: FormModules.student,
       isActive: true,
+      step: 6,
       fields: [
         {
           id: "1",
@@ -1478,11 +1479,11 @@ export async function seedFormFields() {
   const graduateFormTemplates: FormTemplateDef[] = [
     {
       id: "7",
-      title: "Número de graduados por modalidad y sexo",
-      description:
-        "Este es el formulario de número de graduados por modalidad y sexo",
+      title: "Graduados",
+      description: "Numero de graduados por modalidad y sexo",
       module: FormModules.graduate,
       isActive: true,
+      step: 7,
       fields: [
         {
           id: "1",
@@ -1520,11 +1521,11 @@ export async function seedFormFields() {
     },
     {
       id: "8",
-      title: "Número de graduados por nivel académico y sexo",
-      description:
-        "Este es el formulario de número de graduados por nivel académico y sexo",
+      title: "Graduados nivel académico",
+      description: "Numero de graduados por nivel académico y sexo",
       module: FormModules.graduate,
       isActive: true,
+      step: 8,
       fields: [
         {
           id: "1",
@@ -1565,11 +1566,11 @@ export async function seedFormFields() {
   const teacherFormTemplates: FormTemplateDef[] = [
     {
       id: "9",
-      title: "Número de docentes por nivel académico",
-      description:
-        "Este es el formulario de número de docentes por nivel académico",
+      title: "Docentes",
+      description: "Numero de docentes por nivel académico",
       module: FormModules.teacher,
       isActive: true,
+      step: 9,
       fields: [
         {
           id: "1",
@@ -1653,11 +1654,11 @@ export async function seedFormFields() {
   const scholarshipFormTemplates: FormTemplateDef[] = [
     {
       id: "10",
-      title: "Número de beca alimentacion por tipo y sexo",
-      description:
-        "Este es el formulario de número de beca alimentacion por tipo y sexo",
+      title: "Beca Alimentacion",
+      description: "Numero de beca alimentacion por tipo y sexo",
       module: FormModules.scholarships,
       isActive: true,
+      step: 10,
       fields: [
         {
           id: "1",
@@ -1695,10 +1696,11 @@ export async function seedFormFields() {
     },
     {
       id: "11",
-      title: "Número de auxiliares de docencia (Titulares y Invitados)",
-      description: "Este es el formulario de número de auxiliares de docencia",
+      title: "Auxiliares de docencia",
+      description: "Numero de auxiliares de docencia por tipo y sexo",
       module: FormModules.scholarships,
       isActive: true,
+      step: 11,
       fields: [
         {
           id: "1",
@@ -1736,10 +1738,11 @@ export async function seedFormFields() {
     },
     {
       id: "12",
-      title: "Número de beca investigación",
-      description: "Este es el formulario de número beca investigación",
+      title: "Beca Investigación",
+      description: "Numero de beca investigacion por tipo y sexo",
       module: FormModules.scholarships,
       isActive: true,
+      step: 12,
       fields: [
         {
           id: "1",
@@ -1766,10 +1769,11 @@ export async function seedFormFields() {
     },
     {
       id: "13",
-      title: "Número de beca graduación",
-      description: "Este es el formulario de número beca graduación",
+      title: "Beca Graduacion",
+      description: "Numero de beca graduacion por tipo y sexo",
       module: FormModules.scholarships,
       isActive: true,
+      step: 13,
       fields: [
         {
           id: "1",
@@ -1796,10 +1800,11 @@ export async function seedFormFields() {
     },
     {
       id: "14",
-      title: "Número de beca trabajo",
-      description: "Este es el formulario de número beca trabajo",
+      title: "Beca Trabajo",
+      description: "Numero de beca trabajo por tipo y sexo",
       module: FormModules.scholarships,
       isActive: true,
+      step: 14,
       fields: [
         {
           id: "1",
@@ -2081,7 +2086,7 @@ export async function runSeed() {
     await seedTeachingAcademicLevels();
     await seedScholarshipsTypes();
     await seedFormFields();
-    // await seedFormResponses();
+    await seedFormResponses();
 
     console.log("🎉 Proceso de siembra finalizado con éxito.");
     process.exit(0); // Detiene la ejecución del script limpiamente

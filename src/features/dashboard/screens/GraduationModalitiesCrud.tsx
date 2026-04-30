@@ -22,6 +22,7 @@ type GradFormData = Omit<GraduationModality, "docId">
 const emptyForm: GradFormData = { id: "", name: "", code: "" }
 
 export function GraduationModalitiesCrud() {
+    // 1. HOOK ZONE
     const { isLoading: authLoading, isAuthenticated } = useProtectedRoute()
     const { data: modalities = [], isLoading } = useGraduationModalities()
     const addMut = useAddGraduationModality()
@@ -32,6 +33,7 @@ export function GraduationModalitiesCrud() {
     const [editing, setEditing] = useState<GraduationModality | null>(null)
     const [form, setForm] = useState<GradFormData>(emptyForm)
 
+    // 2. FUNCTIONS AND LOGIC
     const openCreate = () => { setEditing(null); setForm(emptyForm); setSheetOpen(true) }
     const openEdit = (item: GraduationModality) => {
         setEditing(item)
@@ -115,9 +117,11 @@ export function GraduationModalitiesCrud() {
         },
     ]
 
+    // 3. EARLY RETURNS
     if (authLoading) return <div className="flex h-full items-center justify-center">Verificando sesión...</div>
     if (!isAuthenticated) return null
 
+    // 4. MAIN RENDER
     return (
         <div className="p-6 space-y-6">
             <Card>

@@ -22,6 +22,7 @@ type ModalityFormData = Omit<Modality, "docId">
 const emptyForm: ModalityFormData = { id: "", modality: "", code: "" }
 
 export function ModalitiesCrud() {
+    // 1. HOOK ZONE
     const { isLoading: authLoading, isAuthenticated } = useProtectedRoute()
     const { data: modalities = [], isLoading } = useModalities()
     const addMut = useAddModality()
@@ -32,6 +33,7 @@ export function ModalitiesCrud() {
     const [editing, setEditing] = useState<Modality | null>(null)
     const [form, setForm] = useState<ModalityFormData>(emptyForm)
 
+    // 2. FUNCTIONS AND LOGIC
     const openCreate = () => { setEditing(null); setForm(emptyForm); setSheetOpen(true) }
     const openEdit = (item: Modality) => {
         setEditing(item)
@@ -115,9 +117,11 @@ export function ModalitiesCrud() {
         },
     ]
 
+    // 3. EARLY RETURNS
     if (authLoading) return <div className="flex h-full items-center justify-center">Verificando sesión...</div>
     if (!isAuthenticated) return null
 
+    // 4. MAIN RENDER
     return (
         <div className="p-6 space-y-6">
             <Card>

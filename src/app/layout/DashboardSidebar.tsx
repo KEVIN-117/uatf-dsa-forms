@@ -131,22 +131,43 @@ export function DashboardSidebar({
     function renderMenuItem(item: MenuItem, level: number = 0) {
         const paddingLeft = level * 12;
         const Icon = item.icon;
+        const isLocked = item.isLocked;
+        const isCompleted = item.isCompleted;
+
+        const disabledClasses = isLocked
+            ? "opacity-50 pointer-events-none grayscale cursor-not-allowed"
+            : "hover:bg-accent hover:text-accent-foreground";
+
+        const completedClasses = isCompleted
+            ? "text-emerald-600 dark:text-emerald-400 font-medium"
+            : "text-foreground";
+
 
         return (
             <SidebarMenuItem key={item.id}>
                 <SidebarMenuButton
                     asChild
-                    className="h-fit text-sm"
-                    style={{ paddingLeft: `${8 + paddingLeft}px` }}
+                    className={`h-fit text-sm transition-all ${disabledClasses} ${completedClasses}`} style={{ paddingLeft: `${8 + paddingLeft}px` }}
                 >
-                    <Link to={item.href}>
+                    <Link to={item.href} disabled={isLocked}>
                         <Tooltip>
-                            <TooltipTrigger className="flex items-center gap-2">
-                                <HugeiconsIcon icon={Icon} className="size-3.5" />
+                            <TooltipTrigger className="flex items-center gap-2 w-full text-left">
+                                {Icon && typeof Icon === 'object' && '$$typeof' in Icon ? (
+                                    /* Si es un componente de React (Lucide), lo renderizamos directamente */
+                                    <Icon className={`size-3.5 shrink-0 ${isCompleted ? 'text-emerald-500' : 'text-muted-foreground'}`} />
+                                ) : (
+                                    /* Si es data cruda (Hugeicons), usamos su wrapper */
+                                    <HugeiconsIcon icon={Icon} className={`size-3.5 shrink-0 ${isCompleted ? 'text-emerald-500' : 'text-muted-foreground'}`} />
+                                )}
                                 <span className="flex-1 text-sm truncate max-w-40">{item.name}</span>
+                                {isCompleted && (
+                                    <span className="text-[9px] uppercase tracking-wider font-bold bg-emerald-500/10 text-emerald-600 px-1.5 py-0.5 rounded-sm ml-auto shrink-0">
+                                        Listo
+                                    </span>
+                                )}
                             </TooltipTrigger>
                             <TooltipContent side="right">
-                                <p>{item.name}</p>
+                                <p>{item.name} {isLocked ? '(Bloqueado)' : ''}</p>
                             </TooltipContent>
                         </Tooltip>
                     </Link>

@@ -35,11 +35,10 @@ const fuzzySort: SortingFn<any> = (rowA, rowB, columnId) => {
 }
 
 export function TablePanel() {
+    // 1. HOOK ZONE
     const { isLoading, isAuthenticated } = useProtectedRoute();
-    const rerender = React.useReducer(() => ({}), {})[1]
     const [data, setData] = React.useState<Person[]>(() => makeData(5_000))
-
-    const refreshData = () => setData((_old) => makeData(50_000))
+    const [, rerender] = React.useReducer((s) => s + 1, 0)
 
     const columns = React.useMemo<ColumnDef<Person, any>[]>(
         () => [
@@ -73,11 +72,21 @@ export function TablePanel() {
         []
     )
 
+    // 2. FUNCTIONS AND LOGIC
+    const refreshData = () => setData((_old) => makeData(50_000))
 
+    // 3. EARLY RETURNS
+    if (isLoading) {
+        return (
+            <div className="flex h-full items-center justify-center text-muted-foreground font-body">
+                Verificando sesión...
+            </div>
+        );
+    }
 
-    if (isLoading) return <div className="flex h-full items-center justify-center text-muted-foreground font-body">Verificando sesión...</div>;
     if (!isAuthenticated) return null;
 
+    // 4. MAIN RENDER
     return (
         <div className="container mx-auto py-8 font-body space-y-6">
             {/* Cabecera Principal */}

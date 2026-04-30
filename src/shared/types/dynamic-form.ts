@@ -28,6 +28,7 @@ export interface FormTemplateDef {
   title: string;
   description?: string;
   module: FormModules;
+  step: number;
   isActive: boolean;
   fields: FormFieldDef[];
 }
@@ -39,4 +40,9 @@ export interface FormResponseDef {
   submittedBy: string;
   createdAt: number; //unix timestamp
   response: Record<string, any>;
+}
+
+export interface DirectorProgressDef {
+  completedSteps: number[];
+  updatedAt: number;
 }
