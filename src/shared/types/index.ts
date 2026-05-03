@@ -58,3 +58,22 @@ export interface MenuItemGroup {
   icon: any;
   children: MenuItem[];
 }
+
+export enum Role {
+  ADMIN = "administrator",
+  DIRECTOR = "director",
+}
+
+export interface User {
+  docId?: string;
+  ci: number;
+  createdAt: number;
+  email: string;
+  facultyId: string;
+  maternalSurname: string;
+  name: string;
+  paternalSurname: string;
+  programId: string;
+  role: Role;
+  updatedAt: number;
+}

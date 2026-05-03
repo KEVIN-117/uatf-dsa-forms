@@ -1,19 +1,11 @@
 import { z } from "zod";
 
 export const directorProfileFormSchema = z.object({
-  fullName: z
+  ci: z
     .string()
     .trim()
-    .min(1, "El nombre es obligatorio")
-    .max(150, "El nombre debe tener menos de 150 caracteres"),
-  facultyId: z
-    .string()
-    .trim()
-    .min(1, "La facultad es obligatoria"),
-  programId: z
-    .string()
-    .trim()
-    .min(1, "La carrera es obligatoria"),
+    .min(1, "El CI es obligatorio")
+    .max(150, "El CI debe tener menos de 150 caracteres"),
 });
 
 export const directorProfileSchema = directorProfileFormSchema.extend({
@@ -22,5 +14,7 @@ export const directorProfileSchema = directorProfileFormSchema.extend({
   savedAt: z.string().min(1),
 });
 
-export type DirectorProfileFormValues = z.infer<typeof directorProfileFormSchema>;
+export type DirectorProfileFormValues = z.infer<
+  typeof directorProfileFormSchema
+>;
 export type DirectorProfile = z.infer<typeof directorProfileSchema>;

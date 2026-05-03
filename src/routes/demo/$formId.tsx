@@ -4,9 +4,12 @@ import { useFormTemplateById } from '#/shared/hooks/useFormBuilder';
 import { auth } from '#/shared/lib/firebase';
 import { DynamicReportPageSkeleton } from '#/shared/components/DynamicReportPageSkeleton';
 import { DynamicReportPageState } from '#/shared/components/DynamicReportPageState';
+import { RouteErrorState, RouteNotFoundState } from '#/shared/components/routing/RouteState';
 
 export const Route = createFileRoute('/demo/$formId')({
   component: DynamicReportPage,
+  notFoundComponent: () => <RouteNotFoundState scope="formularios demo" />,
+  errorComponent: ({ error }) => <RouteErrorState error={error} scope="formularios demo" />,
 });
 
 function DynamicReportPage() {

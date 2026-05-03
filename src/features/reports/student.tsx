@@ -1,16 +1,13 @@
 import { DynamicForm } from "#/shared/components/DynamicForm";
-import { notFound, useNavigate } from '@tanstack/react-router';
+import { notFound } from '@tanstack/react-router';
 import { DynamicReportPageSkeleton } from "#/shared/components/DynamicReportPageSkeleton";
 import { DynamicReportPageState } from "#/shared/components/DynamicReportPageState";
 import { useFormTemplateByModuleAndId } from "#/shared/hooks/useFormBuilder";
-import { useDirectorProfile } from "../director-profile/providers/DirectorProfileProvider";
-import { useSubmitFormResponse } from "#/shared/hooks/useFormResponses";
-import type { FormModules } from "#/shared/types/dynamic-form";
-import { useState } from "react";
 import { AlertDialogCustom } from "#/shared/components/Dialog";
-import { useToast } from "#/shared/components/Toast";
-import { useMarkStepCompleted } from "#/shared/hooks/useDirectorProgress";
-import { useGetNextTemplateUrl } from "#/shared/hooks/useNextFormRoute";
+import { useReportSubmission } from "./hooks/useReportSubmission";
+import { PageHeader } from "#/shared/components/PageHeader";
+
+import { User } from "lucide-react";
 
 
 interface StudentReportProps {
@@ -20,78 +17,8 @@ interface StudentReportProps {
 export function StudentReport({ formId }: StudentReportProps) {
     // 1. HOOK ZONE
     const { template, isPending, isError, error } = useFormTemplateByModuleAndId('student', formId);
-    const { mutateAsync } = useSubmitFormResponse();
-    const { mutateAsync: markStepCompleted } = useMarkStepCompleted();
-    const { profile } = useDirectorProfile();
-    const navigate = useNavigate()
-    const nextUrl = useGetNextTemplateUrl(formId);
 
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [pendingData, setPendingData] = useState<{ data: Record<string, unknown>, module: string } | null>(null);
-
-    // 2. FUNCTIONS AND LOGIC
-    const handleFormSubmitRequest = async (data: Record<string, unknown>, module: string) => {
-        setPendingData({ data, module });
-        setIsDialogOpen(true);
-    };
-
-    const executeSubmit = async () => {
-        if (!pendingData || !template || !profile) return;
-
-        const { data, module } = pendingData;
-        try {
-            const tranformedData = Object.entries(data).reduce((acc, [key, value]) => {
-                const [_id, name] = key.split('@');
-                acc[name] = value;
-                return acc;
-            }, {} as Record<string, unknown>);
-
-            if (!template) {
-                throw new Error('Template no encontrado');
-            }
-            if (!profile) {
-                throw new Error('Profile no encontrado');
-            }
-            await mutateAsync({
-                id: crypto.randomUUID(),
-                templateId: template?.id,
-                module: module as FormModules,
-                submittedBy: profile?.fullName,
-                createdAt: Date.now(),
-                response: tranformedData,
-            });
-
-            await markStepCompleted(template.step);
-
-            useToast({
-                title: "Reporte guardado exitosamente",
-                type: "success",
-                duration: 5000,
-                position: 'top-right',
-                message: `El reporte ha sido guardado correctamente. ${profile?.fullName}`,
-            });
-            setPendingData(null);
-            if (nextUrl) {
-                navigate({ to: nextUrl, replace: true });
-            } else {
-                useToast({
-                    title: "¡Proceso Completado!",
-                    type: "success",
-                    message: "Has finalizado todos los formularios requeridos.",
-                });
-                navigate({ to: '/formStatus/success', replace: true });
-            }
-        } catch (error: unknown) {
-            useToast({
-                title: "Error",
-                type: "error",
-                duration: 5000,
-                closeButton: true,
-                position: 'top-right',
-                message: error instanceof Error ? error.message : "Error desconocido",
-            });
-        }
-    };
+    const { handleFormSubmitRequest, isDialogOpen, setIsDialogOpen, confirmSubmit, cancelSubmit } = useReportSubmission(formId, template);
 
     // 3. EARLY RETURNS
     if (isPending) {
@@ -117,7 +44,7 @@ export function StudentReport({ formId }: StudentReportProps) {
 
     // 4. MAIN RENDER
     return (
-        <div className="container mx-auto py-10">
+        <div className="w-full max-w-6xl mx-auto py-10">
             <div className="mb-8">
                 <span className="text-xs font-bold uppercase tracking-widest text-primary/60">
                     Módulo: {template.module.replace('_', ' ')}
@@ -125,8 +52,15 @@ export function StudentReport({ formId }: StudentReportProps) {
                 <h1 className="text-3xl font-display font-bold mt-2">Gestión de Reportes</h1>
             </div>
 
+            <PageHeader
+                icon={User}
+                title={`Formulario: ${template.title}`}
+                description="Completa los campos requeridos para enviar el reporte."
+            />
+
             <DynamicForm
                 template={template}
+                className="grid grid-cols-1 md:grid-cols-2 gap-4"
                 onSubmit={handleFormSubmitRequest}
             />
 
@@ -137,14 +71,8 @@ export function StudentReport({ formId }: StudentReportProps) {
                 description={`Estás a punto de enviar el formulario para el registro de Estudiantes. Revisa que los datos sean correctos antes de continuar.`}
                 actionLabel="Enviar Reporte"
                 cancelLabel="Revisar de nuevo"
-                onConfirm={() => {
-                    setIsDialogOpen(false);
-                    executeSubmit();
-                }}
-                onCancel={() => {
-                    setIsDialogOpen(false);
-                    setPendingData(null);
-                }}
+                onConfirm={confirmSubmit}
+                onCancel={cancelSubmit}
             />
         </div>
     );

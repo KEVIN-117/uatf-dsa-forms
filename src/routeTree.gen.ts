@@ -23,6 +23,7 @@ import { Route as DashboardModalitiesRouteImport } from './routes/dashboard/moda
 import { Route as DashboardGraduationModalitiesRouteImport } from './routes/dashboard/graduation-modalities'
 import { Route as DashboardFormBuilderRouteImport } from './routes/dashboard/form-builder'
 import { Route as DashboardFacultiesRouteImport } from './routes/dashboard/faculties'
+import { Route as DashboardDirectorsRouteImport } from './routes/dashboard/directors'
 import { Route as DashboardDashboardRouteImport } from './routes/dashboard/dashboard'
 import { Route as DashboardAdminRouteImport } from './routes/dashboard/admin'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
@@ -99,6 +100,11 @@ const DashboardFacultiesRoute = DashboardFacultiesRouteImport.update({
   path: '/dashboard/faculties',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardDirectorsRoute = DashboardDirectorsRouteImport.update({
+  id: '/dashboard/directors',
+  path: '/dashboard/directors',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardDashboardRoute = DashboardDashboardRouteImport.update({
   id: '/dashboard/dashboard',
   path: '/dashboard/dashboard',
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/dashboard': typeof DashboardDashboardRoute
+  '/dashboard/directors': typeof DashboardDirectorsRoute
   '/dashboard/faculties': typeof DashboardFacultiesRoute
   '/dashboard/form-builder': typeof DashboardFormBuilderRoute
   '/dashboard/graduation-modalities': typeof DashboardGraduationModalitiesRoute
@@ -146,6 +153,7 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/dashboard': typeof DashboardDashboardRoute
+  '/dashboard/directors': typeof DashboardDirectorsRoute
   '/dashboard/faculties': typeof DashboardFacultiesRoute
   '/dashboard/form-builder': typeof DashboardFormBuilderRoute
   '/dashboard/graduation-modalities': typeof DashboardGraduationModalitiesRoute
@@ -167,6 +175,7 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/dashboard/admin': typeof DashboardAdminRoute
   '/dashboard/dashboard': typeof DashboardDashboardRoute
+  '/dashboard/directors': typeof DashboardDirectorsRoute
   '/dashboard/faculties': typeof DashboardFacultiesRoute
   '/dashboard/form-builder': typeof DashboardFormBuilderRoute
   '/dashboard/graduation-modalities': typeof DashboardGraduationModalitiesRoute
@@ -189,6 +198,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/dashboard/admin'
     | '/dashboard/dashboard'
+    | '/dashboard/directors'
     | '/dashboard/faculties'
     | '/dashboard/form-builder'
     | '/dashboard/graduation-modalities'
@@ -209,6 +219,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/dashboard/admin'
     | '/dashboard/dashboard'
+    | '/dashboard/directors'
     | '/dashboard/faculties'
     | '/dashboard/form-builder'
     | '/dashboard/graduation-modalities'
@@ -229,6 +240,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/dashboard/admin'
     | '/dashboard/dashboard'
+    | '/dashboard/directors'
     | '/dashboard/faculties'
     | '/dashboard/form-builder'
     | '/dashboard/graduation-modalities'
@@ -250,6 +262,7 @@ export interface RootRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   DashboardAdminRoute: typeof DashboardAdminRoute
   DashboardDashboardRoute: typeof DashboardDashboardRoute
+  DashboardDirectorsRoute: typeof DashboardDirectorsRoute
   DashboardFacultiesRoute: typeof DashboardFacultiesRoute
   DashboardFormBuilderRoute: typeof DashboardFormBuilderRoute
   DashboardGraduationModalitiesRoute: typeof DashboardGraduationModalitiesRoute
@@ -366,6 +379,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardFacultiesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/directors': {
+      id: '/dashboard/directors'
+      path: '/dashboard/directors'
+      fullPath: '/dashboard/directors'
+      preLoaderRoute: typeof DashboardDirectorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/dashboard': {
       id: '/dashboard/dashboard'
       path: '/dashboard/dashboard'
@@ -402,6 +422,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   DashboardAdminRoute: DashboardAdminRoute,
   DashboardDashboardRoute: DashboardDashboardRoute,
+  DashboardDirectorsRoute: DashboardDirectorsRoute,
   DashboardFacultiesRoute: DashboardFacultiesRoute,
   DashboardFormBuilderRoute: DashboardFormBuilderRoute,
   DashboardGraduationModalitiesRoute: DashboardGraduationModalitiesRoute,

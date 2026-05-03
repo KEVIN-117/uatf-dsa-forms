@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { type ColumnDef } from "@tanstack/react-table"
-import { Pencil, Trash2, Plus } from "lucide-react"
+import { Pencil, Trash2, Plus, Building2 } from "lucide-react"
 
 import { useProtectedRoute } from "#/features/auth/hooks/useProtectedRoute"
 import {
@@ -15,8 +15,11 @@ import { EntityFormSheet } from "#/shared/ui/entity-form-sheet"
 import { Button } from "#/shared/ui/button"
 import { Input } from "#/shared/ui/input"
 import { Label } from "#/shared/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "#/shared/ui/card"
+import { Card, CardContent } from "#/shared/ui/card"
 import { useToast } from "#/shared/components/Toast"
+import { PageHeader } from "#/shared/components/PageHeader"
+import { InlineLoader } from "#/shared/components/InlineLoader"
+import { Loader } from "#/shared/components/Loader"
 
 type FacultyFormData = Omit<Faculty, "docId">
 
@@ -128,11 +131,11 @@ export function FacultiesCrud() {
             enableColumnFilter: false,
             enableSorting: false,
             cell: ({ row }) => (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8"
+                        className="h-8 w-8 hover:bg-primary/10 hover:text-primary transition-colors"
                         onClick={() => openEditSheet(row.original)}
                     >
                         <Pencil className="h-4 w-4" />
@@ -140,7 +143,7 @@ export function FacultiesCrud() {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-destructive hover:text-destructive"
+                        className="h-8 w-8 hover:bg-destructive/10 text-destructive hover:text-destructive transition-colors"
                         onClick={() => handleDelete(row.original)}
                     >
                         <Trash2 className="h-4 w-4" />
@@ -152,27 +155,28 @@ export function FacultiesCrud() {
 
     // 3. EARLY RETURNS
     if (authLoading) {
-        return <div className="flex h-full items-center justify-center">Verificando sesión...</div>
+        return <Loader />
     }
     if (!isAuthenticated) return null
 
     // 4. MAIN RENDER
     return (
-        <div className="p-6 space-y-6">
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                    <div>
-                        <CardTitle className="text-2xl font-display">Facultades</CardTitle>
-                        <CardDescription>Gestiona las facultades de la universidad</CardDescription>
-                    </div>
-                    <Button onClick={openCreateSheet} className="gap-2">
-                        <Plus className="h-4 w-4" />
-                        Agregar Facultad
-                    </Button>
-                </CardHeader>
-                <CardContent>
+        <div className="p-6 space-y-6 max-w-5xl mx-auto">
+            <PageHeader
+                icon={Building2}
+                title="Facultades"
+                description="Gestiona las facultades de la universidad"
+                action={{
+                    label: "Agregar Facultad",
+                    icon: Plus,
+                    onClick: openCreateSheet,
+                }}
+            />
+
+            <Card className="glass-card overflow-hidden animate-fade-up-delay-1">
+                <CardContent className="p-0">
                     {isLoading ? (
-                        <div className="text-center py-8 text-muted-foreground">Cargando...</div>
+                        <InlineLoader text="Cargando facultades..." />
                     ) : (
                         <DataTable
                             columns={columns}

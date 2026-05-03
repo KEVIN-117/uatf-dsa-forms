@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
-import { FileSpreadsheet, Loader2 } from 'lucide-react';
+import { FileSpreadsheet, BarChart3 } from 'lucide-react';
 import { DataTable } from '#/shared/ui/data-table';
 
 import { useFormTemplateById } from '#/shared/hooks/useFormBuilder';
@@ -9,7 +9,11 @@ import { useProtectedRoute } from '#/features/auth/hooks/useProtectedRoute';
 
 import { Card, CardContent } from '#/shared/ui/card';
 import { Button } from '#/shared/ui/button';
+import { Badge } from '#/shared/ui/badge';
 import type { FormModules, FormResponseDef } from '#/shared/types/dynamic-form';
+import { PageHeader } from '#/shared/components/PageHeader';
+import { InlineLoader } from '#/shared/components/InlineLoader';
+import { Loader } from '#/shared/components/Loader';
 
 interface ResponsePanelProps {
     formId: string;
@@ -61,37 +65,40 @@ export function ResponsesPanel({ formId, module }: ResponsePanelProps) {
         return [...baseColumns, ...dynamicColumns];
     }, [template]);
 
-    // 2. FUNCTIONS AND LOGIC
-
-    // 3. EARLY RETURNS
+    // 2. EARLY RETURNS
     if (!isAuthenticated || !template) {
-        return (
-            <div className="p-8">
-                <Loader2 className="animate-spin text-primary mx-auto" />
-            </div>
-        );
+        return <Loader text="Cargando resultados..." />;
     }
 
-    // 4. MAIN RENDER
+    // 3. MAIN RENDER
     return (
-        <div className="container mx-auto py-8 font-body space-y-6">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-                <div>
-                    <h1 className="text-3xl font-display font-bold text-foreground">Resultados: {template.title}</h1>
-                    <p className="text-muted-foreground uppercase text-sm tracking-wider mt-1">
-                        Módulo: {template.module} | Total registros: {responses.length}
-                    </p>
-                </div>
-                <Button variant="outline" className="font-semibold text-primary border-primary/20 bg-primary/5">
+        <div className="p-6 space-y-6 max-w-7xl mx-auto">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between animate-fade-up">
+                <PageHeader
+                    icon={BarChart3}
+                    title={`Resultados: ${template.title}`}
+                    description={`Módulo: ${template.module.toUpperCase()} • Total registros: ${responses.length}`}
+                />
+            </div>
+
+            <div className="flex items-center gap-3 animate-fade-up-delay-1">
+                <Badge variant="outline" className="text-xs px-3 py-1 border-primary/30 bg-primary/5 text-primary">
+                    {template.module.toUpperCase()}
+                </Badge>
+                <Badge variant="outline" className="text-xs px-3 py-1 border-border/50 text-muted-foreground">
+                    {responses.length} registros
+                </Badge>
+                <div className="flex-1" />
+                <Button variant="outline" className="font-semibold text-primary border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors">
                     <FileSpreadsheet className="size-4 mr-2" />
                     Exportar a Excel
                 </Button>
             </div>
 
-            <Card className="shadow-md border-border">
-                <CardContent className="p-4 sm:p-6">
+            <Card className="glass-card overflow-hidden animate-fade-up-delay-2">
+                <CardContent className="p-0">
                     {isLoadingResponses ? (
-                        <div className="p-12 flex justify-center"><Loader2 className="animate-spin text-muted-foreground" /></div>
+                        <InlineLoader text="Cargando registros..." />
                     ) : (
                         <DataTable columns={columns} data={responses} showColumnToggle />
                     )}

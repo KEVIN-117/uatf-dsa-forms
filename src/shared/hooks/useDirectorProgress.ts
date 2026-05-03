@@ -1,4 +1,3 @@
-import { useDirectorProfile } from "#/features/director-profile/providers/DirectorProfileProvider";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   arrayUnion,
@@ -9,20 +8,17 @@ import {
 } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import type { DirectorProgressDef } from "../types/dynamic-form";
+import { useAuth } from "#/features/auth/providers/AuthProvider";
 
 export const useDirectorProgress = () => {
-  const { profile } = useDirectorProfile();
+  const { user } = useAuth();
   return useQuery({
     queryKey: ["directorProgress"],
     queryFn: async () => {
-      if (!profile) {
+      if (!user) {
         throw new Error("No se encontro el perfil del director");
       }
-      const progressRef = doc(
-        db,
-        "director_progress",
-        `${profile.fullName}@${profile.facultyName}@${profile.programName}`,
-      );
+      const progressRef = doc(db, "director_progress", `${user.email}`);
       const docSanp = await getDoc(progressRef);
       if (docSanp.exists()) {
         return docSanp.data() as DirectorProgressDef;
@@ -33,25 +29,21 @@ export const useDirectorProgress = () => {
         updatedAt: 0,
       } as DirectorProgressDef;
     },
-    enabled: !!profile,
+    enabled: !!user,
   });
 };
 
 export const useMarkStepCompleted = () => {
   const queryClient = useQueryClient();
-  const { profile } = useDirectorProfile();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async (step: number) => {
-      if (!profile) {
+      if (!user) {
         throw new Error("No se encontro el perfil del director");
       }
 
-      const progressRef = doc(
-        db,
-        "director_progress",
-        `${profile.fullName}@${profile.facultyName}@${profile.programName}`,
-      );
+      const progressRef = doc(db, "director_progress", `${user.email}`);
 
       await setDoc(
         progressRef,

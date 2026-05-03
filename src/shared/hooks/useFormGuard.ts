@@ -3,15 +3,21 @@ import { useNavigate } from "@tanstack/react-router";
 import { useFormTemplates } from "#/shared/hooks/useFormBuilder";
 import { useDirectorProgress } from "#/shared/hooks/useDirectorProgress";
 import type { FormTemplateDef } from "#/shared/types/dynamic-form";
+import { useAuth } from "#/features/auth/providers/AuthProvider";
 
 export const useFormGuard = (currentTemplate: FormTemplateDef | undefined) => {
   const navigate = useNavigate();
+  const { userRole } = useAuth();
   const { data: allTemplates, isPending: isTemplatesPending } =
     useFormTemplates();
   const { data: progress, isPending: isProgressPending } =
     useDirectorProgress();
 
   useEffect(() => {
+    if (userRole !== "director") {
+      return;
+    }
+
     if (
       isTemplatesPending ||
       isProgressPending ||
@@ -45,6 +51,7 @@ export const useFormGuard = (currentTemplate: FormTemplateDef | undefined) => {
     progress,
     isTemplatesPending,
     isProgressPending,
+    userRole,
     navigate,
   ]);
 };

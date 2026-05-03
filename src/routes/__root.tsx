@@ -12,8 +12,8 @@ import { DashboardSidebar } from '#/app/layout/DashboardSidebar'
 
 import { AuthProvider } from '#/features/auth/providers/AuthProvider'
 import { DirectorProfileGate } from '#/features/director-profile/components/DirectorProfileGate'
-import { DirectorProfileProvider } from '#/features/director-profile/providers/DirectorProfileProvider'
 import { Toaster } from "@/shared/ui/sonner"
+import { RouteErrorState, RouteNotFoundState } from "#/shared/components/routing/RouteState"
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -31,6 +31,8 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       { rel: 'icon', href: '/favicon.ico' }
     ],
   }),
+  notFoundComponent: () => <RouteNotFoundState scope="la aplicación" />,
+  errorComponent: ({ error }) => <RouteErrorState error={error} scope="la aplicación" />,
   component: RootComponent,
 })
 
@@ -50,20 +52,18 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="font-sans antialiased wrap-anywhere selection:bg-[rgba(79,184,178,0.24)]">
         <AuthProvider>
-          <DirectorProfileProvider>
-            <SidebarProvider className='bg-sidebar'>
-              <DashboardSidebar />
-              <div className="h-svh overflow-hidden lg:p-2 w-full">
-                <div className="lg:border lg:rounded-md overflow-hidden flex flex-col h-full w-full bg-background">
-                  <main className="w-full flex-1 overflow-auto p-1">
-                    {children}
-                  </main>
-                  <Toaster />
-                </div>
+          <SidebarProvider className='bg-sidebar'>
+            <DashboardSidebar />
+            <div className="h-svh overflow-hidden lg:p-2 w-full">
+              <div className="lg:border lg:rounded-md overflow-hidden flex flex-col h-full w-full bg-background">
+                <main className="w-full flex-1 overflow-auto p-1">
+                  {children}
+                </main>
+                <Toaster />
               </div>
-            </SidebarProvider>
-            <DirectorProfileGate />
-          </DirectorProfileProvider>
+            </div>
+          </SidebarProvider>
+          <DirectorProfileGate />
         </AuthProvider>
         <Scripts />
       </body>

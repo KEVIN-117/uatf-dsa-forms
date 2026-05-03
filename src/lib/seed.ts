@@ -1,11 +1,13 @@
+import { db } from "#/shared/lib/firebase";
 import type { Faculty, Program } from "#/shared/types";
 import {
   FormModules,
   type FormResponseDef,
   type FormTemplateDef,
-} from "../types/dynamic-form";
-import { db } from "./firebase";
+} from "#/shared/types/dynamic-form";
+
 import { setDoc, doc } from "firebase/firestore";
+import directorsRaw from "./lista_directores_2026_con_emails.json";
 
 export interface Modality {
   id: string;
@@ -38,6 +40,16 @@ export interface TeachingCategory {
   id: string;
   name: string;
   code: string;
+}
+
+interface DirectorSeedRaw {
+  email: string;
+  name: string;
+  ci: string | number;
+  paternalSurname: string;
+  maternalSurname: string;
+  facultyId: string | null;
+  programId: string;
 }
 
 const workloads: Workload[] = [
@@ -1167,6 +1179,17 @@ const programs: Program[] = [
   },
 ];
 
+const directors = (directorsRaw as DirectorSeedRaw[]).map((item) => ({
+  ci: Number.parseInt(String(item.ci), 10) || 0,
+  paternalSurname: item.paternalSurname?.trim() ?? "",
+  maternalSurname: item.maternalSurname?.trim() ?? "",
+  name: item.name?.trim() ?? "",
+  email: item.email?.trim().toLowerCase() ?? "",
+  role: "director",
+  facultyId: item.facultyId ?? "",
+  programId: item.programId ?? "",
+}));
+
 const graduationModalities = [
   { id: "1", name: "TESIS DE GRADO", code: "TG" },
   { id: "2", name: "PROYECTO DE GRADO", code: "PG" },
@@ -1878,10 +1901,10 @@ export async function seedFormResponses() {
     "Beca Deporte",
   ];
   const users = [
-    "admin@uatf.edu.bo",
-    "encargado@uatf.edu.bo",
-    "registro@uatf.edu.bo",
-    "usuario_prueba@uatf.edu.bo",
+    "sheylajahel.cadiz@lef.edu.bo",
+    "juanvirgilio.silva@tmc.edu.bo",
+    "ovidiolucio.copa@tuu.edu.bo",
+    "neil.alfaro@ctt.edu.bo",
   ];
 
   // Generar 200 registros de prueba (50 por módulo)
@@ -2072,6 +2095,23 @@ export async function seedTeachingAcademicLevels() {
   }
 }
 
+export async function seedDirectors() {
+  try {
+    const now = Date.now();
+    const uploadPromises = directors.map((item) =>
+      setDoc(doc(db, "users", item.email), {
+        ...item,
+        createdAt: now,
+        updatedAt: now,
+      }),
+    );
+    await Promise.all(uploadPromises);
+    console.log(`✅ ${directors.length} directores sembrados exitosamente`);
+  } catch (error) {
+    console.error("❌ Error al sembrar directores:", error);
+  }
+}
+
 export async function runSeed() {
   console.log("🌱 Iniciando la siembra de datos en Firestore...");
 
@@ -2085,6 +2125,7 @@ export async function runSeed() {
     await seedWorkloads();
     await seedTeachingAcademicLevels();
     await seedScholarshipsTypes();
+    // await seedDirectors();
     await seedFormFields();
     await seedFormResponses();
 

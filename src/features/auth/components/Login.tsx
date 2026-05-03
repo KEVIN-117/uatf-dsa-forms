@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useForm } from "@tanstack/react-form";
-import { Loader2 } from "lucide-react";
+import { Loader2, ShieldCheck } from "lucide-react";
 import { useLogin } from "#/features/auth/hooks/useAuth";
 import { validateSchemaField } from "#/shared/lib/zod-form";
 import { adminLoginSchema, type AdminLoginFormValues } from "#/shared/schemas/auth";
@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "#/sha
 import { Input } from "#/shared/ui/input";
 import { Label } from "#/shared/ui/label";
 import { FirebaseError } from "firebase/app";
+import { useToast } from "#/shared/components/Toast";
 
 interface LoginProps {
   onSuccess?: () => void;
@@ -49,7 +50,11 @@ export function Login({
           navigate({ to: redirectTo });
         }
       } catch (error: unknown) {
-        console.error("Error de autenticación:", error);
+        useToast({
+          title: "Error de acceso",
+          type: "error",
+          message: "Credenciales incorrectos.",
+        });
 
         if (error instanceof FirebaseError) {
           if (error.code === "auth/invalid-credential") {
@@ -69,8 +74,16 @@ export function Login({
   });
 
   return (
-    <Card className="w-full">
-      <CardHeader className="space-y-2">
+    <Card className="w-full glass-card border-border/40 overflow-hidden relative">
+      {/* Decorative gradient */}
+      <div className="gradient-blob -top-16 -right-16 w-40 h-40 bg-primary/5" />
+
+      <CardHeader className="relative space-y-2">
+        <div className="flex justify-center mb-1">
+          <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-primary/10 border border-primary/20">
+            <ShieldCheck className="w-5 h-5 text-primary" />
+          </div>
+        </div>
         <CardTitle className="text-2xl text-center font-display text-primary">
           Acceso administrativo
         </CardTitle>
@@ -78,7 +91,7 @@ export function Login({
           Ingresa con una cuenta administradora para omitir el registro del director.
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="relative">
         <form
           onSubmit={(event) => {
             event.preventDefault();
@@ -88,7 +101,7 @@ export function Login({
           className="space-y-5 font-body"
         >
           {authError ? (
-            <div className="rounded-md bg-destructive p-3 text-center text-sm text-white">
+            <div className="rounded-xl bg-destructive/10 border border-destructive/20 p-3 text-center text-sm text-destructive font-medium">
               {authError}
             </div>
           ) : null}
@@ -121,6 +134,7 @@ export function Login({
                       field.handleChange(event.target.value);
                     }}
                     placeholder="admin@institucion.edu"
+                    className="focus-academic"
                   />
                   {showErrors && field.state.meta.errors.length > 0 ? (
                     <div className="text-sm font-medium text-destructive">
@@ -160,6 +174,7 @@ export function Login({
                       field.handleChange(event.target.value);
                     }}
                     placeholder="••••••••"
+                    className="focus-academic"
                   />
                   {showErrors && field.state.meta.errors.length > 0 ? (
                     <div className="text-sm font-medium text-destructive">
@@ -176,7 +191,7 @@ export function Login({
             children={(isSubmitting) => (
               <Button
                 type="submit"
-                className="mt-6 w-full py-5 text-base font-bold transition-all"
+                className="mt-6 w-full py-5 text-base font-bold transition-all hover-lift"
                 disabled={isSubmitting || loginMutation.isPending}
               >
                 {isSubmitting || loginMutation.isPending ? (

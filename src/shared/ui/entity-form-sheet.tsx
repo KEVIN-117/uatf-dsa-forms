@@ -17,8 +17,8 @@ export function EntityFormSheet({
 }: EntityFormSheetProps) {
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
-            <SheetContent className="sm:max-w-lg overflow-y-auto">
-                <SheetHeader>
+            <SheetContent className="sm:max-w-lg overflow-y-auto glass-card border-l-border/40">
+                <SheetHeader className="border-b border-border/30 pb-4">
                     <SheetTitle className="text-xl font-display">{title}</SheetTitle>
                     {description && (
                         <SheetDescription>{description}</SheetDescription>
