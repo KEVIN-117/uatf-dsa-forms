@@ -64,11 +64,23 @@ const adminSeedUsers: Array<AdminType> = [
   },
 ];
 
+// Copy lista_directores_2026_con_emails.sample.json to lista_directores_2026_con_emails.json
+// and populate it with real data before running this seeder.
+// The real file is gitignored to prevent accidental PII commits.
+const directorsFilePath = path.resolve(
+  __dirname,
+  "lista_directores_2026_con_emails.json",
+);
+if (!fs.existsSync(directorsFilePath)) {
+  console.error(
+    "❌ Missing data file: lista_directores_2026_con_emails.json\n" +
+      "   Copy lista_directores_2026_con_emails.sample.json to lista_directores_2026_con_emails.json " +
+      "and populate it with real director data before running this seeder.",
+  );
+  process.exit(1);
+}
 const directors: Array<DirectorType> = JSON.parse(
-  fs.readFileSync(
-    path.resolve(__dirname, "lista_directores_2026_con_emails.json"),
-    "utf-8",
-  ),
+  fs.readFileSync(directorsFilePath, "utf-8"),
 );
 
 async function CreateUser() {
