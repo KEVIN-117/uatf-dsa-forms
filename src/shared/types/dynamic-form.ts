@@ -1,3 +1,5 @@
+import type { Timestamp } from "firebase/firestore";
+
 export type FieldType = "text" | "number" | "email" | "select" | "password";
 
 export interface FieldOption {
@@ -38,11 +40,15 @@ export interface FormResponseDef {
   templateId: string;
   module: FormModules;
   submittedBy: string;
+  facultyId: string;
+  programId: string;
+  faculty: string;
+  program: string;
   createdAt: number; //unix timestamp
   response: Record<string, any>;
 }
 
 export interface DirectorProgressDef {
   completedSteps: number[];
-  updatedAt: number;
+  updatedAt: Timestamp;
 }

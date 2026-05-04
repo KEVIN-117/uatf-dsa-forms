@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { FileSpreadsheet, BarChart3 } from 'lucide-react';
 import { DataTable } from '#/shared/ui/data-table';
@@ -14,6 +14,7 @@ import type { FormModules, FormResponseDef } from '#/shared/types/dynamic-form';
 import { PageHeader } from '#/shared/components/PageHeader';
 import { InlineLoader } from '#/shared/components/InlineLoader';
 import { Loader } from '#/shared/components/Loader';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '#/shared/ui/select';
 
 interface ResponsePanelProps {
     formId: string;
@@ -28,6 +29,41 @@ export function ResponsesPanel({ formId, module }: ResponsePanelProps) {
         module as FormModules,
         formId
     );
+    const [selectedFacultyId, setSelectedFacultyId] = useState<string>("all");
+    const [selectedProgramId, setSelectedProgramId] = useState<string>("all");
+
+    const facultyOptions = useMemo(() => {
+        const map = new Map<string, string>();
+        responses.forEach((r) => {
+            if (r.facultyId) map.set(r.facultyId, r.faculty || r.facultyId);
+        });
+        return Array.from(map.entries()).map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name));
+    }, [responses]);
+
+    const programOptions = useMemo(() => {
+        const map = new Map<string, string>();
+        responses.forEach((r) => {
+            if (selectedFacultyId !== "all" && r.facultyId !== selectedFacultyId) return;
+            if (r.programId) map.set(r.programId, r.program || r.programId);
+        });
+        return Array.from(map.entries()).map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name));
+    }, [responses, selectedFacultyId]);
+
+    useEffect(() => {
+        if (selectedProgramId === "all") return;
+        const existsInCurrentFaculty = programOptions.some((p) => p.id === selectedProgramId);
+        if (!existsInCurrentFaculty) {
+            setSelectedProgramId("all");
+        }
+    }, [programOptions, selectedProgramId]);
+
+    const filteredResponses = useMemo(() => {
+        return responses.filter((r) => {
+            const byFaculty = selectedFacultyId === "all" || r.facultyId === selectedFacultyId;
+            const byProgram = selectedProgramId === "all" || r.programId === selectedProgramId;
+            return byFaculty && byProgram;
+        });
+    }, [responses, selectedFacultyId, selectedProgramId]);
 
     const columns = useMemo<ColumnDef<FormResponseDef, any>[]>(() => {
         if (!template) return [];
@@ -95,12 +131,45 @@ export function ResponsesPanel({ formId, module }: ResponsePanelProps) {
                 </Button>
             </div>
 
+            <Card className="glass-card animate-fade-up-delay-1">
+                <CardContent className="p-4 grid gap-3 md:grid-cols-2">
+                    <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground">Filtrar por Facultad</p>
+                        <Select value={selectedFacultyId} onValueChange={setSelectedFacultyId}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Todas las facultades" />
+                            </SelectTrigger>
+                            <SelectContent className='bg-background'>
+                                <SelectItem value="all">Todas las facultades</SelectItem>
+                                {facultyOptions.map((f) => (
+                                    <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground">Filtrar por Carrera</p>
+                        <Select value={selectedProgramId} onValueChange={setSelectedProgramId}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Todas las carreras" />
+                            </SelectTrigger>
+                            <SelectContent className='bg-background'>
+                                <SelectItem value="all">Todas las carreras</SelectItem>
+                                {programOptions.map((p) => (
+                                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </CardContent>
+            </Card>
+
             <Card className="glass-card overflow-hidden animate-fade-up-delay-2">
                 <CardContent className="p-0">
                     {isLoadingResponses ? (
                         <InlineLoader text="Cargando registros..." />
                     ) : (
-                        <DataTable columns={columns} data={responses} showColumnToggle />
+                        <DataTable columns={columns} data={filteredResponses} showColumnToggle />
                     )}
                 </CardContent>
             </Card>

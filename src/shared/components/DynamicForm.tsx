@@ -35,9 +35,6 @@ export function DynamicForm({ template, onSubmit, className, submitLabel = "Envi
         if (!totalField) return;
 
         let calculateTotal = 0;
-
-        console.log(formValues)
-
         Object.entries(formValues).forEach(([key, value]) => {
             const fieldId = key.split("@")[0]
 

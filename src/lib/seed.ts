@@ -50,6 +50,8 @@ interface DirectorSeedRaw {
   maternalSurname: string;
   facultyId: string | null;
   programId: string;
+  faculty: string | null;
+  program: string;
 }
 
 const workloads: Workload[] = [
@@ -1188,6 +1190,8 @@ const directors = (directorsRaw as DirectorSeedRaw[]).map((item) => ({
   role: "director",
   facultyId: item.facultyId ?? "",
   programId: item.programId ?? "",
+  faculty: item.faculty,
+  program: item.program,
 }));
 
 const graduationModalities = [
@@ -1906,6 +1910,17 @@ export async function seedFormResponses() {
     "ovidiolucio.copa@tuu.edu.bo",
     "neil.alfaro@ctt.edu.bo",
   ];
+  const directorMetaByEmail = new Map(
+    directors.map((director) => [
+      director.email,
+      {
+        facultyId: director.facultyId || "",
+        faculty: director.faculty || "",
+        programId: director.programId || "",
+        program: director.program || "",
+      },
+    ]),
+  );
 
   // Generar 200 registros de prueba (50 por módulo)
   for (let i = 1; i <= 200; i++) {
@@ -1920,6 +1935,12 @@ export async function seedFormResponses() {
     const total = masculino + femenino;
 
     const submittedBy = users[Math.floor(Math.random() * users.length)];
+    const submitterMeta = directorMetaByEmail.get(submittedBy) ?? {
+      facultyId: "",
+      faculty: "",
+      programId: "",
+      program: "",
+    };
     // Fecha aleatoria en los últimos 30 días
     const createdAt =
       Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000);
@@ -1931,6 +1952,10 @@ export async function seedFormResponses() {
         templateId: "1",
         module: FormModules.student,
         submittedBy,
+        facultyId: submitterMeta.facultyId,
+        faculty: submitterMeta.faculty,
+        programId: submitterMeta.programId,
+        program: submitterMeta.program,
         createdAt,
         response: {
           modalidad: modalities[Math.floor(Math.random() * modalities.length)],
@@ -1946,6 +1971,10 @@ export async function seedFormResponses() {
         templateId: "7",
         module: FormModules.graduate,
         submittedBy,
+        facultyId: submitterMeta.facultyId,
+        faculty: submitterMeta.faculty,
+        programId: submitterMeta.programId,
+        program: submitterMeta.program,
         createdAt,
         response: {
           modalidad: modalities[Math.floor(Math.random() * modalities.length)],
@@ -1981,6 +2010,10 @@ export async function seedFormResponses() {
         templateId: "9",
         module: FormModules.teacher,
         submittedBy,
+        facultyId: submitterMeta.facultyId,
+        faculty: submitterMeta.faculty,
+        programId: submitterMeta.programId,
+        program: submitterMeta.program,
         createdAt,
         response: {
           paterno: surnames[Math.floor(Math.random() * surnames.length)],
@@ -2006,6 +2039,10 @@ export async function seedFormResponses() {
         templateId: "10",
         module: FormModules.scholarships,
         submittedBy,
+        facultyId: submitterMeta.facultyId,
+        faculty: submitterMeta.faculty,
+        programId: submitterMeta.programId,
+        program: submitterMeta.program,
         createdAt,
         response: {
           tipo: scholarshipTypes[

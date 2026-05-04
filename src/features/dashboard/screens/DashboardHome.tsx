@@ -4,7 +4,7 @@ import { useProtectedRoute } from "#/features/auth/hooks/useProtectedRoute";
 import { useAuth } from "#/features/auth/providers/AuthProvider";
 import { useAllResponses } from "#/shared/hooks/useFormResponses";
 import { useFormTemplates } from "#/shared/hooks/useFormBuilder";
-import { useDirectorProgress } from "#/shared/hooks/useDirectorProgress";
+import { useDirectorProgress } from "#/features/reports/hooks/useDirectorProgress";
 import { FormModules, type FormResponseDef } from "#/shared/types/dynamic-form";
 import { Award, BookOpen, CalendarDays, CheckCircle2, Clock, FileText, GraduationCap, LayoutDashboard, TrendingUp, Users } from "lucide-react";
 import { Badge } from "#/shared/ui/badge";
@@ -65,7 +65,6 @@ function relativeTime(ts: number) {
   return `Hace ${days}d`;
 }
 
-/* ─── animated progress bar ─── */
 function ProgressBar({ value, max, label }: { value: number; max: number; label: string }) {
   const pct = max > 0 ? Math.round((value / max) * 100) : 0;
   return (
@@ -84,7 +83,6 @@ function ProgressBar({ value, max, label }: { value: number; max: number; label:
   );
 }
 
-/* ─── stat card component ─── */
 function StatCard({
   icon: Icon,
   label,
@@ -122,7 +120,6 @@ function StatCard({
   );
 }
 
-/* ─── module card component ─── */
 function ModuleCard({ mod, count }: { mod: FormModules; count: number }) {
   const Icon = MODULE_ICON[mod];
   return (
@@ -154,17 +151,14 @@ function ModuleCard({ mod, count }: { mod: FormModules; count: number }) {
   );
 }
 
-/* ─── response timeline item ─── */
 function ResponseItem({ resp }: { resp: FormResponseDef }) {
   const Icon = MODULE_ICON[resp.module];
   return (
     <div className="flex items-center gap-4 p-3 rounded-xl border border-border/30 bg-card/60 backdrop-blur-sm hover:bg-accent/30 hover:border-border/50 transition-all duration-200 group">
-      {/* Timeline dot + icon */}
       <div className={`flex items-center justify-center w-9 h-9 rounded-lg ${MODULE_ICON_BG[resp.module]} shrink-0 group-hover:scale-110 transition-transform duration-200`}>
         <Icon className={`w-4 h-4 ${MODULE_ACCENT[resp.module]}`} />
       </div>
 
-      {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <p className="text-sm font-semibold text-foreground truncate">{MODULE_LABEL[resp.module]}</p>
@@ -175,15 +169,12 @@ function ResponseItem({ resp }: { resp: FormResponseDef }) {
         <p className="text-xs text-muted-foreground mt-0.5 truncate">{formatDate(resp.createdAt)}</p>
       </div>
 
-      {/* Relative time */}
       <span className="text-[11px] text-muted-foreground font-medium shrink-0 hidden sm:block">{relativeTime(resp.createdAt)}</span>
     </div>
   );
 }
 
-/* ═══════════════════════════════════════════
-   MAIN COMPONENT
-   ═══════════════════════════════════════════ */
+
 export function DashboardHome() {
   const { isLoading: authLoading, isAuthenticated } = useProtectedRoute();
   const { userRole, user } = useAuth();
@@ -229,9 +220,7 @@ export function DashboardHome() {
 
   return (
     <div className="p-6 space-y-8 max-w-7xl mx-auto">
-      {/* ── Header con bienvenida ── */}
       <div className="animate-fade-up relative overflow-hidden rounded-2xl border border-border/40 p-6 md:p-8 bg-linear-to-br from-primary/8 via-card to-secondary/5 glass-card">
-        {/* Decorative blobs */}
         <div className="gradient-blob -top-20 -right-20 w-48 h-48 bg-primary/5" />
         <div className="gradient-blob -bottom-16 -left-16 w-40 h-40 bg-secondary/8" />
 
@@ -254,9 +243,7 @@ export function DashboardHome() {
       </div>
 
       {isDirector ? (
-        /* ═══════════════ DIRECTOR VIEW ═══════════════ */
         <>
-          {/* KPI Cards */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 animate-fade-up-delay-1">
             <StatCard
               icon={CheckCircle2}
@@ -282,7 +269,6 @@ export function DashboardHome() {
             />
           </div>
 
-          {/* Progress */}
           <Card className="border-border/40 bg-card/80 backdrop-blur-sm shadow-sm overflow-hidden dash-animate dash-delay-2">
             <CardHeader>
               <div className="flex items-center gap-3">
@@ -302,7 +288,6 @@ export function DashboardHome() {
             </CardContent>
           </Card>
 
-          {/* Module breakdown */}
           <Card className="border-border/40 bg-card/80 backdrop-blur-sm shadow-sm overflow-hidden dash-animate dash-delay-3">
             <CardHeader>
               <div className="flex items-center gap-3">
@@ -322,7 +307,6 @@ export function DashboardHome() {
             </CardContent>
           </Card>
 
-          {/* Recent activity */}
           <Card className="border-border/40 bg-card/80 backdrop-blur-sm shadow-sm overflow-hidden dash-animate dash-delay-4">
             <CardHeader>
               <div className="flex items-center gap-3">
@@ -359,9 +343,7 @@ export function DashboardHome() {
           </Card>
         </>
       ) : (
-        /* ═══════════════ ADMIN VIEW ═══════════════ */
         <>
-          {/* KPI Cards */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 dash-animate dash-delay-1">
             <StatCard
               icon={FileText}
@@ -387,7 +369,6 @@ export function DashboardHome() {
             />
           </div>
 
-          {/* Global modules */}
           <Card className="border-border/40 bg-card/80 backdrop-blur-sm shadow-sm overflow-hidden dash-animate dash-delay-2">
             <CardHeader>
               <div className="flex items-center gap-3">
@@ -412,7 +393,7 @@ export function DashboardHome() {
   );
 }
 
-/* ─── greeting helper ─── */
+
 function getGreeting(): string {
   const h = new Date().getHours();
   if (h < 12) return "☀️ Buenos días,";

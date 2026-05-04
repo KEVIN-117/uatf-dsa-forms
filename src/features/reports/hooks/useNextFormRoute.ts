@@ -1,6 +1,6 @@
+import { useFormTemplates } from "#/shared/hooks/useFormBuilder";
 import { FormModules } from "#/shared/types/dynamic-form";
 import { useMemo } from "react";
-import { useFormTemplates } from "./useFormBuilder";
 
 const MODULE_PATHS: Record<FormModules, string> = {
   [FormModules.student]: "student-report",

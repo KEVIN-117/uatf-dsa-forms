@@ -54,7 +54,7 @@ interface AdminType extends UserType {}
  * @description Create a user with the given data and return the user.
  */
 
-const admin: Array<AdminType> = [
+const adminSeedUsers: Array<AdminType> = [
   {
     email: "admin@gmail.com",
     role: roles.ADMIN,
@@ -70,16 +70,6 @@ const directors: Array<DirectorType> = JSON.parse(
     "utf-8",
   ),
 );
-
-const admins: Array<AdminType> = [
-  {
-    email: "admin@gmail.com",
-    role: roles.ADMIN,
-    createdAt: new Date().getTime(),
-    updatedAt: new Date().getTime(),
-    name: "Admin",
-  },
-];
 
 async function CreateUser() {
   console.log("🚀 Starting seeders for user...");
@@ -122,22 +112,22 @@ async function createAdmin() {
   console.log("🚀 Starting seeders for admin...");
 
   try {
-    for (const admin of admins) {
+    for (const adminSeeder of adminSeedUsers) {
       const createdUser = await auth.createUser({
-        email: admin.email,
+        email: adminSeeder.email,
         password: "s40Oh2F#^iIBZ",
-        displayName: admin.name,
+        displayName: adminSeeder.name,
       });
       const customClaim = {
-        role: admin.role,
+        role: adminSeeder.role,
       };
       await auth.setCustomUserClaims(createdUser.uid, customClaim);
       console.log("🚀 Created admin:", createdUser.email);
       console.log("🚀 Custom claims:", customClaim);
       await db.collection("users").doc(createdUser.uid).set({
-        name: admin.name,
-        email: admin.email,
-        role: admin.role,
+        name: adminSeeder.name,
+        email: adminSeeder.email,
+        role: adminSeeder.role,
         createdAt: new Date().getTime(),
         updatedAt: new Date().getTime(),
       });

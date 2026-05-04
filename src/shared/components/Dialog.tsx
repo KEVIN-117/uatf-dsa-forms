@@ -32,7 +32,7 @@ export function AlertDialogCustom({
                         </div>
                         <AlertDialogTitle className="text-lg">{message}</AlertDialogTitle>
                     </div>
-                    <AlertDialogDescription className="pl-13">
+                    <AlertDialogDescription className="pl-12">
                         {description}
                     </AlertDialogDescription>
                 </AlertDialogHeader>

@@ -14,7 +14,7 @@ export function InlineLoader({ text = "Cargando..." }: InlineLoaderProps) {
           }}
         />
         <div
-          className="absolute inset-1.5 rounded-full border-[2px] border-secondary/10"
+          className="absolute inset-1.5 rounded-full border-2 border-secondary/10"
           style={{
             borderBottomColor: 'var(--secondary)',
             animation: 'loader-spin-reverse 1.2s linear infinite',

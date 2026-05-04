@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useFormTemplates } from "#/shared/hooks/useFormBuilder";
-import { useDirectorProgress } from "#/shared/hooks/useDirectorProgress";
+import { useDirectorProgress } from "#/features/reports/hooks/useDirectorProgress";
 import type { FormTemplateDef } from "#/shared/types/dynamic-form";
 import { useAuth } from "#/features/auth/providers/AuthProvider";
 

@@ -13,7 +13,7 @@ import {
   TeachingFreeIcons,
 } from "@hugeicons/core-free-icons";
 import { useAllResponses } from "./useFormResponses";
-import { useDirectorProgress } from "./useDirectorProgress";
+import { useDirectorProgress } from "../../features/reports/hooks/useDirectorProgress";
 import { CheckCircle2, Lock } from "lucide-react";
 import type { MenuItem, MenuItemGroup } from "#/shared/types";
 import { useAuth } from "#/features/auth/providers/AuthProvider";

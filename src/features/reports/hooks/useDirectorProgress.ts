@@ -6,8 +6,8 @@ import {
   serverTimestamp,
   setDoc,
 } from "firebase/firestore";
-import { db } from "../lib/firebase";
-import type { DirectorProgressDef } from "../types/dynamic-form";
+import { db } from "../../../shared/lib/firebase";
+import type { DirectorProgressDef } from "../../../shared/types/dynamic-form";
 import { useAuth } from "#/features/auth/providers/AuthProvider";
 
 export const useDirectorProgress = () => {
@@ -26,8 +26,8 @@ export const useDirectorProgress = () => {
 
       return {
         completedSteps: [],
-        updatedAt: 0,
-      } as DirectorProgressDef;
+        updatedAt: serverTimestamp(),
+      };
     },
     enabled: !!user,
   });

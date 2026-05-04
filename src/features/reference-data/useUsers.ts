@@ -1,7 +1,16 @@
 import { db } from "#/shared/lib/firebase";
 import type { User } from "#/shared/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, serverTimestamp, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+  updateDoc,
+} from "firebase/firestore";
 import { useEffect } from "react";
 import { useLogin } from "../auth/hooks/useAuth";
 import type { AdminLoginFormValues } from "#/shared/schemas/auth";
@@ -44,7 +53,9 @@ export const useUserByCi = (ci: string) => {
 export const useAddUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (user: Omit<User, "docId" | "createdAt" | "updatedAt">) => {
+    mutationFn: async (
+      user: Omit<User, "docId" | "createdAt" | "updatedAt">,
+    ) => {
       await addDoc(collection(db, "users"), {
         ...user,
         createdAt: Date.now(),

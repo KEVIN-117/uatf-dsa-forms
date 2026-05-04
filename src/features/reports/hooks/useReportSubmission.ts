@@ -1,11 +1,11 @@
 import { useAuth } from "#/features/auth/providers/AuthProvider";
 import { useToast } from "#/shared/components/Toast";
-import { useMarkStepCompleted } from "#/shared/hooks/useDirectorProgress";
+import { useMarkStepCompleted } from "#/features/reports/hooks/useDirectorProgress";
 import { useSubmitFormResponse } from "#/shared/hooks/useFormResponses";
-import { useGetNextTemplateUrl } from "#/shared/hooks/useNextFormRoute";
 import type { FormModules, FormTemplateDef } from "#/shared/types/dynamic-form";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { useGetNextTemplateUrl } from "./useNextFormRoute";
 
 export const useReportSubmission = (
   formId: string,
@@ -13,7 +13,7 @@ export const useReportSubmission = (
 ) => {
   const { mutateAsync } = useSubmitFormResponse();
   const { mutateAsync: markStepCompleted } = useMarkStepCompleted();
-  const { user } = useAuth();
+  const { user, faculty, facultyId, program, programId } = useAuth();
   const navigate = useNavigate();
   const nextUrl = useGetNextTemplateUrl(formId);
 
@@ -59,6 +59,10 @@ export const useReportSubmission = (
         module: module as FormModules,
         submittedBy: user?.email || "Director",
         createdAt: Date.now(),
+        facultyId: facultyId as string,
+        faculty: faculty as string,
+        programId: programId as string,
+        program: program as string,
         response: tranformedData,
       });
       await markStepCompleted(template.step);

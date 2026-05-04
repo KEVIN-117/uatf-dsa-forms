@@ -1,12 +1,12 @@
 import { useAuth } from "#/features/auth/providers/AuthProvider";
 import { useToast } from "#/shared/components/Toast";
-import { useMarkStepCompleted } from "#/shared/hooks/useDirectorProgress";
+import { useMarkStepCompleted } from "#/features/reports/hooks/useDirectorProgress";
 import { useSubmitFormResponse } from "#/shared/hooks/useFormResponses";
-import { useGetNextTemplateUrl } from "#/shared/hooks/useNextFormRoute";
 import type { FormTemplateDef } from "#/shared/types/dynamic-form";
 import { useNavigate } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
+import { useGetNextTemplateUrl } from "./useNextFormRoute";
 
 export const useTeacherBulkSubmission = (
   formId: string,
@@ -15,7 +15,7 @@ export const useTeacherBulkSubmission = (
 ) => {
   const { mutateAsync } = useSubmitFormResponse();
   const { mutateAsync: markStepCompleted } = useMarkStepCompleted();
-  const { user } = useAuth();
+  const { user, faculty, facultyId, program, programId } = useAuth();
   const navigate = useNavigate();
   const nextUrl = useGetNextTemplateUrl(formId);
 
@@ -54,7 +54,7 @@ export const useTeacherBulkSubmission = (
 
     const teacherRecord = {
       ...transformedData,
-      submittedBy: user?.displayName || "Director",
+      submittedBy: user?.email || "director@uatf.edu.bo",
       createdAt: Date.now(),
     };
 
@@ -86,6 +86,10 @@ export const useTeacherBulkSubmission = (
           module: template.module,
           submittedBy: submittedBy as string,
           createdAt: createdAt as number,
+          facultyId: facultyId as string,
+          faculty: faculty as string,
+          programId: programId as string,
+          program: program as string,
           response: pureResponseData,
         });
       });

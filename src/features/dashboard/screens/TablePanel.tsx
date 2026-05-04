@@ -89,7 +89,6 @@ export function TablePanel() {
     // 4. MAIN RENDER
     return (
         <div className="container mx-auto py-8 font-body space-y-6">
-            {/* Cabecera Principal */}
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div className="space-y-2">
                     <h1 className="text-3xl font-display font-bold text-foreground">

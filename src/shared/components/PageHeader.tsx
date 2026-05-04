@@ -18,7 +18,6 @@ export function PageHeader({ title, description, icon: Icon, action, children }:
 
   return (
     <div className="animate-fade-up relative overflow-hidden rounded-2xl border border-border/40 p-6 md:p-8 bg-linear-to-br from-primary/8 via-card to-secondary/5 glass-card">
-      {/* Decorative blobs */}
       <div className="gradient-blob -top-20 -right-20 w-48 h-48 bg-primary/5" />
       <div className="gradient-blob -bottom-16 -left-16 w-40 h-40 bg-secondary/8" />
 
