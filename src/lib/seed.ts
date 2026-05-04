@@ -7,7 +7,10 @@ import {
 } from "#/shared/types/dynamic-form";
 
 import { setDoc, doc } from "firebase/firestore";
-import directorsRaw from "./lista_directores_2026_con_emails.json";
+// Copy lista_directores_2026_con_emails.sample.json to lista_directores_2026_con_emails.json
+// and populate it with real data before running this seed script.
+// The real file is gitignored to prevent accidental PII commits.
+import directorsRaw from "./lista_directores_2026_con_emails.sample.json";
 
 export interface Modality {
   id: string;
