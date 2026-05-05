@@ -378,7 +378,6 @@ const graduationModalities: GraduationModality[] = [
   { id: "3", name: "TRABAJO DIRIGIDO", code: "TD" },
   { id: "4", name: "EXAMEN DE GRADO", code: "EG" },
   { id: "5", name: "INTERNADO ROTATORIO", code: "IR" },
-  { id: "6", name: "ADSCRIPCION", code: "ADS" },
   { id: "7", name: "GRADUACION POR EXCELENCIA", code: "GE" },
   { id: "8", name: "MODALIDAD ESPECIAL DE TITULACION", code: "MET" },
   { id: "9", name: "DIPLOMADO DE GRADUACION", code: "DG" },
@@ -417,7 +416,6 @@ const programs: Program[] = [
       "3",
       "4",
       "5",
-      "6",
       "7",
       "8",
       "9",
@@ -3694,6 +3692,10 @@ export async function seedPrograms() {
     const batchPromises = programs.map((item) =>
       setDoc(doc(db, "programs", item.id), {
         ...item,
+        allowedGraduationModalitiesIds:
+          item.allowedGraduationModalitiesIds.filter(
+            (modalityId) => modalityId !== "6",
+          ),
         createdAt: new Date(),
         updatedAt: new Date(),
       }),

@@ -1,4 +1,3 @@
-// src/components/DynamicForm.tsx
 import { useForm, useStore } from '@tanstack/react-form';
 import { Loader2, Send } from 'lucide-react';
 import type { FormTemplateDef, FormFieldDef } from '@/shared/types/dynamic-form';
@@ -103,9 +102,19 @@ export function DynamicForm({ template, onSubmit, className, submitLabel = "Envi
                 value={fieldApi.state.value}
                 onBlur={fieldApi.handleBlur}
                 disabled={isTotal}
+                // Añadimos step="1" y min="0" para que el navegador sepa que son enteros positivos
+                {...(fieldDef.type === 'number' ? { step: "1", min: "0" } : {})}
+                // Bloqueamos físicamente las teclas que no corresponden a un entero
+                onKeyDown={(e) => {
+                    if (fieldDef.type === 'number') {
+                        if (['.', ',', 'e', 'E', '+', '-'].includes(e.key)) {
+                            e.preventDefault();
+                        }
+                    }
+                }}
                 onChange={(e) => {
                     const val = e.target.value;
-                    fieldApi.handleChange(fieldDef.type === 'number' ? (val ? Number(val) : '') : val);
+                    fieldApi.handleChange(fieldDef.type === 'number' ? (val ? parseInt(val, 10) : '') : val);
                 }}
                 className={`h-11 rounded-xl form-field-premium focus-academic ${isTotal ? 'bg-muted/40 font-bold text-primary border-primary/20' : ''}`}
             />
@@ -131,6 +140,9 @@ export function DynamicForm({ template, onSubmit, className, submitLabel = "Envi
                             onChange: ({ value }) => {
                                 if (fieldDef.required && (value === undefined || value === null || value === '')) {
                                     return 'Este campo es obligatorio';
+                                }
+                                if (fieldDef.type === 'number' && value !== '' && !/^\d+$/.test(String(value))) {
+                                    return 'Este campo debe ser un número entero (sin decimales)';
                                 }
                                 return undefined;
                             },

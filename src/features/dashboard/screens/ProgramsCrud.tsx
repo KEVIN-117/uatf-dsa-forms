@@ -289,7 +289,7 @@ export function ProgramsCrud() {
                                 <p className="text-sm text-muted-foreground text-center py-4">No hay modalidades registradas.</p>
                             ) : (
                                 modalities.map((mod) => (
-                                    <div key={mod.id} className="flex items-center justify-between gap-2 py-1.5 border-b last:border-0 border-border/40">
+                                    <div key={mod.id} className="flex items-center justify-between gap-2 py-1.5 border-b last:border-0 border-border/40 hover:bg-background px-2 rounded-sm">
                                         <Label htmlFor={`mod-${mod.id}`} className="cursor-pointer text-sm font-normal flex-1">
                                             {mod.modality} <span className="text-muted-foreground ml-1">({mod.code})</span>
                                         </Label>
@@ -317,12 +317,12 @@ export function ProgramsCrud() {
                                 <p className="text-sm text-muted-foreground text-center py-4">No hay modalidades de graduación registradas.</p>
                             ) : (
                                 graduationModalities.map((mod) => (
-                                    <div key={mod.id} className="flex items-center justify-between gap-2 py-1.5 border-b last:border-0 border-border/40">
-                                        <Label htmlFor={`mod-${mod.id}`} className="cursor-pointer text-sm font-normal flex-1">
+                                    <div key={mod.id} className="flex items-center justify-between gap-2 py-1.5 border-b last:border-0 border-border/40 hover:bg-background px-2 rounded-sm">
+                                        <Label htmlFor={`gradmod-${mod.id}`} className="cursor-pointer text-sm font-normal flex-1">
                                             {mod.name} <span className="text-muted-foreground ml-1">({mod.code})</span>
                                         </Label>
                                         <Switch
-                                            id={`mod-${mod.id}`}
+                                            id={`gradmod-${mod.id}`}
                                             checked={form.allowedGraduationModalitiesIds?.includes(mod.id)}
                                             onCheckedChange={(checked) => {
                                                 const current = form.allowedGraduationModalitiesIds || []
