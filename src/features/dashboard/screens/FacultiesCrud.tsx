@@ -161,7 +161,7 @@ export function FacultiesCrud() {
 
     // 4. MAIN RENDER
     return (
-        <div className="p-6 space-y-6 max-w-5xl mx-auto">
+        <div className="p-6 space-y-6 max-w-8xl mx-auto">
             <PageHeader
                 icon={Building2}
                 title="Facultades"

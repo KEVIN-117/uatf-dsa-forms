@@ -16,7 +16,7 @@ interface ScholarshipReportProps {
 export function ScholarshipReport({ formId }: ScholarshipReportProps) {
     // 1. HOOK ZONE
     const { template, isPending, isError, error } = useFormTemplateByModuleAndId('scholarships', formId);
-    const { handleFormSubmitRequest, isDialogOpen, setIsDialogOpen, confirmSubmit, cancelSubmit } = useReportSubmission(formId, template);
+    const { handleFormSubmitRequest, isDialogOpen, setIsDialogOpen, confirmSubmit, cancelSubmit, resetForm, setResetForm } = useReportSubmission(formId, template);
 
     // 3. EARLY RETURNS
     if (isPending) {
@@ -60,6 +60,8 @@ export function ScholarshipReport({ formId }: ScholarshipReportProps) {
                 template={template}
                 className="grid grid-cols-1 md:grid-cols-2 gap-4"
                 onSubmit={handleFormSubmitRequest}
+                resetForm={resetForm}
+                setResetForm={setResetForm}
             />
 
             <AlertDialogCustom

@@ -116,7 +116,7 @@ export function DirectorsCrud() {
   if (!isAuthenticated) return null;
 
   return (
-    <div className="p-6 space-y-6 max-w-6xl mx-auto">
+    <div className="p-6 space-y-6 max-w-8xl mx-auto">
       <PageHeader
         icon={Users}
         title="Directores"

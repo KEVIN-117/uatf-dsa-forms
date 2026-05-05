@@ -108,7 +108,7 @@ export function ResponsesPanel({ formId, module }: ResponsePanelProps) {
 
     // 3. MAIN RENDER
     return (
-        <div className="p-6 space-y-6 max-w-7xl mx-auto">
+        <div className="p-6 space-y-6 max-w-8xl mx-auto">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between animate-fade-up">
                 <PageHeader
                     icon={BarChart3}

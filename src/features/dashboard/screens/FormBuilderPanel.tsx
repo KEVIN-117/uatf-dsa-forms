@@ -3,6 +3,7 @@ import {
     Plus,
     Save,
     ShieldCheck,
+    Upload,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { DynamicForm } from '#/shared/components/DynamicForm';
@@ -23,6 +24,7 @@ import { createBlankTemplate, createDefaultField, generateTemplateId, moduleOpti
 import { BuilderSkeleton } from '#/features/dynamic-form/components/BuilderSkeleton';
 import { StatePanel } from '#/features/dynamic-form/components/StatePanel';
 import { FieldEditor } from '#/features/dynamic-form/components/FieldEditor';
+import { EntityFormSheet } from "#/shared/ui/entity-form-sheet";
 import { useToast } from '#/shared/components/Toast';
 
 export default function FormBuilderPanel() {
@@ -32,6 +34,8 @@ export default function FormBuilderPanel() {
     const { mutateAsync: upsertTemplate, isPending: isPendingUpsertTemplate } = useUpsertFormTemplate();
     const [selectedTemplateId, setSelectedTemplateId] = useState<string>('new');
     const [draft, setDraft] = useState<FormTemplateDef>(() => createBlankTemplate());
+    const [sheetOpen, setSheetOpen] = useState(false);
+
 
     useEffect(() => {
         if (selectedTemplateId === 'new') {
@@ -102,6 +106,7 @@ export default function FormBuilderPanel() {
     };
 
     const handleLoadTemplate = (templateId: string) => {
+        setSheetOpen(false);
         setSelectedTemplateId(templateId);
     };
 
@@ -233,6 +238,10 @@ export default function FormBuilderPanel() {
                         <Plus className="size-4" />
                         Nueva plantilla
                     </Button>
+                    <Button type="button" variant="outline" onClick={() => setSheetOpen(true)}>
+                        <Upload className="size-4" />
+                        Cargar plantilla
+                    </Button>
                     <Button
                         type="button"
                         variant="outline"
@@ -254,46 +263,50 @@ export default function FormBuilderPanel() {
                 </div>
             </div>
 
-            <div className="grid gap-6 xl:grid-cols-[1fr_3fr_1fr]">
-                {/* Sidebar con las plantillas guardadas */}
-                <aside className="space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Plantillas guardadas</CardTitle>
-                            <CardDescription>Selecciona una plantilla para editarla o comienza una nueva.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                            <button
-                                type="button"
-                                onClick={handleCreateNew}
-                                className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left transition-colors ${selectedTemplateId === 'new'
-                                    ? 'border-primary bg-primary/5'
-                                    : 'border-border hover:bg-accent'
-                                    }`}
-                            >
-                                <span className="font-medium">Nueva plantilla</span>
-                                <span className="text-xs text-muted-foreground">Blank</span>
-                            </button>
 
-                            {templates.map((template) => (
+            <div className="grid gap-6 xl:grid-cols-[2.5fr_1.5fr]">
+                <EntityFormSheet title={"Cargar plantilla"} description="Carga una plantilla existente para editarla o crea una nueva." open={sheetOpen} onOpenChange={setSheetOpen} side='bottom' className='max-h-[75vh] overflow-y-auto'>
+
+                    {/* Sidebar con las plantillas guardadas */}
+                    <div className="space-y-6">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Plantillas guardadas</CardTitle>
+                                <CardDescription>Selecciona una plantilla para editarla o comienza una nueva.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-2 overflow-y-auto grid grid-cols-3 gap-4">
                                 <button
-                                    key={template.id}
                                     type="button"
-                                    onClick={() => handleLoadTemplate(template.id)}
-                                    className={`flex w-full flex-col gap-1 rounded-lg border px-3 py-2 text-left transition-colors ${selectedTemplateId === template.id
+                                    onClick={handleCreateNew}
+                                    className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left transition-colors ${selectedTemplateId === 'new'
                                         ? 'border-primary bg-primary/5'
                                         : 'border-border hover:bg-accent'
                                         }`}
                                 >
-                                    <span className="font-medium">{template.title}</span>
-                                    <span className="text-xs text-muted-foreground">
-                                        {template.id} · {template.module}
-                                    </span>
+                                    <span className="font-medium">Nueva plantilla</span>
+                                    <span className="text-xs text-muted-foreground">Blank</span>
                                 </button>
-                            ))}
-                        </CardContent>
-                    </Card>
-                </aside>
+
+                                {templates.map((template) => (
+                                    <button
+                                        key={template.id}
+                                        type="button"
+                                        onClick={() => handleLoadTemplate(template.id)}
+                                        className={`flex w-full flex-col gap-1 rounded-lg border px-3 py-2 text-left transition-colors ${selectedTemplateId === template.id
+                                            ? 'border-primary bg-primary/5'
+                                            : 'border-border hover:bg-accent'
+                                            }`}
+                                    >
+                                        <span className="font-medium">{template.title}</span>
+                                        <span className="text-xs text-muted-foreground">
+                                            {template.id} · {template.module}
+                                        </span>
+                                    </button>
+                                ))}
+                            </CardContent>
+                        </Card>
+                    </div>
+                </EntityFormSheet>
 
                 {/* Panel de edición */}
                 <main className="space-y-6">
@@ -347,6 +360,8 @@ export default function FormBuilderPanel() {
                                         message: "Revisa la consola para ver la estructura de los datos.",
                                     });
                                 }}
+                                resetForm={false}
+                                setResetForm={() => { }}
                             />
                         </CardContent>
                     </Card>

@@ -85,9 +85,11 @@ export const useProgramById = (programId: string | null) => {
 export const useAddProgram = () => {
   return useMutation({
     mutationFn: async (newProgram: Omit<Program, "docId">) => {
-      const programsRef = collection(db, "programs");
+      // Usamos setDoc con el id manual como docId para mantener consistencia con el seed
+      // y con hooks como useProgramModalities que esperan que el docId sea el id del programa.
+      const docRef = doc(db, "programs", newProgram.id);
 
-      return await addDoc(programsRef, {
+      return await setDoc(docRef, {
         ...newProgram,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),

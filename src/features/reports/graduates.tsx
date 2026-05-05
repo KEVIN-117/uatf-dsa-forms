@@ -7,6 +7,10 @@ import { AlertDialogCustom } from "#/shared/components/Dialog";
 import { useReportSubmission } from "./hooks/useReportSubmission";
 import { GraduationCap } from "lucide-react";
 import { PageHeader } from "#/shared/components/PageHeader";
+import { useProgramGraduationModalities } from "../reference-data/hooks/useProgramModalities";
+import { useAuth } from "../auth/providers/AuthProvider";
+import { useMemo } from "react";
+import type { FormTemplateDef } from "#/shared/types/dynamic-form";
 
 interface GraduatesReportProps {
     formId: string;
@@ -15,7 +19,30 @@ interface GraduatesReportProps {
 export function GraduatesReport({ formId }: GraduatesReportProps) {
     // 1. HOOK ZONE
     const { template, isPending, isError, error } = useFormTemplateByModuleAndId('graduate', formId);
-    const { handleFormSubmitRequest, isDialogOpen, setIsDialogOpen, confirmSubmit, cancelSubmit } = useReportSubmission(formId, template);
+    const { programId } = useAuth()
+    const { handleFormSubmitRequest, isDialogOpen, setIsDialogOpen, confirmSubmit, cancelSubmit, resetForm, setResetForm } = useReportSubmission(formId, template);
+    const { data: allowedGraduationModalities } = useProgramGraduationModalities(programId ?? "");
+
+    const filteredTemplate = useMemo(() => {
+        if (!template) return;
+
+        if (!allowedGraduationModalities || allowedGraduationModalities.length === 0) return template;
+
+        return {
+            ...template,
+            fields: template.fields.map((field) => {
+                const isGraduationModalityField = field.type === "select" && (field.name === "modalidad" || field.label.toLocaleLowerCase().includes("modalidad"))
+
+                if (isGraduationModalityField && field.options) {
+                    return {
+                        ...field,
+                        options: field.options.filter((option) => allowedGraduationModalities.includes(String(option.value)))
+                    }
+                }
+                return field;
+            })
+        } as FormTemplateDef
+    }, [template, allowedGraduationModalities])
 
     // 3. EARLY RETURNS
     if (isPending) {
@@ -54,9 +81,11 @@ export function GraduatesReport({ formId }: GraduatesReportProps) {
                 description="Completa los campos requeridos para enviar el reporte."
             />
             <DynamicForm
-                template={template}
+                template={filteredTemplate!}
                 className="grid grid-cols-1 md:grid-cols-2 gap-4"
                 onSubmit={handleFormSubmitRequest}
+                resetForm={resetForm}
+                setResetForm={setResetForm}
             />
             <AlertDialogCustom
                 open={isDialogOpen}

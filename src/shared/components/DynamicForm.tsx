@@ -6,51 +6,70 @@ import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Button } from '../ui/button';
 import { FormContainer } from './FormContainer';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 interface DynamicFormProps {
     template: FormTemplateDef;
     onSubmit: (data: Record<string, any>, module: string) => Promise<void>;
     className?: string;
     submitLabel?: string;
+    resetForm: boolean;
+    setResetForm: (value: boolean) => void;
 }
 
-export function DynamicForm({ template, onSubmit, className, submitLabel = "Enviar Reporte" }: DynamicFormProps) {
+export function DynamicForm({ template, onSubmit, className, submitLabel = "Enviar Reporte", resetForm, setResetForm }: DynamicFormProps) {
     const defaultValues = template.fields.reduce((acc, field) => {
         acc[`${field.id}@${field.name}`] = field.type === 'number' ? '' : '';
         return acc;
     }, {} as Record<string, any>);
 
+    const totalField = useMemo(
+        () =>
+            template.fields.find(
+                (field) => field.name.toLowerCase() === 'total' || field.label.toLowerCase() === 'total',
+            ),
+        [template.fields],
+    );
+
+    const totalKey = useMemo(
+        () => (totalField ? `${totalField.id}@${totalField.name}` : null),
+        [totalField],
+    );
+
     const form = useForm({
         defaultValues,
-        onSubmit: async ({ value }) => {
+        onSubmit: async ({ value, formApi }) => {
             await onSubmit(value, template.module);
+            if (resetForm) {
+                form.reset();
+                formApi.reset();
+                setResetForm(false);
+            }
         },
     });
 
     const formValues = useStore(form.store, (state) => state.values);
 
     useEffect(() => {
-        const totalField = template.fields.find((field) => field.name.toLowerCase() === 'total' || field.label.toLowerCase() === 'total')
-        if (!totalField) return;
+        if (!totalField || !totalKey) return;
 
-        let calculateTotal = 0;
-        Object.entries(formValues).forEach(([key, value]) => {
-            const fieldId = key.split("@")[0]
-
-            const fieldDef = template.fields.find((field) => field.id === fieldId || field.name === key)
-            if (fieldDef && fieldDef.type === "number" && fieldDef.id !== totalField.id) {
-                calculateTotal += Number(value) || 0;
+        const calculatedTotal = template.fields.reduce((sum, field) => {
+            if (field.id === totalField.id || field.type !== 'number') {
+                return sum;
             }
-        })
 
-        const totalKey = Object.keys(formValues).find((key) => key.startsWith(`${totalField.id}@`) || key === totalField.name);
+            const fieldValue = formValues[`${field.id}@${field.name}`];
+            const numericValue = typeof fieldValue === 'number' ? fieldValue : Number(fieldValue);
 
-        if (totalKey && formValues[totalKey] !== calculateTotal) {
-            form.setFieldValue(totalKey, calculateTotal);
+            return sum + (Number.isFinite(numericValue) ? numericValue : 0);
+        }, 0);
+
+        const currentTotal = Number(formValues[totalKey]);
+
+        if (!Number.isFinite(currentTotal) || currentTotal !== calculatedTotal) {
+            form.setFieldValue(totalKey, calculatedTotal);
         }
-
-    }, [formValues, template.fields, form.setFieldValue]);
+    }, [formValues, template.fields, totalField, totalKey, form.setFieldValue]);
 
     const renderFieldInput = (fieldDef: FormFieldDef, fieldApi: any) => {
         const isTotal = fieldDef.name.toLowerCase() === 'total' || fieldDef.label.toLowerCase() === 'total';

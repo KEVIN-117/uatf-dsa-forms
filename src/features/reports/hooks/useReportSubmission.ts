@@ -14,6 +14,7 @@ export const useReportSubmission = (
   const { mutateAsync } = useSubmitFormResponse();
   const { mutateAsync: markStepCompleted } = useMarkStepCompleted();
   const { user, faculty, facultyId, program, programId } = useAuth();
+  const [resetForm, setResetForm] = useState(false);
   const navigate = useNavigate();
   const nextUrl = useGetNextTemplateUrl(formId);
 
@@ -66,7 +67,6 @@ export const useReportSubmission = (
         response: tranformedData,
       });
       await markStepCompleted(template.step);
-
       useToast({
         title: "Reporte guardado exitosamente",
         type: "success",
@@ -74,7 +74,7 @@ export const useReportSubmission = (
         position: "top-right",
         message: `El reporte ha sido guardado correctamente. ${user.displayName}`,
       });
-
+      setResetForm(true);
       setPendingData(null);
       if (nextUrl) {
         navigate({ to: nextUrl, replace: true });
@@ -124,5 +124,7 @@ export const useReportSubmission = (
     handleFormSubmitRequest,
     confirmSubmit,
     cancelSubmit,
+    resetForm,
+    setResetForm,
   };
 };

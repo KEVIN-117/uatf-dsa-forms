@@ -16,11 +16,13 @@ export const useTeacherBulkSubmission = (
   const { mutateAsync } = useSubmitFormResponse();
   const { mutateAsync: markStepCompleted } = useMarkStepCompleted();
   const { user, faculty, facultyId, program, programId } = useAuth();
+
   const navigate = useNavigate();
   const nextUrl = useGetNextTemplateUrl(formId);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [teachers, setTeachers] = useState<Record<string, unknown>[]>([]);
+  const [resetForm, setResetForm] = useState(false);
 
   const columns = useMemo<ColumnDef<Record<string, unknown>, any>[]>(() => {
     if (!template) return [];
@@ -97,6 +99,7 @@ export const useTeacherBulkSubmission = (
 
       await markStepCompleted(template.step);
 
+      setResetForm(true);
       useToast({
         title: "Reporte guardado exitosamente",
         type: "success",
@@ -133,5 +136,7 @@ export const useTeacherBulkSubmission = (
     executeSubmitBulk,
     isDialogOpen,
     setIsDialogOpen,
+    resetForm,
+    setResetForm,
   };
 };

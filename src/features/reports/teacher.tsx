@@ -34,7 +34,7 @@ export function TeacherReport({ formId }: TeacherReportProps) {
         },
     ];
 
-    const { columns, teachers, handleAddTeacherToMemory, executeSubmitBulk, isDialogOpen, setIsDialogOpen } = useTeacherBulkSubmission(formId, baseColumns, template);
+    const { columns, teachers, handleAddTeacherToMemory, executeSubmitBulk, isDialogOpen, setIsDialogOpen, resetForm, setResetForm } = useTeacherBulkSubmission(formId, baseColumns, template);
 
     if (isPending) {
         return <DynamicReportPageSkeleton />;
@@ -82,6 +82,8 @@ export function TeacherReport({ formId }: TeacherReportProps) {
                         onSubmit={handleAddTeacherToMemory}
                         className="grid grid-cols-1 md:grid-cols-3 gap-4"
                         submitLabel="Agregar a la lista"
+                        resetForm={resetForm}
+                        setResetForm={setResetForm}
                     />
                 </CardContent>
             </Card>

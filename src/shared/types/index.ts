@@ -27,6 +27,8 @@ export interface Program {
   facultyId: string; // Relación con Faculty
   campusId: string; // id_sede
   level: string; // LIC, TUS, TUM (del archivo fac_y_carreras)
+  allowedModalitiesIds: string[];
+  allowedGraduationModalitiesIds: string[];
 }
 
 export type IconSvgObject =

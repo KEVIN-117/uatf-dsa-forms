@@ -8,6 +8,10 @@ import { useReportSubmission } from "./hooks/useReportSubmission";
 import { PageHeader } from "#/shared/components/PageHeader";
 
 import { User } from "lucide-react";
+import { useProgramModalities } from "../reference-data/hooks/useProgramModalities";
+import { useAuth } from "../auth/providers/AuthProvider";
+import { useMemo } from "react";
+import type { FormTemplateDef } from "#/shared/types/dynamic-form";
 
 
 interface StudentReportProps {
@@ -17,8 +21,32 @@ interface StudentReportProps {
 export function StudentReport({ formId }: StudentReportProps) {
     // 1. HOOK ZONE
     const { template, isPending, isError, error } = useFormTemplateByModuleAndId('student', formId);
+    const { programId } = useAuth()
 
-    const { handleFormSubmitRequest, isDialogOpen, setIsDialogOpen, confirmSubmit, cancelSubmit } = useReportSubmission(formId, template);
+    const { handleFormSubmitRequest, isDialogOpen, setIsDialogOpen, confirmSubmit, cancelSubmit, resetForm, setResetForm } = useReportSubmission(formId, template);
+    const { data: allowedModalities } = useProgramModalities(programId ?? "");
+
+    const filteredTemplate = useMemo(() => {
+        if (!template) return;
+
+        if (!allowedModalities || allowedModalities.length === 0) return template;
+
+        return {
+            ...template,
+            fields: template.fields.map(field => {
+                const isModalityField = field.type === "select" && (field.name === 'modalidad' || field.label.toLocaleLowerCase().includes('modalidad'))
+
+                if (isModalityField && field.options) {
+                    return {
+                        ...field,
+                        options: field.options.filter(opt => allowedModalities.includes(String(opt.value)))
+                    };
+                }
+                return field;
+            })
+        } as FormTemplateDef;
+
+    }, [template, allowedModalities])
 
     // 3. EARLY RETURNS
     if (isPending) {
@@ -59,9 +87,11 @@ export function StudentReport({ formId }: StudentReportProps) {
             />
 
             <DynamicForm
-                template={template}
+                template={filteredTemplate!}
                 className="grid grid-cols-1 md:grid-cols-2 gap-4"
                 onSubmit={handleFormSubmitRequest}
+                resetForm={resetForm}
+                setResetForm={setResetForm}
             />
 
             <AlertDialogCustom
