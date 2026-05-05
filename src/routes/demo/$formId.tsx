@@ -4,15 +4,20 @@ import { useFormTemplateById } from '#/shared/hooks/useFormBuilder';
 import { auth } from '#/shared/lib/firebase';
 import { DynamicReportPageSkeleton } from '#/shared/components/DynamicReportPageSkeleton';
 import { DynamicReportPageState } from '#/shared/components/DynamicReportPageState';
+import { RouteErrorState, RouteNotFoundState } from '#/shared/components/routing/RouteState';
 
 export const Route = createFileRoute('/demo/$formId')({
   component: DynamicReportPage,
+  notFoundComponent: () => <RouteNotFoundState scope="formularios demo" />,
+  errorComponent: ({ error }) => <RouteErrorState error={error} scope="formularios demo" />,
 });
 
 function DynamicReportPage() {
+  // 1. HOOK ZONE
   const { formId } = Route.useParams();
   const { template, isPending, isError, error } = useFormTemplateById(formId);
 
+  // 2. FUNCTIONS AND LOGIC
   const handleFormSubmit = async (
     data: Record<string, unknown>,
     module: string,
@@ -30,6 +35,7 @@ function DynamicReportPage() {
     }
   };
 
+  // 3. EARLY RETURNS
   if (isPending) {
     return <DynamicReportPageSkeleton />;
   }
@@ -51,6 +57,7 @@ function DynamicReportPage() {
     throw notFound();
   }
 
+  // 4. MAIN RENDER
   return (
     <div className="container max-w-3xl mx-auto py-10">
       <div className="mb-8">

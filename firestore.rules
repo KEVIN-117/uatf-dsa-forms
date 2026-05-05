@@ -2,8 +2,129 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // ==========================================
+    // FUNCIONES AUXILIARES
+    // ==========================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      // Verifica si el token tiene el claim de 'administrator' (roles.ADMIN en seeders)
+      return isAuthenticated() && request.auth.token.role == 'administrator';
+    }
+
+    function isDirector() {
+      // Verifica si el token tiene el claim de 'director' (roles.DIRECTOR en seeders)
+      return isAuthenticated() && request.auth.token.role == 'director';
+    }
+
+    // ==========================================
+    // REGLAS POR COLECCIÓN
+    // ==========================================
+
+    // 1. Colección USERS
+    match /users/{userId} {
+      // Permitimos lectura para que el login de directores por CI funcione 
+      // (el componente actual busca en toda la colección)
+      allow read: if true;
+      // Los administradores tienen control total.
+      allow write: if isAdmin();
+    }
+
+    // 2. DATOS DE REFERENCIA (Lectura para todos, Gestión para Admin)
+    match /faculties/{id} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    match /programs/{id} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    match /modalities/{id} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    match /graduation_modalities/{id} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    match /teachingCategories/{id} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    match /workloads/{id} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    match /teachingAcademicLevels/{id} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    match /academicLevels/{id} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    match /scholarshipsTypes/{id} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    match /form_templates/{id} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // 3. RESPUESTAS (Filtro por programa para directores)
+    // El Admin tiene gestión total vía la regla de admin más abajo o explícita aquí.
+    
+    match /student/{responseId} {
+      allow read, write: if isAdmin();
+      allow create: if isDirector();
+      // Un director solo puede ver respuestas de su propia carrera (programId)
+      allow read: if isDirector() && (resource == null || resource.data.programId == request.auth.token.programId);
+      allow update, delete: if false; 
+    }
+    
+    match /teacher/{responseId} {
+      allow read, write: if isAdmin();
+      allow create: if isDirector();
+      allow read: if isDirector() && (resource == null || resource.data.programId == request.auth.token.programId);
+      allow update, delete: if false; 
+    }
+    
+    match /graduate/{responseId} {
+      allow read, write: if isAdmin();
+      allow create: if isDirector();
+      allow read: if isDirector() && (resource == null || resource.data.programId == request.auth.token.programId);
+      allow update, delete: if false; 
+    }
+
+    match /scholarships/{responseId} {
+      allow read, write: if isAdmin();
+      allow create: if isDirector();
+      allow read: if isDirector() && (resource == null || resource.data.programId == request.auth.token.programId);
+      allow update, delete: if false; 
+    }
+
+    // 4. ESTADO DE PROGRESO / DIRECTOR PROGRESS
+    match /form-status/{statusId} {
+      allow read, write: if isAdmin() || (isDirector() && request.auth.uid == statusId);
+    }
+
+    match /director_progress/{progressId} {
+      allow read, write: if isAdmin() || (isDirector() && request.auth.uid == progressId);
+    }
+
+    // ==========================================
+    // REGLA GLOBAL DE ADMINISTRADOR Y CIERRE
+    // ==========================================
     match /{document=**} {
-      allow read, write: if true;
+      // El administrador puede gestionar ABSOLUTAMENTE TODO.
+      allow read, write: if isAdmin();
+      // Denegar todo lo demás por defecto.
+      allow read, write: if false;
     }
   }
 }

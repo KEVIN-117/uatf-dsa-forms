@@ -11,3 +11,6 @@ dist-ssr
 .vinxi
 __unconfig*
 todos.json
+serviceAccountKey.json
+/lib/*.json
+src/lib/lista_directores_2026_con_emails.json

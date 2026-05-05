@@ -3,12 +3,14 @@ import { notFound } from '@tanstack/react-router';
 import { DynamicReportPageSkeleton } from "#/shared/components/DynamicReportPageSkeleton";
 import { DynamicReportPageState } from "#/shared/components/DynamicReportPageState";
 import { useFormTemplateByModuleAndId } from "#/shared/hooks/useFormBuilder";
-import { useSubmitFormResponse } from "#/shared/hooks/useFormResponses";
-import type { FormModules } from "#/shared/types/dynamic-form";
-import { useDirectorProfile } from "../director-profile/providers/DirectorProfileProvider";
-import { useState } from "react";
 import { AlertDialogCustom } from "#/shared/components/Dialog";
-import { useToast } from "#/shared/components/Toast";
+import { Card, CardContent, CardHeader, CardTitle } from "#/shared/ui/card";
+import { DataTable } from "#/shared/ui/data-table";
+import type { ColumnDef } from "@tanstack/react-table";
+import { Button } from "#/shared/ui/button";
+import { SaveAll, User } from "lucide-react";
+import { useTeacherBulkSubmission } from "./hooks/useTeacherBulkSubmission";
+import { PageHeader } from "#/shared/components/PageHeader";
 
 interface TeacherReportProps {
     formId: string;
@@ -17,62 +19,22 @@ interface TeacherReportProps {
 export function TeacherReport({ formId }: TeacherReportProps) {
     const { template, isPending, isError, error } = useFormTemplateByModuleAndId('teacher', formId);
 
-    const { mutateAsync } = useSubmitFormResponse();
-    const { profile } = useDirectorProfile();
+    const baseColumns: ColumnDef<Record<string, unknown>, any>[] = [
+        {
+            accessorKey: 'submittedBy',
+            header: 'Registrado por',
+            cell: (info) => <span className="font-medium text-primary">{info.getValue()}</span>,
+        },
+        {
+            accessorKey: 'createdAt',
+            header: 'Fecha de Registro',
+            cell: (info) => new Date(info.getValue()).toLocaleDateString('es-ES', {
+                day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+            }),
+        },
+    ];
 
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [pendingData, setPendingData] = useState<{ data: Record<string, unknown>, module: string } | null>(null);
-
-    const handleFormSubmitRequest = async (data: Record<string, unknown>, module: string) => {
-        setPendingData({ data, module });
-        setIsDialogOpen(true);
-    };
-
-    const executeSubmit = async () => {
-        if (!pendingData || !template || !profile) return;
-
-        const { data, module } = pendingData;
-        try {
-            const tranformedData = Object.entries(data).reduce((acc, [key, value]) => {
-                const [_id, name] = key.split('@');
-                acc[name] = value;
-                return acc;
-            }, {} as Record<string, unknown>);
-
-            if (!template) {
-                throw new Error('Template no encontrado');
-            }
-            if (!profile) {
-                throw new Error('Profile no encontrado');
-            }
-            await mutateAsync({
-                id: crypto.randomUUID(),
-                templateId: template?.id,
-                module: module as FormModules,
-                submittedBy: profile?.fullName,
-                createdAt: Date.now(),
-                response: tranformedData,
-            });
-
-            useToast({
-                title: "Reporte guardado exitosamente",
-                type: "success",
-                duration: 5000,
-                position: 'top-right',
-                message: `El reporte ha sido guardado correctamente. ${profile?.fullName}`,
-            });
-            setPendingData(null);
-        } catch (error: unknown) {
-            useToast({
-                title: "Error",
-                type: "error",
-                duration: 5000,
-                closeButton: true,
-                position: 'top-right',
-                message: error instanceof Error ? error.message : "Error desconocido",
-            });
-        }
-    };
+    const { columns, teachers, handleAddTeacherToMemory, executeSubmitBulk, isDialogOpen, setIsDialogOpen, resetForm, setResetForm } = useTeacherBulkSubmission(formId, baseColumns, template);
 
     if (isPending) {
         return <DynamicReportPageSkeleton />;
@@ -96,7 +58,7 @@ export function TeacherReport({ formId }: TeacherReportProps) {
     }
 
     return (
-        <div className="container mx-auto py-10">
+        <div className="w-full max-w-7xl mx-auto py-2 space-y-4">
             <div className="mb-8">
                 <span className="text-xs font-bold uppercase tracking-widest text-primary/60">
                     Módulo: {template.module.replace('_', ' ')}
@@ -104,10 +66,63 @@ export function TeacherReport({ formId }: TeacherReportProps) {
                 <h1 className="text-3xl font-display font-bold mt-2">Gestión de Reportes</h1>
             </div>
 
-            <DynamicForm
-                template={template}
-                onSubmit={handleFormSubmitRequest}
+            <PageHeader
+                icon={User}
+                title={`Formulario: ${template.title}`}
+                description="Completa los campos requeridos para enviar el reporte."
             />
+
+            <Card className="shadow-sm w-full">
+                <CardHeader>
+                    <CardTitle className="text-lg">Añadir Docente</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <DynamicForm
+                        template={template}
+                        onSubmit={handleAddTeacherToMemory}
+                        className="grid grid-cols-1 md:grid-cols-3 gap-4"
+                        submitLabel="Agregar a la lista"
+                        resetForm={resetForm}
+                        setResetForm={setResetForm}
+                    />
+                </CardContent>
+            </Card>
+
+            <div className="grid grid-cols-1 gap-8">
+
+                <div className="flex flex-col gap-4">
+                    <Card className="shadow-sm border-border flex-1">
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <CardTitle className="text-lg">Docentes por registrar ({teachers.length})</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-4 sm:p-6">
+                            {teachers.length === 0 ? (
+                                <div className="h-40 flex items-center justify-center border-2 border-dashed rounded-lg text-muted-foreground">
+                                    No hay docentes en la lista. Llena el formulario para comenzar.
+                                </div>
+                            ) : (
+                                <DataTable<Record<string, unknown>, unknown>
+                                    columns={columns}
+                                    data={teachers}
+                                    showColumnToggle
+                                />
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    <div className="flex justify-end">
+                        <Button
+                            size="lg"
+                            disabled={teachers.length === 0}
+                            onClick={() => setIsDialogOpen(true)}
+                            className="w-full sm:w-auto font-bold"
+                        >
+                            <SaveAll className="mr-2 size-5" />
+                            Finalizar y Enviar ({teachers.length}) Docentes
+                        </Button>
+                    </div>
+                </div>
+            </div>
 
             <AlertDialogCustom
                 open={isDialogOpen}
@@ -118,11 +133,10 @@ export function TeacherReport({ formId }: TeacherReportProps) {
                 cancelLabel="Revisar de nuevo"
                 onConfirm={() => {
                     setIsDialogOpen(false);
-                    executeSubmit();
+                    executeSubmitBulk();
                 }}
                 onCancel={() => {
                     setIsDialogOpen(false);
-                    setPendingData(null);
                 }}
             />
         </div>

@@ -27,6 +27,8 @@ export interface Program {
   facultyId: string; // Relación con Faculty
   campusId: string; // id_sede
   level: string; // LIC, TUS, TUM (del archivo fac_y_carreras)
+  allowedModalitiesIds: string[];
+  allowedGraduationModalitiesIds: string[];
 }
 
 export type IconSvgObject =
@@ -43,16 +45,37 @@ export type IconSvgObject =
       },
     ])[];
 
-export type MenuItem = {
+export interface MenuItem {
   id: string;
   name: string;
-  icon: IconSvgObject;
+  icon: any;
   href: string;
-};
+  isLocked: boolean;
+  isCompleted: boolean;
+}
 
-export type MenuItemGroup = {
+export interface MenuItemGroup {
   id: string;
   name: string;
-  icon: IconSvgObject;
+  icon: any;
   children: MenuItem[];
-};
+}
+
+export enum Role {
+  ADMIN = "administrator",
+  DIRECTOR = "director",
+}
+
+export interface User {
+  docId?: string;
+  ci: number;
+  createdAt: number;
+  email: string;
+  facultyId: string;
+  maternalSurname: string;
+  name: string;
+  paternalSurname: string;
+  programId: string;
+  role: Role;
+  updatedAt: number;
+}

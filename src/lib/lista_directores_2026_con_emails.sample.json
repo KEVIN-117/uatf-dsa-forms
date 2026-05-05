@@ -1,0 +1,35 @@
+[
+    {
+        "email": "director.ejemplo1@programa1.edu.bo",
+        "name": "Nombre1",
+        "ci": 1000001,
+        "paternalSurname": "ApellidoPaterno1",
+        "maternalSurname": "ApellidoMaterno1",
+        "facultyId": "A",
+        "faculty": "FAC. DE ARTES",
+        "programId": "ARM",
+        "program": "Artes Musicales"
+    },
+    {
+        "email": "director.ejemplo2@programa2.edu.bo",
+        "name": "Nombre2",
+        "ci": 1000002,
+        "paternalSurname": "ApellidoPaterno2",
+        "maternalSurname": "ApellidoMaterno2",
+        "facultyId": "B",
+        "faculty": "FAC. DE CC AA Y PP",
+        "programId": "AGR",
+        "program": "Ingenieria Agronomica"
+    },
+    {
+        "email": "director.ejemplo3@programa3.edu.bo",
+        "name": "Nombre3",
+        "ci": "1000003-1E",
+        "paternalSurname": "ApellidoPaterno3",
+        "maternalSurname": "ApellidoMaterno3",
+        "facultyId": "C",
+        "faculty": "FAC. DE CC EE FF Y AA",
+        "programId": "ECO",
+        "program": "Economia"
+    }
+]

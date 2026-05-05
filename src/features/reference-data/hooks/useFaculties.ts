@@ -51,6 +51,20 @@ export const useFacultiesById = (facultyId: string) => {
   return faculties.data?.find((faculty) => faculty.id === facultyId);
 };
 
+export const useFacultyById = (facultyId: string | null) => {
+  const { data: faculties } = useFaculties();
+
+  return useQuery({
+    queryKey: ["facultyById", facultyId, faculties?.length],
+    queryFn: () => {
+      if (!facultyId || !faculties) return null;
+      return faculties.find((faculty) => faculty.id === facultyId) || null;
+    },
+    enabled: !!facultyId && !!faculties && faculties.length > 0,
+    staleTime: Infinity,
+  });
+};
+
 export const useAddFaculty = () => {
   return useMutation({
     mutationFn: async (newFaculty: Omit<Faculty, "docId">) => {

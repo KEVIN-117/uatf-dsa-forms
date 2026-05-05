@@ -1,9 +1,12 @@
 import { Divider } from '#/shared/components/Divider'
 import { createFileRoute } from '@tanstack/react-router'
 import { MapPin, Users, Award } from 'lucide-react'
+import { RouteErrorState, RouteNotFoundState } from '#/shared/components/routing/RouteState'
 
 export const Route = createFileRoute('/')({
   component: HomePage,
+  notFoundComponent: () => <RouteNotFoundState scope="inicio" />,
+  errorComponent: ({ error }) => <RouteErrorState error={error} scope="inicio" />,
 })
 
 function HomePage() {

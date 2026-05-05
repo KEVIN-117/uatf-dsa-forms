@@ -12,7 +12,7 @@ import {
 } from "firebase/firestore";
 import { useEffect } from "react";
 import { db } from "#/shared/lib/firebase";
-import type { Modality } from "#/shared/types";
+import type { GraduationModality, Modality } from "#/shared/types";
 
 export const useModalities = () => {
   const queryClient = useQueryClient();
@@ -42,6 +42,46 @@ export const useModalities = () => {
     queryKey: ["modalities"],
     queryFn: () =>
       (queryClient.getQueryData(["modalities"]) as Modality[]) || [],
+    staleTime: Infinity,
+  });
+};
+
+export const useGraduationModalities = () => {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const q = query(
+      collection(db, "graduation_modalities"),
+      orderBy("id", "asc"),
+    );
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const graduationModalities = snapshot.docs.map((docSnap) => ({
+          docId: docSnap.id,
+          ...docSnap.data(),
+        })) as GraduationModality[];
+
+        queryClient.setQueryData(
+          ["graduationModalities"],
+          graduationModalities,
+        );
+      },
+      (error) => {
+        console.error("Error escuchando modalidades de graduación:", error);
+      },
+    );
+
+    return () => unsubscribe();
+  }, [queryClient]);
+
+  return useQuery({
+    queryKey: ["graduationModalities"],
+    queryFn: () =>
+      (queryClient.getQueryData([
+        "graduationModalities",
+      ]) as GraduationModality[]) || [],
     staleTime: Infinity,
   });
 };

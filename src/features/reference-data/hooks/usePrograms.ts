@@ -18,7 +18,10 @@ export const usePrograms = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const programsQuery = query(collection(db, "programs"), orderBy("name", "asc"));
+    const programsQuery = query(
+      collection(db, "programs"),
+      orderBy("name", "asc"),
+    );
 
     const unsubscribe = onSnapshot(
       programsQuery,
@@ -48,16 +51,45 @@ export const useProgramsByFaculty = (facultyId: string) => {
   const programs = usePrograms();
 
   return (
-    programs.data?.filter((program) => program.facultyId === facultyId) ?? []
+    programs.data?.filter((program) => program.facultyId === facultyId) || []
   );
+};
+export const useProgramByFaculty = (facultyId: string | null) => {
+  const { data: programs } = usePrograms();
+
+  return useQuery({
+    queryKey: ["programByFaculty", facultyId, programs?.length],
+    queryFn: () => {
+      if (!facultyId || !programs) return null;
+      return programs.find((program) => program.facultyId === facultyId) || null;
+    },
+    enabled: !!facultyId && !!programs && programs.length > 0,
+    staleTime: Infinity,
+  });
+};
+
+export const useProgramById = (programId: string | null) => {
+  const { data: programs } = usePrograms();
+
+  return useQuery({
+    queryKey: ["programById", programId, programs?.length],
+    queryFn: () => {
+      if (!programId || !programs) return null;
+      return programs.find((program) => program.id === programId) || null;
+    },
+    enabled: !!programId && !!programs && programs.length > 0,
+    staleTime: Infinity,
+  });
 };
 
 export const useAddProgram = () => {
   return useMutation({
     mutationFn: async (newProgram: Omit<Program, "docId">) => {
-      const programsRef = collection(db, "programs");
+      // Usamos setDoc con el id manual como docId para mantener consistencia con el seed
+      // y con hooks como useProgramModalities que esperan que el docId sea el id del programa.
+      const docRef = doc(db, "programs", newProgram.id);
 
-      return await addDoc(programsRef, {
+      return await setDoc(docRef, {
         ...newProgram,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),

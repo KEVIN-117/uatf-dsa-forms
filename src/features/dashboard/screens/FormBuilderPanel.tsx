@@ -3,6 +3,7 @@ import {
     Plus,
     Save,
     ShieldCheck,
+    Upload,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { DynamicForm } from '#/shared/components/DynamicForm';
@@ -23,14 +24,18 @@ import { createBlankTemplate, createDefaultField, generateTemplateId, moduleOpti
 import { BuilderSkeleton } from '#/features/dynamic-form/components/BuilderSkeleton';
 import { StatePanel } from '#/features/dynamic-form/components/StatePanel';
 import { FieldEditor } from '#/features/dynamic-form/components/FieldEditor';
+import { EntityFormSheet } from "#/shared/ui/entity-form-sheet";
 import { useToast } from '#/shared/components/Toast';
 
 export default function FormBuilderPanel() {
+    // 1. HOOK ZONE
     const { isLoading, isAuthenticated } = useProtectedRoute();
     const { data: templates = [], isPending, isError, error } = useFormTemplates();
     const { mutateAsync: upsertTemplate, isPending: isPendingUpsertTemplate } = useUpsertFormTemplate();
     const [selectedTemplateId, setSelectedTemplateId] = useState<string>('new');
     const [draft, setDraft] = useState<FormTemplateDef>(() => createBlankTemplate());
+    const [sheetOpen, setSheetOpen] = useState(false);
+
 
     useEffect(() => {
         if (selectedTemplateId === 'new') {
@@ -45,18 +50,7 @@ export default function FormBuilderPanel() {
 
     const previewTemplate = useMemo(() => normalizeTemplate(draft), [draft]);
 
-    if (isLoading || isPending) return <BuilderSkeleton />;
-    if (!isAuthenticated) return null;
-
-    if (isError) {
-        return (
-            <StatePanel
-                title="No se pudo cargar el builder"
-                description={error instanceof Error ? error.message : 'No fue posible leer las plantillas desde Firestore.'}
-            />
-        );
-    }
-
+    // 2. FUNCTIONS AND LOGIC
     const handleSave = async () => {
         const cleaned = normalizeTemplate(draft);
 
@@ -112,6 +106,7 @@ export default function FormBuilderPanel() {
     };
 
     const handleLoadTemplate = (templateId: string) => {
+        setSheetOpen(false);
         setSelectedTemplateId(templateId);
     };
 
@@ -208,6 +203,20 @@ export default function FormBuilderPanel() {
         });
     };
 
+    // 3. EARLY RETURNS
+    if (isLoading || isPending) return <BuilderSkeleton />;
+    if (!isAuthenticated) return null;
+
+    if (isError) {
+        return (
+            <StatePanel
+                title="No se pudo cargar el builder"
+                description={error instanceof Error ? error.message : 'No fue posible leer las plantillas desde Firestore.'}
+            />
+        );
+    }
+
+    // 4. MAIN RENDER
     return (
         <div className="container mx-auto py-8">
             <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -228,6 +237,10 @@ export default function FormBuilderPanel() {
                     <Button type="button" variant="outline" onClick={handleCreateNew}>
                         <Plus className="size-4" />
                         Nueva plantilla
+                    </Button>
+                    <Button type="button" variant="outline" onClick={() => setSheetOpen(true)}>
+                        <Upload className="size-4" />
+                        Cargar plantilla
                     </Button>
                     <Button
                         type="button"
@@ -250,46 +263,50 @@ export default function FormBuilderPanel() {
                 </div>
             </div>
 
-            <div className="grid gap-6 xl:grid-cols-[1fr_3fr_1fr]">
-                {/* Sidebar con las plantillas guardadas */}
-                <aside className="space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Plantillas guardadas</CardTitle>
-                            <CardDescription>Selecciona una plantilla para editarla o comienza una nueva.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-2">
-                            <button
-                                type="button"
-                                onClick={handleCreateNew}
-                                className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left transition-colors ${selectedTemplateId === 'new'
-                                    ? 'border-primary bg-primary/5'
-                                    : 'border-border hover:bg-accent'
-                                    }`}
-                            >
-                                <span className="font-medium">Nueva plantilla</span>
-                                <span className="text-xs text-muted-foreground">Blank</span>
-                            </button>
 
-                            {templates.map((template) => (
+            <div className="grid gap-6 xl:grid-cols-[2.5fr_1.5fr]">
+                <EntityFormSheet title={"Cargar plantilla"} description="Carga una plantilla existente para editarla o crea una nueva." open={sheetOpen} onOpenChange={setSheetOpen} side='bottom' className='max-h-[75vh] overflow-y-auto'>
+
+                    {/* Sidebar con las plantillas guardadas */}
+                    <div className="space-y-6">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Plantillas guardadas</CardTitle>
+                                <CardDescription>Selecciona una plantilla para editarla o comienza una nueva.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-2 overflow-y-auto grid grid-cols-3 gap-4">
                                 <button
-                                    key={template.id}
                                     type="button"
-                                    onClick={() => handleLoadTemplate(template.id)}
-                                    className={`flex w-full flex-col gap-1 rounded-lg border px-3 py-2 text-left transition-colors ${selectedTemplateId === template.id
+                                    onClick={handleCreateNew}
+                                    className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left transition-colors ${selectedTemplateId === 'new'
                                         ? 'border-primary bg-primary/5'
                                         : 'border-border hover:bg-accent'
                                         }`}
                                 >
-                                    <span className="font-medium">{template.title}</span>
-                                    <span className="text-xs text-muted-foreground">
-                                        {template.id} · {template.module}
-                                    </span>
+                                    <span className="font-medium">Nueva plantilla</span>
+                                    <span className="text-xs text-muted-foreground">Blank</span>
                                 </button>
-                            ))}
-                        </CardContent>
-                    </Card>
-                </aside>
+
+                                {templates.map((template) => (
+                                    <button
+                                        key={template.id}
+                                        type="button"
+                                        onClick={() => handleLoadTemplate(template.id)}
+                                        className={`flex w-full flex-col gap-1 rounded-lg border px-3 py-2 text-left transition-colors ${selectedTemplateId === template.id
+                                            ? 'border-primary bg-primary/5'
+                                            : 'border-border hover:bg-accent'
+                                            }`}
+                                    >
+                                        <span className="font-medium">{template.title}</span>
+                                        <span className="text-xs text-muted-foreground">
+                                            {template.id} · {template.module}
+                                        </span>
+                                    </button>
+                                ))}
+                            </CardContent>
+                        </Card>
+                    </div>
+                </EntityFormSheet>
 
                 {/* Panel de edición */}
                 <main className="space-y-6">
@@ -343,6 +360,8 @@ export default function FormBuilderPanel() {
                                         message: "Revisa la consola para ver la estructura de los datos.",
                                     });
                                 }}
+                                resetForm={false}
+                                setResetForm={() => { }}
                             />
                         </CardContent>
                     </Card>
@@ -409,6 +428,15 @@ export default function FormBuilderPanel() {
                                     </Select>
                                 </div>
 
+                                <div className="space-y-2">
+                                    <Label>Step</Label>
+                                    <Input
+                                        type="number"
+                                        value={draft.step}
+                                        onChange={(event) => updateTemplate({ step: Number(event.target.value) })}
+                                    />
+                                </div>
+
                                 <div className="flex items-center justify-between rounded-lg border border-border px-3 py-2">
                                     <div>
                                         <p className="text-sm font-medium">Activo</p>
@@ -427,6 +455,3 @@ export default function FormBuilderPanel() {
         </div>
     );
 }
-
-
-

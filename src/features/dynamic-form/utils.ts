@@ -28,6 +28,7 @@ function createBlankTemplate(): FormTemplateDef {
     description: "Describe el formulario aqui.",
     module: FormModules.student,
     isActive: true,
+    step: 99,
     fields: [createDefaultField(1)],
   };
 }

@@ -3,78 +3,48 @@ import { notFound } from '@tanstack/react-router';
 import { DynamicReportPageSkeleton } from "#/shared/components/DynamicReportPageSkeleton";
 import { DynamicReportPageState } from "#/shared/components/DynamicReportPageState";
 import { useFormTemplateByModuleAndId } from "#/shared/hooks/useFormBuilder";
-import { useDirectorProfile } from "../director-profile/providers/DirectorProfileProvider";
-import { useSubmitFormResponse } from "#/shared/hooks/useFormResponses";
-import type { FormModules } from "#/shared/types/dynamic-form";
-import { useToast } from "#/shared/components/Toast";
 import { AlertDialogCustom } from "#/shared/components/Dialog";
-import { useState } from "react";
+import { useReportSubmission } from "./hooks/useReportSubmission";
+import { GraduationCap } from "lucide-react";
+import { PageHeader } from "#/shared/components/PageHeader";
+import { useProgramGraduationModalities } from "../reference-data/hooks/useProgramModalities";
+import { useAuth } from "../auth/providers/AuthProvider";
+import { useMemo } from "react";
+import type { FormTemplateDef } from "#/shared/types/dynamic-form";
 
 interface GraduatesReportProps {
     formId: string;
 }
 
 export function GraduatesReport({ formId }: GraduatesReportProps) {
+    // 1. HOOK ZONE
     const { template, isPending, isError, error } = useFormTemplateByModuleAndId('graduate', formId);
-    const { mutateAsync } = useSubmitFormResponse();
-    const { profile } = useDirectorProfile();
+    const { programId } = useAuth()
+    const { handleFormSubmitRequest, isDialogOpen, setIsDialogOpen, confirmSubmit, cancelSubmit, resetForm, setResetForm } = useReportSubmission(formId, template);
+    const { data: allowedGraduationModalities } = useProgramGraduationModalities(programId ?? "");
 
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [pendingData, setPendingData] = useState<{ data: Record<string, unknown>, module: string } | null>(null);
+    const filteredTemplate = useMemo(() => {
+        if (!template) return;
 
-    const handleFormSubmitRequest = async (data: Record<string, unknown>, module: string) => {
-        setPendingData({ data, module });
-        setIsDialogOpen(true);
-    };
+        if (!allowedGraduationModalities || allowedGraduationModalities.length === 0) return template;
 
-    const executeSubmit = async () => {
-        if (!pendingData || !template || !profile) return;
+        return {
+            ...template,
+            fields: template.fields.map((field) => {
+                const isGraduationModalityField = field.type === "select" && (field.name === "modalidad" || field.label.toLocaleLowerCase().includes("modalidad"))
 
-        const { data, module } = pendingData;
-        try {
-            const tranformedData = Object.entries(data).reduce((acc, [key, value]) => {
-                const [_id, name] = key.split('@');
-                acc[name || key] = value;
-                return acc;
-            }, {} as Record<string, unknown>);
+                if (isGraduationModalityField && field.options) {
+                    return {
+                        ...field,
+                        options: field.options.filter((option) => allowedGraduationModalities.includes(String(option.value)))
+                    }
+                }
+                return field;
+            })
+        } as FormTemplateDef
+    }, [template, allowedGraduationModalities])
 
-            if (!template) {
-                throw new Error('Template no encontrado');
-            }
-            if (!profile) {
-                throw new Error('Profile no encontrado');
-            }
-
-            await mutateAsync({
-                id: crypto.randomUUID(),
-                templateId: template?.id,
-                module: module as FormModules,
-                submittedBy: profile?.fullName,
-                createdAt: Date.now(),
-                response: tranformedData,
-            });
-
-            useToast({
-                title: "Reporte guardado exitosamente",
-                type: "success",
-                duration: 5000,
-                position: 'top-right',
-                message: `El reporte ha sido guardado correctamente. ${profile?.fullName}`,
-            });
-
-            setPendingData(null);
-        } catch (error: unknown) {
-            useToast({
-                title: "Error",
-                type: "error",
-                duration: 5000,
-                closeButton: true,
-                position: 'top-right',
-                message: error instanceof Error ? error.message : "Error desconocido",
-            });
-        }
-    };
-
+    // 3. EARLY RETURNS
     if (isPending) {
         return <DynamicReportPageSkeleton />;
     }
@@ -96,6 +66,7 @@ export function GraduatesReport({ formId }: GraduatesReportProps) {
         throw notFound();
     }
 
+    // 4. MAIN RENDER
     return (
         <div className="w-full max-w-6xl mx-auto py-10">
             <div className="mb-8">
@@ -104,9 +75,17 @@ export function GraduatesReport({ formId }: GraduatesReportProps) {
                 </span>
                 <h1 className="text-3xl font-display font-bold mt-2">Gestión de Reportes</h1>
             </div>
+            <PageHeader
+                icon={GraduationCap}
+                title={`Formulario: ${template.title}`}
+                description="Completa los campos requeridos para enviar el reporte."
+            />
             <DynamicForm
-                template={template}
+                template={filteredTemplate!}
+                className="grid grid-cols-1 md:grid-cols-2 gap-4"
                 onSubmit={handleFormSubmitRequest}
+                resetForm={resetForm}
+                setResetForm={setResetForm}
             />
             <AlertDialogCustom
                 open={isDialogOpen}
@@ -116,12 +95,10 @@ export function GraduatesReport({ formId }: GraduatesReportProps) {
                 actionLabel="Enviar Reporte"
                 cancelLabel="Revisar de nuevo"
                 onConfirm={() => {
-                    setIsDialogOpen(false);
-                    executeSubmit();
+                    confirmSubmit();
                 }}
                 onCancel={() => {
-                    setIsDialogOpen(false);
-                    setPendingData(null);
+                    cancelSubmit();
                 }}
             />
         </div>

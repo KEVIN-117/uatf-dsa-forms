@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { ShieldCheck, UserRound } from "lucide-react";
+import { ShieldCheck, UserRound, GraduationCap } from "lucide-react";
 import { useAuth } from "#/features/auth/providers/AuthProvider";
-import { useDirectorProfile } from "#/features/director-profile/providers/DirectorProfileProvider";
 import { Button } from "#/shared/ui/button";
 import {
   Drawer,
@@ -18,11 +17,11 @@ type GateMode = "director" | "admin";
 
 export function DirectorProfileGate() {
   const [isOpen, setIsOpen] = useState(false);
-  const { isAuthenticated, isLoading } = useAuth();
-  const { profile, isHydrated } = useDirectorProfile();
+  const { isAuthenticated, isLoading, user } = useAuth();
+
   const [mode, setMode] = useState<GateMode>("director");
   const shouldRequireIdentification =
-    isHydrated && !isLoading && !profile && !isAuthenticated;
+    !user && !isLoading && !isAuthenticated;
 
   useEffect(() => {
     if (shouldRequireIdentification) {
@@ -31,7 +30,7 @@ export function DirectorProfileGate() {
     }
   }, [shouldRequireIdentification]);
 
-  if (!isHydrated || isLoading) {
+  if (isLoading) {
     return null;
   }
 
@@ -53,10 +52,15 @@ export function DirectorProfileGate() {
       direction="bottom"
       modal
     >
-      <DrawerContent className="w-full sm:max-w-full md:max-w-4xl mx-auto h-auto p-4 ">
-        <DrawerHeader className="border-b">
-          <DrawerTitle>Identificación previa</DrawerTitle>
-          <DrawerDescription>
+      <DrawerContent className="w-full sm:max-w-full md:max-w-4xl mx-auto h-auto p-4">
+        <DrawerHeader className="border-b border-border/40 pb-4">
+          <div className="flex items-center justify-center mb-2">
+            <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20">
+              <GraduationCap className="w-6 h-6 text-primary" />
+            </div>
+          </div>
+          <DrawerTitle className="text-center text-xl font-display">Identificación previa</DrawerTitle>
+          <DrawerDescription className="text-center">
             Antes de usar los formularios, registra quién llena la información o
             entra como administrador.
           </DrawerDescription>
@@ -68,6 +72,7 @@ export function DirectorProfileGate() {
               type="button"
               variant={mode === "director" ? "default" : "outline"}
               onClick={() => setMode("director")}
+              className={`gap-2 transition-all ${mode === "director" ? "shadow-md" : "hover:bg-muted/60"}`}
             >
               <UserRound className="size-4" />
               Datos del director
@@ -76,6 +81,7 @@ export function DirectorProfileGate() {
               type="button"
               variant={mode === "admin" ? "default" : "outline"}
               onClick={() => setMode("admin")}
+              className={`gap-2 transition-all ${mode === "admin" ? "shadow-md" : "hover:bg-muted/60"}`}
             >
               <ShieldCheck className="size-4" />
               Admin

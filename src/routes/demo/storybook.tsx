@@ -7,9 +7,12 @@ import { RadioGroup } from '#/shared/storybook/radio-group'
 import { Slider } from '#/shared/storybook/slider'
 import { Button } from '#/shared/storybook/button'
 import { useProtectedRoute } from '#/features/auth/hooks/useProtectedRoute'
+import { RouteErrorState, RouteNotFoundState } from '#/shared/components/routing/RouteState'
 
 export const Route = createFileRoute('/demo/storybook')({
   component: StorybookDemo,
+  notFoundComponent: () => <RouteNotFoundState scope="demo" />,
+  errorComponent: ({ error }) => <RouteErrorState error={error} scope="demo" />,
 })
 
 function StorybookDemo() {
@@ -99,4 +102,3 @@ function StorybookDemo() {
     </div>
   )
 }
-
