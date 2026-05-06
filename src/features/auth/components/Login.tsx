@@ -74,7 +74,7 @@ export function Login({
   });
 
   return (
-    <Card className="w-full glass-card border-border/40 overflow-hidden relative">
+    <Card className="w-full glass-card border-border/40 relative">
       {/* Decorative gradient */}
       <div className="gradient-blob -top-16 -right-16 w-40 h-40 bg-primary/5" />
 

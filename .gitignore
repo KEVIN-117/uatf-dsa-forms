@@ -14,3 +14,4 @@ todos.json
 serviceAccountKey.json
 /lib/*.json
 src/lib/lista_directores_2026_con_emails.json
+src/lib/admins.json

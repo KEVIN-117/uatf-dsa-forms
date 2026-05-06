@@ -16,6 +16,7 @@ export interface FormFieldDef {
   required?: boolean;
   options?: FieldOption[];
   dependsOn?: string[];
+  defaultValue?: string | number | boolean | null;
 }
 
 export enum FormModules {
@@ -33,6 +34,7 @@ export interface FormTemplateDef {
   step: number;
   isActive: boolean;
   fields: FormFieldDef[];
+  hasBulk: boolean;
 }
 
 export interface FormResponseDef {

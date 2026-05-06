@@ -43,7 +43,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ### Environment Variables
 
-Create a `.env` file in the root directory and add your Firebase configuration:
+Create a `.env` file in the root directory and add your Firebase configuration (see `.env.example` for reference):
 
 ```bash
 VITE_FIREBASE_API_KEY=your_api_key
@@ -53,6 +53,24 @@ VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
 VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
 VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
+VITE_AUTH_PARSE=@2026
+```
+
+### Database Seeding
+
+To populate your Firestore database with reference data and initial users, follow these steps:
+
+1. **Service Account:** Place your Firebase `serviceAccountKey.json` in the root directory.
+2. **Admin Data:** Copy `src/lib/admins.sample.json` to `src/lib/admins.json` and fill it with your admin user data.
+3. **Director Data:** Copy `src/lib/lista_directores_2026_con_emails.sample.json` to `src/lib/lista_directores_2026_con_emails.json` and fill it with real director data.
+4. **Run Seeders:**
+
+```bash
+# Seed reference data (Faculties, Programs, etc.)
+pnpm seed
+
+# Seed Users (Admins and Directors)
+pnpm seed:admins
 ```
 
 ## 📦 Deployment

@@ -34,6 +34,7 @@ COPY --from=builder --chown=reactapp:nodejs /app/package.json ./
 # Copiamos la salida construida (cliente, servidor SSR y el server Express compilado)
 COPY --from=builder --chown=reactapp:nodejs /app/dist ./dist
 COPY --from=builder --chown=reactapp:nodejs /app/pnpm-lock.yaml ./
+COPY --from=builder --chown=reactapp:nodejs /app/public ./public
 
 RUN pnpm install --prod --frozen-lockfile
 

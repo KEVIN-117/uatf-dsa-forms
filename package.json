@@ -20,7 +20,6 @@
     "build-storybook": "storybook build",
     "seed": "vite-node src/lib/seed.ts",
     "seed:admins": "vite-node src/lib/adminSeeder.ts",
-    "seed:directors": "vite-node src/lib/directorSeeder.ts",
     "deploy": "npm run build && firebase deploy",
     "build:client": "pnpm run build:app",
     "build:server": "pnpm run build:app"

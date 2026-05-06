@@ -47,22 +47,27 @@ interface DirectorType extends UserType {
   programId: string;
 }
 
-interface AdminType extends UserType {}
+interface AdminType extends UserType {
+  password: string;
+}
 
 /**
  * @name CreateUser
  * @description Create a user with the given data and return the user.
  */
+const adminsFilePath = path.resolve(__dirname, "admins.json");
+if (!fs.existsSync(adminsFilePath)) {
+  console.error(
+    "❌ Missing data file: admins.json\n" +
+      "   Copy admins.sample.json to admins.json " +
+      "and populate it with real admin data before running this seeder.",
+  );
+  process.exit(1);
+}
 
-const adminSeedUsers: Array<AdminType> = [
-  {
-    email: "admin@gmail.com",
-    role: roles.ADMIN,
-    createdAt: new Date().getTime(),
-    updatedAt: new Date().getTime(),
-    name: "Admin",
-  },
-];
+const adminSeedUsers: Array<AdminType> = JSON.parse(
+  fs.readFileSync(adminsFilePath, "utf-8"),
+);
 
 // Copy lista_directores_2026_con_emails.sample.json to lista_directores_2026_con_emails.json
 // and populate it with real data before running this seeder.
@@ -127,7 +132,7 @@ async function createAdmin() {
     for (const adminSeeder of adminSeedUsers) {
       const createdUser = await auth.createUser({
         email: adminSeeder.email,
-        password: "s40Oh2F#^iIBZ",
+        password: adminSeeder.password,
         displayName: adminSeeder.name,
       });
       const customClaim = {

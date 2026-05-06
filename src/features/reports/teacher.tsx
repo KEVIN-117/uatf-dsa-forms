@@ -6,11 +6,12 @@ import { useFormTemplateByModuleAndId } from "#/shared/hooks/useFormBuilder";
 import { AlertDialogCustom } from "#/shared/components/Dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "#/shared/ui/card";
 import { DataTable } from "#/shared/ui/data-table";
-import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "#/shared/ui/button";
-import { SaveAll, User } from "lucide-react";
-import { useTeacherBulkSubmission } from "./hooks/useTeacherBulkSubmission";
+import { SaveAll, User, X } from "lucide-react";
 import { PageHeader } from "#/shared/components/PageHeader";
+import { useBulkSubmission } from "./hooks/useBulkSubmission";
+import { createBaseColumns } from "./BaseColumns";
+import { useCallback, useMemo, useRef } from "react";
 
 interface TeacherReportProps {
     formId: string;
@@ -19,22 +20,37 @@ interface TeacherReportProps {
 export function TeacherReport({ formId }: TeacherReportProps) {
     const { template, isPending, isError, error } = useFormTemplateByModuleAndId('teacher', formId);
 
-    const baseColumns: ColumnDef<Record<string, unknown>, any>[] = [
-        {
-            accessorKey: 'submittedBy',
-            header: 'Registrado por',
-            cell: (info) => <span className="font-medium text-primary">{info.getValue()}</span>,
-        },
-        {
-            accessorKey: 'createdAt',
-            header: 'Fecha de Registro',
-            cell: (info) => new Date(info.getValue()).toLocaleDateString('es-ES', {
-                day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-            }),
-        },
-    ];
+    // Use refs to break the circular dependency between useBulkSubmission and createBaseColumns
+    const editDataRef = useRef<(index: number) => void>(() => { });
+    const removeDataRef = useRef<(index: number) => void>(() => { });
 
-    const { columns, teachers, handleAddTeacherToMemory, executeSubmitBulk, isDialogOpen, setIsDialogOpen, resetForm, setResetForm } = useTeacherBulkSubmission(formId, baseColumns, template);
+    const stableOnEdit = useCallback((i: number) => editDataRef.current(i), []);
+    const stableOnDelete = useCallback((i: number) => removeDataRef.current(i), []);
+
+    const actionColumns = useMemo(
+        () => createBaseColumns({ onEdit: stableOnEdit, onDelete: stableOnDelete }),
+        [stableOnEdit, stableOnDelete],
+    );
+
+    const {
+        columns,
+        data: teachers,
+        handleAddDataToMemory: handleAddTeacherToMemory,
+        executeSubmitBulk,
+        isDialogOpen,
+        setIsDialogOpen,
+        resetForm,
+        setResetForm,
+        removeData,
+        editData,
+        cancelEdit,
+        editingIndex,
+        initialValues,
+    } = useBulkSubmission(formId, actionColumns, template);
+
+    // Keep refs in sync with the latest callbacks from the hook
+    editDataRef.current = editData;
+    removeDataRef.current = removeData;
 
     if (isPending) {
         return <DynamicReportPageSkeleton />;
@@ -58,7 +74,7 @@ export function TeacherReport({ formId }: TeacherReportProps) {
     }
 
     return (
-        <div className="w-full max-w-7xl mx-auto py-2 space-y-4">
+        <div className="w-full max-w-6xl mx-auto py-2 space-y-4">
             <div className="mb-8">
                 <span className="text-xs font-bold uppercase tracking-widest text-primary/60">
                     Módulo: {template.module.replace('_', ' ')}
@@ -73,17 +89,31 @@ export function TeacherReport({ formId }: TeacherReportProps) {
             />
 
             <Card className="shadow-sm w-full">
-                <CardHeader>
-                    <CardTitle className="text-lg">Añadir Docente</CardTitle>
+                <CardHeader className="flex flex-row items-center justify-between">
+                    <CardTitle className="text-lg">
+                        {editingIndex !== null ? "Actualizar Docente" : "Añadir Docente"}
+                    </CardTitle>
+                    {editingIndex !== null && (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={cancelEdit}
+                            className="text-muted-foreground hover:text-destructive"
+                        >
+                            <X className="h-4 w-4 mr-1" />
+                            Cancelar edición
+                        </Button>
+                    )}
                 </CardHeader>
                 <CardContent>
                     <DynamicForm
                         template={template}
                         onSubmit={handleAddTeacherToMemory}
                         className="grid grid-cols-1 md:grid-cols-3 gap-4"
-                        submitLabel="Agregar a la lista"
+                        submitLabel={editingIndex !== null ? "Actualizar registro" : "Agregar a la lista"}
                         resetForm={resetForm}
                         setResetForm={setResetForm}
+                        initialValues={initialValues}
                     />
                 </CardContent>
             </Card>

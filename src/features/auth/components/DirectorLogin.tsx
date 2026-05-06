@@ -79,7 +79,7 @@ export function DirectorLogin({ onSuccess }: DirectorLoginProps) {
   });
 
   return (
-    <Card className="w-full glass-card border-border/40 overflow-hidden relative">
+    <Card className="w-full glass-card border-border/40 relative">
       {/* Decorative gradient */}
       <div className="gradient-blob -top-16 -left-16 w-40 h-40 bg-secondary/8" />
 

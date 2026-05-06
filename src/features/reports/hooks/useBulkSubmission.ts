@@ -5,10 +5,10 @@ import { useSubmitFormResponse } from "#/shared/hooks/useFormResponses";
 import type { FormTemplateDef } from "#/shared/types/dynamic-form";
 import { useNavigate } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useGetNextTemplateUrl } from "./useNextFormRoute";
 
-export const useTeacherBulkSubmission = (
+export const useBulkSubmission = (
   formId: string,
   baseCols: ColumnDef<Record<string, unknown>, any>[],
   template?: FormTemplateDef,
@@ -21,8 +21,10 @@ export const useTeacherBulkSubmission = (
   const nextUrl = useGetNextTemplateUrl(formId);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [teachers, setTeachers] = useState<Record<string, unknown>[]>([]);
+  const [data, setData] = useState<Record<string, unknown>[]>([]);
   const [resetForm, setResetForm] = useState(false);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [initialValues, setInitialValues] = useState<Record<string, unknown> | null>(null);
 
   const columns = useMemo<ColumnDef<Record<string, unknown>, any>[]>(() => {
     if (!template) return [];
@@ -41,10 +43,62 @@ export const useTeacherBulkSubmission = (
         },
       }));
 
-    return [...baseColumns, ...dynamicColumns];
-  }, [template]);
+    return [...dynamicColumns, ...baseColumns];
+  }, [template, baseCols]);
 
-  const handleAddTeacherToMemory = async (data: Record<string, unknown>) => {
+  /** Remove a row from the in-memory table by index */
+  const removeData = useCallback(
+    (index: number) => {
+      setData((prev) => prev.filter((_, i) => i !== index));
+
+      // If we were editing this row, cancel the edit
+      if (editingIndex === index) {
+        setEditingIndex(null);
+        setInitialValues(null);
+        setResetForm(true);
+      } else if (editingIndex !== null && index < editingIndex) {
+        // Adjust editing index if a row before it was removed
+        setEditingIndex((prev) => (prev !== null ? prev - 1 : null));
+      }
+
+      useToast({
+        title: "Registro eliminado",
+        type: "warning",
+        message: "El registro fue eliminado de la tabla temporal.",
+      });
+    },
+    [editingIndex],
+  );
+
+  /** Load a row's data back into the form for editing */
+  const editData = useCallback(
+    (index: number) => {
+      if (!template) return;
+
+      const row = data[index];
+      if (!row) return;
+
+      // Transform row data (keyed by field.name) back to form keys (field.id@field.name)
+      const formValues: Record<string, unknown> = {};
+      for (const field of template.fields) {
+        const key = `${field.id}@${field.name}`;
+        formValues[key] = row[field.name] ?? "";
+      }
+
+      setEditingIndex(index);
+      setInitialValues(formValues);
+    },
+    [data, template],
+  );
+
+  /** Cancel editing and clear the form */
+  const cancelEdit = useCallback(() => {
+    setEditingIndex(null);
+    setInitialValues(null);
+    setResetForm(true);
+  }, []);
+
+  const handleAddDataToMemory = async (data: Record<string, unknown>) => {
     const transformedData = Object.entries(data).reduce(
       (acc, [key, value]) => {
         const [_id, name] = key.split("@");
@@ -54,24 +108,43 @@ export const useTeacherBulkSubmission = (
       {} as Record<string, unknown>,
     );
 
-    const teacherRecord = {
+    const record = {
       ...transformedData,
       submittedBy: user?.email || "director@uatf.edu.bo",
       createdAt: Date.now(),
     };
 
-    setTeachers((prev) => [...prev, teacherRecord]);
+    if (editingIndex !== null) {
+      // Update the existing row
+      setData((prev) =>
+        prev.map((item, i) => (i === editingIndex ? record : item)),
+      );
+      setEditingIndex(null);
+      setInitialValues(null);
 
-    useToast({
-      title: "Docente agregado",
-      type: "success",
-      message:
-        "El docente fue agregado a la tabla temporal. No olvides enviar los datos al finalizar.",
-    });
+      useToast({
+        title: "Registro actualizado",
+        type: "success",
+        message:
+          "El registro fue actualizado correctamente en la tabla temporal.",
+      });
+    } else {
+      // Add a new row
+      setData((prev) => [...prev, record]);
+
+      useToast({
+        title: "Dato agregado",
+        type: "success",
+        message:
+          "El dato fue agregado a la tabla temporal. No olvides enviar los datos al finalizar.",
+      });
+    }
+
+    setResetForm(true);
   };
 
   const executeSubmitBulk = async () => {
-    if (teachers.length === 0 || !template || !user) return;
+    if (data.length === 0 || !template || !user) return;
 
     try {
       if (!template) {
@@ -80,8 +153,8 @@ export const useTeacherBulkSubmission = (
       if (!user) {
         throw new Error("Profile no encontrado");
       }
-      const uploadPromises = teachers.map(async (t) => {
-        const { submittedBy, createdAt, ...pureResponseData } = t;
+      const uploadPromises = data.map(async (r) => {
+        const { submittedBy, createdAt, ...pureResponseData } = r;
         await mutateAsync({
           id: crypto.randomUUID(),
           templateId: template.id,
@@ -105,9 +178,9 @@ export const useTeacherBulkSubmission = (
         type: "success",
         duration: 5000,
         position: "top-right",
-        message: `Se registraron ${teachers.length} docentes correctamente.`,
+        message: `Se registraron ${data.length} registros correctamente.`,
       });
-      setTeachers([]);
+      setData([]);
       if (nextUrl) {
         navigate({ to: nextUrl, replace: true });
       } else {
@@ -131,12 +204,17 @@ export const useTeacherBulkSubmission = (
   };
   return {
     columns,
-    teachers,
-    handleAddTeacherToMemory,
+    data,
+    handleAddDataToMemory,
     executeSubmitBulk,
     isDialogOpen,
     setIsDialogOpen,
     resetForm,
     setResetForm,
+    removeData,
+    editData,
+    cancelEdit,
+    editingIndex,
+    initialValues,
   };
 };

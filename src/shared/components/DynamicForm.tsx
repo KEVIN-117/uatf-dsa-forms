@@ -1,6 +1,7 @@
-import { useForm, useStore } from '@tanstack/react-form';
-import { Loader2, Send } from 'lucide-react';
+import { revalidateLogic, useForm, useStore } from '@tanstack/react-form';
+import { Loader2, Send, X } from 'lucide-react';
 import type { FormTemplateDef, FormFieldDef } from '@/shared/types/dynamic-form';
+import type { ModalityLimits } from '#/features/reports/hooks/useSubmittedModalidades';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { Button } from '../ui/button';
@@ -14,9 +15,14 @@ interface DynamicFormProps {
     submitLabel?: string;
     resetForm: boolean;
     setResetForm: (value: boolean) => void;
+    initialValues?: Record<string, unknown> | null;
+    editingIndex?: number | null;
+    cancelEdit?: () => void;
+    /** Límites numéricos por modalidad desde el formulario anterior */
+    modalityLimits?: ModalityLimits;
 }
 
-export function DynamicForm({ template, onSubmit, className, submitLabel = "Enviar Reporte", resetForm, setResetForm }: DynamicFormProps) {
+export function DynamicForm({ template, onSubmit, className, submitLabel = "Enviar Reporte", resetForm, setResetForm, initialValues, editingIndex, cancelEdit, modalityLimits }: DynamicFormProps) {
     const defaultValues = template.fields.reduce((acc, field) => {
         acc[`${field.id}@${field.name}`] = field.type === 'number' ? '' : '';
         return acc;
@@ -37,14 +43,10 @@ export function DynamicForm({ template, onSubmit, className, submitLabel = "Envi
 
     const form = useForm({
         defaultValues,
-        onSubmit: async ({ value, formApi }) => {
+        onSubmit: async ({ value }) => {
             await onSubmit(value, template.module);
-            if (resetForm) {
-                form.reset();
-                formApi.reset();
-                setResetForm(false);
-            }
         },
+        validationLogic: revalidateLogic(),
     });
 
     const formValues = useStore(form.store, (state) => state.values);
@@ -69,6 +71,40 @@ export function DynamicForm({ template, onSubmit, className, submitLabel = "Envi
             form.setFieldValue(totalKey, calculatedTotal);
         }
     }, [formValues, template.fields, totalField, totalKey, form.setFieldValue]);
+    useEffect(() => {
+        if (resetForm) {
+            form.reset();
+            setResetForm(false);
+        }
+    }, [resetForm, form, setResetForm]);
+
+    // Pre-fill the form when initialValues are provided (edit mode)
+    useEffect(() => {
+        if (initialValues) {
+            for (const [key, value] of Object.entries(initialValues)) {
+                form.setFieldValue(key, value);
+            }
+        }
+    }, [initialValues, form.setFieldValue]);
+
+    // Encontrar la key del campo "modalidad" para usarlo en validación cruzada
+    const modalityFieldKey = useMemo(() => {
+        const modalityField = template.fields.find(
+            (f) => f.type === 'select' && (f.name === 'modalidad' || f.label.toLowerCase().includes('modalidad'))
+        );
+        return modalityField ? `${modalityField.id}@${modalityField.name}` : null;
+    }, [template.fields]);
+
+    /**
+     * Obtiene el límite máximo para un campo numérico basado en la modalidad seleccionada.
+     * Retorna undefined si no hay límite aplicable.
+     */
+    const getFieldLimit = (fieldName: string): number | undefined => {
+        if (!modalityLimits || !modalityFieldKey) return undefined;
+        const selectedModalidad = String(formValues[modalityFieldKey] ?? '');
+        if (!selectedModalidad) return undefined;
+        return modalityLimits[selectedModalidad]?.[fieldName];
+    };
 
     const renderFieldInput = (fieldDef: FormFieldDef, fieldApi: any) => {
         const isTotal = fieldDef.name.toLowerCase() === 'total' || fieldDef.label.toLowerCase() === 'total';
@@ -102,9 +138,7 @@ export function DynamicForm({ template, onSubmit, className, submitLabel = "Envi
                 value={fieldApi.state.value}
                 onBlur={fieldApi.handleBlur}
                 disabled={isTotal}
-                // Añadimos step="1" y min="0" para que el navegador sepa que son enteros positivos
                 {...(fieldDef.type === 'number' ? { step: "1", min: "0" } : {})}
-                // Bloqueamos físicamente las teclas que no corresponden a un entero
                 onKeyDown={(e) => {
                     if (fieldDef.type === 'number') {
                         if (['.', ',', 'e', 'E', '+', '-'].includes(e.key)) {
@@ -144,6 +178,16 @@ export function DynamicForm({ template, onSubmit, className, submitLabel = "Envi
                                 if (fieldDef.type === 'number' && value !== '' && !/^\d+$/.test(String(value))) {
                                     return 'Este campo debe ser un número entero (sin decimales)';
                                 }
+                                // Validación de límites por modalidad
+                                if (fieldDef.type === 'number' && value !== '' && modalityLimits) {
+                                    const limit = getFieldLimit(fieldDef.name);
+                                    if (limit !== undefined) {
+                                        const numValue = Number(value);
+                                        if (Number.isFinite(numValue) && numValue > limit) {
+                                            return `El valor no puede ser mayor a ${limit} (límite del formulario anterior)`;
+                                        }
+                                    }
+                                }
                                 return undefined;
                             },
                         }}
@@ -170,28 +214,42 @@ export function DynamicForm({ template, onSubmit, className, submitLabel = "Envi
                     />
                 ))}
 
-                <form.Subscribe
-                    selector={(state) => [state.canSubmit, state.isSubmitting]}
-                    children={([canSubmit, isSubmitting]) => (
+                <div className="flex flex-row w-full justify-between gap-4">
+                    <form.Subscribe
+                        selector={(state) => [state.canSubmit, state.isSubmitting]}
+                        children={([canSubmit, isSubmitting]) => (
+                            <Button
+                                type="submit"
+                                className="w-full font-bold mt-6 py-6 text-base hover-lift gap-2"
+                                disabled={!canSubmit || isSubmitting}
+                            >
+                                {isSubmitting ? (
+                                    <span className="flex items-center gap-2">
+                                        <Loader2 className="animate-spin h-5 w-5" /> Guardando reporte...
+                                    </span>
+                                ) : (
+                                    <>
+                                        <Send className="w-4 h-4" />
+                                        {submitLabel}
+                                    </>
+                                )}
+                            </Button>
+                        )}
+                    />
+                    {editingIndex !== null && (
                         <Button
-                            type="submit"
+                            variant="outline"
+                            size="sm"
+                            onClick={cancelEdit}
                             className="w-full font-bold mt-6 py-6 text-base hover-lift gap-2"
-                            disabled={!canSubmit || isSubmitting}
                         >
-                            {isSubmitting ? (
-                                <span className="flex items-center gap-2">
-                                    <Loader2 className="animate-spin h-5 w-5" /> Guardando reporte...
-                                </span>
-                            ) : (
-                                <>
-                                    <Send className="w-4 h-4" />
-                                    {submitLabel}
-                                </>
-                            )}
+                            <X className="h-4 w-4 mr-1" />
+                            Cancelar edición
                         </Button>
                     )}
-                />
+                </div>
             </form>
+
         </FormContainer>
     );
 }

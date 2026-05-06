@@ -429,11 +429,21 @@ export default function FormBuilderPanel() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label>Step</Label>
+                                    <Label>Paso</Label>
                                     <Input
                                         type="number"
                                         value={draft.step}
                                         onChange={(event) => updateTemplate({ step: Number(event.target.value) })}
+                                    />
+                                </div>
+                                <div className="flex items-center justify-between rounded-lg border border-border px-3 py-2">
+                                    <div className="flex flex-col">
+                                        <p className="text-sm font-medium">Envio masivo</p>
+                                        <p className="text-xs text-muted-foreground">Permite enviar multiples respuestas</p>
+                                    </div>
+                                    <Switch
+                                        checked={draft.hasBulk}
+                                        onCheckedChange={(checked) => updateTemplate({ hasBulk: checked })}
                                     />
                                 </div>
 
