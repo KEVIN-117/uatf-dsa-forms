@@ -54,6 +54,11 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
 VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
 VITE_AUTH_PARSE=@2026
+
+# Docker specific (required for deployment)
+DOCKERHUB_USERNAME=your_username
+IMAGE_TAG=latest # or 'dev' for development
+PORT=3000
 ```
 
 ### Database Seeding
@@ -73,7 +78,45 @@ pnpm seed
 pnpm seed:admins
 ```
 
-## 📦 Deployment
+## 🐳 Docker Deployment
+
+The application is containerized and can be deployed using Docker Compose.
+
+### Local Build
+
+```bash
+docker compose build
+docker compose up -d
+```
+
+### Environment-based Deployment
+
+You can control which environment to deploy using the `IMAGE_TAG` variable in your `.env` file:
+
+- **Production:** Set `IMAGE_TAG=latest`
+- **Development:** Set `IMAGE_TAG=dev`
+
+## 🚀 CI/CD & Environments
+
+The project uses GitHub Actions for automated building and publishing.
+
+### Workflow
+
+- **Push to `develop` branch:** Automatically builds and pushes a Docker image tagged `:dev` to Docker Hub, deploying to the **Development** environment.
+- **Push to `main` branch:** Automatically builds and pushes a Docker image tagged `:latest` to Docker Hub, deploying to the **Production** environment.
+- **Tags (`v*`):** Builds and pushes a Docker image with the specific version tag.
+
+### Required GitHub Secrets
+
+To enable the CI/CD pipeline, configure the following secrets in your repository settings:
+
+- `DOCKERHUB_USERNAME`: Your Docker Hub username.
+- `DOCKERHUB_TOKEN`: Your Docker Hub Personal Access Token.
+- **Environment Secrets** (for both `development` and `production` environments):
+  - `VITE_FIREBASE_*` (all Firebase config keys)
+  - `VITE_AUTH_PARSE`
+
+## 📦 Manual Deployment
 
 The project is configured for deployment to **Firebase Hosting**.
 
