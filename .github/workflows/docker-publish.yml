@@ -1,0 +1,62 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    # Selecciona el entorno de GitHub basado en la rama
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms
+          tags: |
+            # Tag 'latest' solo para main
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            # Tag 'dev' para la rama develop
+            type=raw,value=dev,enable=${{ github.ref == 'refs/heads/develop' }}
+            # Tags para versiones (v1.0.0)
+            type=semver,pattern={{version}}
+            # Tag con el SHA del commit
+            type=sha
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ id.meta.outputs.tags }}
+          labels: ${{ id.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            VITE_FIREBASE_API_KEY=${{ secrets.VITE_FIREBASE_API_KEY }}
+            VITE_FIREBASE_AUTH_DOMAIN=${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+            VITE_FIREBASE_PROJECT_ID=${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+            VITE_FIREBASE_STORAGE_BUCKET=${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+            VITE_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+            VITE_FIREBASE_APP_ID=${{ secrets.VITE_FIREBASE_APP_ID }}
+            VITE_FIREBASE_MEASUREMENT_ID=${{ secrets.VITE_FIREBASE_MEASUREMENT_ID }}
+            VITE_AUTH_PARSE=${{ secrets.VITE_AUTH_PARSE }}

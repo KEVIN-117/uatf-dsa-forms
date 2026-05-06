@@ -2,13 +2,11 @@ version: '3.8'
 
 services:
   uatf-forms:
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
-    image: uatf-dsa-forms:latest
+    # Cambiar 'latest' por 'dev' para el ambiente de desarrollo
+    image: ${DOCKERHUB_USERNAME}/uatf-forms:${IMAGE_TAG:-latest}
     container_name: uatf-forms
     ports:
-      - "${PORT}:${PORT}"
+      - "${PORT:-3000}:3000"
     env_file:
       - .env
     restart: unless-stopped
