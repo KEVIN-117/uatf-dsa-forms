@@ -1,8 +1,16 @@
 import { useAuth } from "#/features/auth/providers/AuthProvider";
 import { useToast } from "#/shared/components/Toast";
 import { useMarkStepCompleted } from "#/features/reports/hooks/useDirectorProgress";
-import { useSubmitFormResponse } from "#/shared/hooks/useFormResponses";
-import type { FormModules, FormTemplateDef } from "#/shared/types/dynamic-form";
+import {
+  useDeleteFormResponse,
+  useSubmitFormResponse,
+  useUpdateFormResponse,
+} from "#/shared/hooks/useFormResponses";
+import type {
+  FormModules,
+  FormResponseDef,
+  FormTemplateDef,
+} from "#/shared/types/dynamic-form";
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useGetNextTemplateUrl } from "./useNextFormRoute";
@@ -17,6 +25,7 @@ export const useReportSubmission = (
   const [resetForm, setResetForm] = useState(false);
   const navigate = useNavigate();
   const nextUrl = useGetNextTemplateUrl(formId);
+  const [scrollToTop, setScrollToTop] = useState(false);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [pendingData, setPendingData] = useState<{
@@ -24,7 +33,46 @@ export const useReportSubmission = (
     module: string;
   } | null>(null);
 
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [initialData, setInitialData] = useState<Record<string, any> | null>(
+    null,
+  );
+
+  const updateMutation = useUpdateFormResponse();
+  const deleteMutation = useDeleteFormResponse();
+
   // 2. FUNCTIONS AND LOGIC
+
+  const handleEdit = (response: FormResponseDef) => {
+    setEditingId(response.id);
+    setInitialData(response.response);
+    setScrollToTop(true);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setInitialData(null);
+    setResetForm(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (
+      window.confirm(
+        "¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.",
+      )
+    ) {
+      await deleteMutation.mutateAsync({
+        module: template?.module as FormModules,
+        id: id,
+      });
+      useToast({
+        type: "success",
+        title: "Eliminado",
+        message: "Registro eliminado correctamente.",
+      });
+    }
+  };
+
   const handleFormSubmitRequest = async (
     data: Record<string, unknown>,
     module: string,
@@ -53,38 +101,57 @@ export const useReportSubmission = (
       if (!user) {
         throw new Error("Profile no encontrado");
       }
-
-      await mutateAsync({
-        id: crypto.randomUUID(),
-        templateId: template?.id,
-        module: module as FormModules,
-        submittedBy: user?.email || "Director",
-        createdAt: Date.now(),
-        facultyId: facultyId as string,
-        faculty: faculty as string,
-        programId: programId as string,
-        program: program as string,
-        response: tranformedData,
-      });
-      await markStepCompleted(template.step);
-      useToast({
-        title: "Reporte guardado exitosamente",
-        type: "success",
-        duration: 5000,
-        position: "top-right",
-        message: `El reporte ha sido guardado correctamente. ${user.displayName}`,
-      });
-      setResetForm(true);
-      setPendingData(null);
-      if (nextUrl) {
-        navigate({ to: nextUrl, replace: true });
-      } else {
-        useToast({
-          title: "¡Proceso Completado!",
-          type: "success",
-          message: "Has finalizado todos los formularios requeridos.",
+      if (editingId) {
+        await updateMutation.mutateAsync({
+          id: editingId,
+          module: module as FormModules,
+          response: tranformedData,
         });
-        navigate({ to: "/formStatus/success", replace: true });
+        // Limpiar estado de edición y resetear formulario
+        setEditingId(null);
+        setInitialData(null);
+        setResetForm(true);
+        setPendingData(null);
+        useToast({
+          title: "Registro actualizado",
+          type: "success",
+          duration: 5000,
+          position: "top-right",
+          message: "El registro ha sido actualizado correctamente.",
+        });
+      } else {
+        await mutateAsync({
+          id: crypto.randomUUID(),
+          templateId: template?.id,
+          module: module as FormModules,
+          submittedBy: user?.email || "Director",
+          createdAt: Date.now(),
+          facultyId: facultyId as string,
+          faculty: faculty as string,
+          programId: programId as string,
+          program: program as string,
+          response: tranformedData,
+        });
+        await markStepCompleted(template.step);
+        useToast({
+          title: "Reporte guardado exitosamente",
+          type: "success",
+          duration: 5000,
+          position: "top-right",
+          message: `El reporte ha sido guardado correctamente. ${user.displayName}`,
+        });
+        setResetForm(true);
+        setPendingData(null);
+        if (nextUrl) {
+          navigate({ to: nextUrl, replace: true });
+        } else {
+          useToast({
+            title: "¡Proceso Completado!",
+            type: "success",
+            message: "Has finalizado todos los formularios requeridos.",
+          });
+          navigate({ to: "/formStatus/success", search: { completed: true }, replace: true });
+        }
       }
     } catch (error: unknown) {
       useToast({
@@ -126,5 +193,16 @@ export const useReportSubmission = (
     cancelSubmit,
     resetForm,
     setResetForm,
+    initialData,
+    editingId,
+    setInitialData,
+    setEditingId,
+    handleDelete,
+    handleEdit,
+    handleCancelEdit,
+    deleteMutation,
+    updateMutation,
+    scrollToTop,
+    setScrollToTop,
   };
 };

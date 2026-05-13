@@ -1,40 +1,226 @@
-import { CheckCircle2, Sparkles } from "lucide-react";
-import { Button } from "#/shared/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "#/shared/ui/card";
-import { Link } from "@tanstack/react-router";
+import { SuccessCard } from "#/features/reports/components/SuccessCard";
+import { ReceiptSummary } from "#/features/reports/components/ReceiptSummary";
+import { Card, CardContent } from "#/shared/ui/card";
+import { useState, useEffect } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogFooter,
+} from "#/shared/ui/alert-dialog";
+import { ArrowRight } from "lucide-react";
+import type { TemplateSummary } from "#/features/reports/hooks/useDirectorSummary";
 
-export function FormSuccess() {
+/**
+ * Variant types for FormSuccess:
+ *
+ * - `completion` : Full flow → loader → dialog → summary (after finishing all forms)
+ * - `readonly`   : Summary only, no dialog or loader (from dashboard link)
+ * - `minimal`    : Just the success card, no summary data
+ */
+type FormSuccessVariant = "completion" | "readonly" | "minimal";
+
+interface FormSuccessProps {
+  /** Controls the visual flow variant */
+  variant?: FormSuccessVariant;
+  /** Whether data is still loading */
+  isLoading?: boolean;
+  /** Grouped summary data to display */
+  groups?: TemplateSummary[];
+  /** Director's full name for the receipt */
+  directorName?: string;
+  /** Faculty name */
+  faculty?: string;
+  /** Program name */
+  program?: string;
+}
+
+/**
+ * Composable FormSuccess component with multiple variants.
+ *
+ * Usage:
+ * ```tsx
+ * // After completing all forms:
+ * <FormSuccess variant="completion" isLoading={isPending} groups={data} ... />
+ *
+ * // From dashboard "Ver comprobante":
+ * <FormSuccess variant="readonly" isLoading={isPending} groups={data} ... />
+ *
+ * // Simple success message (e.g., single step completion):
+ * <FormSuccess variant="minimal" />
+ * ```
+ */
+export function FormSuccess({
+  variant = "readonly",
+  isLoading = false,
+  groups = [],
+  directorName = "Director",
+  faculty = "-",
+  program = "-",
+}: FormSuccessProps) {
+  switch (variant) {
+    case "completion":
+      return (
+        <CompletionFlow
+          isLoading={isLoading}
+          groups={groups}
+          directorName={directorName}
+          faculty={faculty}
+          program={program}
+        />
+      );
+    case "minimal":
+      return (
+        <div className="w-full max-w-3xl mx-auto py-8 px-4">
+          <SuccessCard />
+        </div>
+      );
+    case "readonly":
+    default:
+      return (
+        <ReadonlyFlow
+          isLoading={isLoading}
+          groups={groups}
+          directorName={directorName}
+          faculty={faculty}
+          program={program}
+        />
+      );
+  }
+}
+
+// ─── Variant: Completion ──────────────────────────────────────────────
+// Shows: loader → dialog → summary
+
+interface FlowProps {
+  isLoading: boolean;
+  groups: TemplateSummary[];
+  directorName: string;
+  faculty: string;
+  program: string;
+}
+
+function CompletionFlow({ isLoading, groups, directorName, faculty, program }: FlowProps) {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+
+  const hasSummary = groups.length > 0;
+
+  // Auto-open dialog when loading finishes
+  useEffect(() => {
+    if (!isLoading && !dismissed) {
+      setDialogOpen(true);
+    }
+  }, [isLoading, dismissed]);
+
+  const handleContinue = () => {
+    setDialogOpen(false);
+    setDismissed(true);
+  };
+
   return (
-    <div className="flex items-center justify-center min-h-[60vh] p-4">
-      <Card className="w-full max-w-md text-center glass-card shadow-lg border-border/40 overflow-hidden relative animate-fade-up">
-        {/* Decorative gradient background */}
-        <div className="gradient-blob -top-16 -right-16 w-40 h-40 bg-emerald-500/8" />
-        <div className="gradient-blob -bottom-12 -left-12 w-36 h-36 bg-primary/5" />
+    <div className="w-full max-w-3xl mx-auto py-8 px-4 space-y-8">
+      {/* Phase 1: Loading */}
+      {isLoading && !dismissed && (
+        <SuccessCard isLoading loadingText="Cargando resumen de envíos..." />
+      )}
 
-        <CardHeader className="relative flex flex-col items-center space-y-4 pt-8">
-          {/* Animated success icon */}
-          <div className="relative">
-            <div className="rounded-full bg-emerald-500/10 p-4 dark:bg-emerald-400/10 animate-scale-bounce">
-              <CheckCircle2 className="h-12 w-12 text-emerald-600 dark:text-emerald-400" />
-            </div>
-            {/* Sparkle accents */}
-            <Sparkles className="absolute -top-1 -right-1 h-5 w-5 text-secondary animate-pulse" />
-          </div>
-          <CardTitle className="text-3xl font-display font-bold text-foreground">
-            ¡Envío Exitoso!
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="relative">
-          <p className="text-muted-foreground font-body leading-relaxed">
-            Tu reporte ha sido enviado correctamente. Agradecemos tu participación y compromiso con los procesos académicos de la UATF.
-          </p>
-        </CardContent>
-        <CardFooter className="relative flex justify-center pb-8">
-          <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 hover-lift">
-            <Link to="/">Volver al Inicio</Link>
-          </Button>
-        </CardFooter>
-      </Card>
+      {/* Phase 2: Dialog */}
+      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <AlertDialogContent className="max-w-md p-0 border-none bg-transparent shadow-none">
+          <SuccessCard />
+          <AlertDialogFooter className="px-6 pb-6 pt-0 justify-center">
+            <AlertDialogAction
+              onClick={handleContinue}
+              className="w-full gap-2 font-bold py-5 text-base"
+            >
+              Ver Comprobante <ArrowRight className="size-4" />
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Phase 3: Summary */}
+      {dismissed && (
+        <SummarySection
+          isLoading={false}
+          hasSummary={hasSummary}
+          groups={groups}
+          directorName={directorName}
+          faculty={faculty}
+          program={program}
+        />
+      )}
     </div>
   );
+}
+
+// ─── Variant: Readonly ────────────────────────────────────────────────
+// Shows: loader → summary (no dialog)
+
+function ReadonlyFlow({ isLoading, groups, directorName, faculty, program }: FlowProps) {
+  const hasSummary = groups.length > 0;
+
+  return (
+    <div className="w-full max-w-3xl mx-auto py-8 px-4 space-y-8">
+      {isLoading && (
+        <SuccessCard isLoading loadingText="Cargando resumen de envíos..." />
+      )}
+
+      {!isLoading && (
+        <SummarySection
+          isLoading={isLoading}
+          hasSummary={hasSummary}
+          groups={groups}
+          directorName={directorName}
+          faculty={faculty}
+          program={program}
+        />
+      )}
+    </div>
+  );
+}
+
+// ─── Shared: Summary Section ──────────────────────────────────────────
+
+function SummarySection({
+  isLoading,
+  hasSummary,
+  groups,
+  directorName,
+  faculty,
+  program,
+}: {
+  isLoading: boolean;
+  hasSummary: boolean;
+  groups: TemplateSummary[];
+  directorName: string;
+  faculty: string;
+  program: string;
+}) {
+  if (hasSummary) {
+    return (
+      <ReceiptSummary
+        groups={groups}
+        directorName={directorName}
+        faculty={faculty}
+        program={program}
+      />
+    );
+  }
+
+  if (!isLoading) {
+    return (
+      <Card className="glass-card">
+        <CardContent className="p-8 text-center">
+          <p className="text-muted-foreground">
+            No se encontraron reportes enviados. Si acabas de enviar tus
+            formularios, espera unos segundos e intenta recargar la página.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return null;
 }

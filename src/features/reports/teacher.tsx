@@ -10,8 +10,11 @@ import { Button } from "#/shared/ui/button";
 import { SaveAll, User, X } from "lucide-react";
 import { PageHeader } from "#/shared/components/PageHeader";
 import { useBulkSubmission } from "./hooks/useBulkSubmission";
-import { createBaseColumns } from "./BaseColumns";
-import { useCallback, useMemo, useRef } from "react";
+import { useOnEditTableActions } from "./BaseColumns";
+import { useEffect } from "react";
+import { useReportSubmission } from "./hooks/useReportSubmission";
+import { ResponsesPanel } from "../dashboard/screens/ResponsesPanel";
+import type { FormModules } from "#/shared/types/dynamic-form";
 
 interface TeacherReportProps {
     formId: string;
@@ -21,16 +24,9 @@ export function TeacherReport({ formId }: TeacherReportProps) {
     const { template, isPending, isError, error } = useFormTemplateByModuleAndId('teacher', formId);
 
     // Use refs to break the circular dependency between useBulkSubmission and createBaseColumns
-    const editDataRef = useRef<(index: number) => void>(() => { });
-    const removeDataRef = useRef<(index: number) => void>(() => { });
+    const { actionColumns, editDataRef, removeDataRef } = useOnEditTableActions();
 
-    const stableOnEdit = useCallback((i: number) => editDataRef.current(i), []);
-    const stableOnDelete = useCallback((i: number) => removeDataRef.current(i), []);
-
-    const actionColumns = useMemo(
-        () => createBaseColumns({ onEdit: stableOnEdit, onDelete: stableOnDelete }),
-        [stableOnEdit, stableOnDelete],
-    );
+    const { handleFormSubmitRequest, cancelSubmit, confirmSubmit, initialData, editingId, handleDelete, handleEdit, handleCancelEdit, isDialogOpen: isConfirmDialogOpen, setIsDialogOpen: setIsConfirmDialogOpen, scrollToTop, setScrollToTop, resetForm: resetResponseForm, setResetForm: setResetResponseForm } = useReportSubmission(formId, template);
 
     const {
         columns,
@@ -47,6 +43,16 @@ export function TeacherReport({ formId }: TeacherReportProps) {
         editingIndex,
         initialValues,
     } = useBulkSubmission(formId, actionColumns, template);
+
+    useEffect(() => {
+        if (scrollToTop && editingId) {
+            const element = document.getElementById("page-top");
+            if (element) {
+                element.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+            setScrollToTop(false);
+        }
+    }, [scrollToTop, editingId, setScrollToTop]);
 
     // Keep refs in sync with the latest callbacks from the hook
     editDataRef.current = editData;
@@ -74,7 +80,7 @@ export function TeacherReport({ formId }: TeacherReportProps) {
     }
 
     return (
-        <div className="w-full max-w-6xl mx-auto py-2 space-y-4">
+        <div className="w-full max-w-6xl mx-auto py-2 space-y-4" id="page-top">
             <div className="mb-8">
                 <span className="text-xs font-bold uppercase tracking-widest text-primary/60">
                     Módulo: {template.module.replace('_', ' ')}
@@ -107,13 +113,18 @@ export function TeacherReport({ formId }: TeacherReportProps) {
                 </CardHeader>
                 <CardContent>
                     <DynamicForm
-                        template={template}
-                        onSubmit={handleAddTeacherToMemory}
+                        key={editingId ? `response-edit-${editingId}` : `bulk-${editingIndex ?? 'new'}`}
+                        template={template!}
+                        onSubmit={editingId ? handleFormSubmitRequest : handleAddTeacherToMemory}
                         className="grid grid-cols-1 md:grid-cols-3 gap-4"
-                        submitLabel={editingIndex !== null ? "Actualizar registro" : "Agregar a la lista"}
-                        resetForm={resetForm}
-                        setResetForm={setResetForm}
-                        initialValues={initialValues}
+                        submitLabel={editingId ? "Guardar Cambios" : editingIndex !== null ? "Actualizar registro" : "Agregar a la lista"}
+                        resetForm={editingId ? resetResponseForm : resetForm}
+                        setResetForm={editingId ? setResetResponseForm : setResetForm}
+                        initialValues={editingId ? initialData : initialValues}
+                        editingIndex={editingId ? null : editingIndex}
+                        cancelEdit={editingId ? undefined : cancelEdit}
+                        isEditing={!!editingId}
+                        onCancelEdit={editingId ? handleCancelEdit : undefined}
                     />
                 </CardContent>
             </Card>
@@ -168,6 +179,25 @@ export function TeacherReport({ formId }: TeacherReportProps) {
                 onCancel={() => {
                     setIsDialogOpen(false);
                 }}
+            />
+
+            <AlertDialogCustom
+                open={isConfirmDialogOpen}
+                onOpenChange={setIsConfirmDialogOpen}
+                message="Confirmar actualización"
+                description="Estás a punto de actualizar este registro. Revisa que los datos sean correctos antes de continuar."
+                actionLabel="Guardar Cambios"
+                cancelLabel="Revisar de nuevo"
+                onConfirm={confirmSubmit}
+                onCancel={cancelSubmit}
+            />
+
+            <ResponsesPanel
+                formId={formId}
+                module={template?.module as FormModules}
+                variant='embedded'
+                onDelete={handleDelete}
+                onEdit={handleEdit}
             />
         </div>
     );

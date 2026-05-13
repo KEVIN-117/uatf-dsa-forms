@@ -1,6 +1,7 @@
 import { Button } from "#/shared/ui/button";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Pencil, Trash2 } from "lucide-react";
+import { useCallback, useMemo, useRef } from "react";
 
 export interface BaseColumnActions {
     onEdit: (rowIndex: number) => void;
@@ -36,4 +37,23 @@ export function createBaseColumns(actions: BaseColumnActions): ColumnDef<Record<
             ),
         }
     ];
+}
+
+export const useOnEditTableActions = () => {
+    const editDataRef = useRef<(index: number) => void>(() => { });
+    const removeDataRef = useRef<(index: number) => void>(() => { });
+
+    const stableOnEdit = useCallback((i: number) => editDataRef.current(i), []);
+    const stableOnDelete = useCallback((i: number) => removeDataRef.current(i), []);
+
+    const actionColumns = useMemo(
+        () => createBaseColumns({ onEdit: stableOnEdit, onDelete: stableOnDelete }),
+        [stableOnEdit, stableOnDelete],
+    );
+
+    return {
+        actionColumns,
+        editDataRef,
+        removeDataRef
+    };
 }

@@ -3,6 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { RouteErrorState, RouteNotFoundState } from '#/shared/components/routing/RouteState';
 import { requireRole } from '#/shared/lib/route-guards';
 import { Role } from '#/shared/types';
+import type { FormModules } from '#/shared/types/dynamic-form';
 
 export const Route = createFileRoute('/dashboard/reports/$templateId/$module')({
     component: RouteComponent,
@@ -13,5 +14,5 @@ export const Route = createFileRoute('/dashboard/reports/$templateId/$module')({
 
 function RouteComponent() {
     const { templateId, module } = Route.useParams();
-    return <ResponsesPanel formId={templateId} module={module} />
+    return <ResponsesPanel formId={templateId} module={module as FormModules} />
 }

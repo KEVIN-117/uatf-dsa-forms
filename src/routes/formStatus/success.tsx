@@ -1,9 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { FormSuccess } from '#/shared/components/FormSuccess'
+import { FormSuccessPage } from '#/features/reports/screens/FormSuccessPage'
 import { RouteErrorState, RouteNotFoundState } from '#/shared/components/routing/RouteState'
 
 export const Route = createFileRoute('/formStatus/success')({
-  component: FormSuccess,
+  component: FormSuccessPage,
+  validateSearch: (search: Record<string, unknown>) => ({
+    completed: search.completed === true || search.completed === "true",
+  }),
   notFoundComponent: () => <RouteNotFoundState scope="estado de formulario" />,
   errorComponent: ({ error }) => <RouteErrorState error={error} scope="estado de formulario" />,
 })

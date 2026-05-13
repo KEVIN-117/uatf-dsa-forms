@@ -18,15 +18,32 @@ interface DynamicFormProps {
     initialValues?: Record<string, unknown> | null;
     editingIndex?: number | null;
     cancelEdit?: () => void;
-    /** Límites numéricos por modalidad desde el formulario anterior */
     modalityLimits?: ModalityLimits;
+    isEditing?: boolean;
+    onCancelEdit?: () => void;
 }
 
-export function DynamicForm({ template, onSubmit, className, submitLabel = "Enviar Reporte", resetForm, setResetForm, initialValues, editingIndex, cancelEdit, modalityLimits }: DynamicFormProps) {
-    const defaultValues = template.fields.reduce((acc, field) => {
-        acc[`${field.id}@${field.name}`] = field.type === 'number' ? '' : '';
-        return acc;
-    }, {} as Record<string, any>);
+export function DynamicForm({ template, onSubmit, className, submitLabel = "Enviar Reporte", resetForm, setResetForm, initialValues, editingIndex, cancelEdit, modalityLimits, isEditing, onCancelEdit }: DynamicFormProps) {
+    // Compute defaultValues from initialValues when in edit mode,
+    // so the form mounts already pre-filled instead of relying on setFieldValue after mount
+    const defaultValues = useMemo(() => {
+        const base: Record<string, any> = {};
+
+        template.fields.forEach((field) => {
+            const key = `${field.id}@${field.name}`;
+            if (isEditing && initialValues) {
+                // Single-record edit: initialValues keys are raw field names (e.g. "nombre")
+                base[key] = initialValues[field.name] ?? '';
+            } else if (initialValues && !isEditing) {
+                // Bulk edit: initialValues keys are already composite (field.id@field.name)
+                base[key] = initialValues[key] ?? '';
+            } else {
+                base[key] = '';
+            }
+        });
+
+        return base;
+    }, [template.fields, isEditing, initialValues]);
 
     const totalField = useMemo(
         () =>
@@ -77,15 +94,6 @@ export function DynamicForm({ template, onSubmit, className, submitLabel = "Envi
             setResetForm(false);
         }
     }, [resetForm, form, setResetForm]);
-
-    // Pre-fill the form when initialValues are provided (edit mode)
-    useEffect(() => {
-        if (initialValues) {
-            for (const [key, value] of Object.entries(initialValues)) {
-                form.setFieldValue(key, value);
-            }
-        }
-    }, [initialValues, form.setFieldValue]);
 
     // Encontrar la key del campo "modalidad" para usarlo en validación cruzada
     const modalityFieldKey = useMemo(() => {
@@ -236,11 +244,11 @@ export function DynamicForm({ template, onSubmit, className, submitLabel = "Envi
                             </Button>
                         )}
                     />
-                    {editingIndex !== null && (
+                    {(editingIndex !== null || isEditing) && (
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={cancelEdit}
+                            onClick={editingIndex !== null ? cancelEdit : onCancelEdit}
                             className="w-full font-bold mt-6 py-6 text-base hover-lift gap-2"
                         >
                             <X className="h-4 w-4 mr-1" />

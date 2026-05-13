@@ -11,8 +11,10 @@ import { useBulkSubmission } from "./hooks/useBulkSubmission";
 import { Card, CardContent, CardHeader, CardTitle } from "#/shared/ui/card";
 import { DataTable } from "#/shared/ui/data-table";
 import { Button } from "#/shared/ui/button";
-import { createBaseColumns } from "./BaseColumns";
-import { useCallback, useMemo, useRef } from "react";
+import { useOnEditTableActions } from "./BaseColumns";
+import { useEffect } from "react";
+import type { FormModules } from "#/shared/types/dynamic-form";
+import { ResponsesPanel } from "../dashboard/screens/ResponsesPanel";
 
 
 interface ScholarshipReportProps {
@@ -22,20 +24,20 @@ interface ScholarshipReportProps {
 export function ScholarshipReport({ formId }: ScholarshipReportProps) {
     // 1. HOOK ZONE
     const { template, isPending, isError, error } = useFormTemplateByModuleAndId('scholarships', formId);
-    const editDataRef = useRef<(index: number) => void>(() => { });
-    const removeDataRef = useRef<(index: number) => void>(() => { });
-    const { handleFormSubmitRequest, isDialogOpen, setIsDialogOpen, confirmSubmit, cancelSubmit, resetForm, setResetForm } = useReportSubmission(formId, template);
+    const { handleFormSubmitRequest, cancelSubmit, confirmSubmit, initialData, editingId, handleDelete, handleEdit, handleCancelEdit, isDialogOpen: isConfirmDialogOpen, setIsDialogOpen: setIsConfirmDialogOpen, scrollToTop, setScrollToTop, resetForm: resetResponseForm, setResetForm: setResetResponseForm } = useReportSubmission(formId, template);
+    const { actionColumns, editDataRef, removeDataRef } = useOnEditTableActions();
 
+    const { columns, data, handleAddDataToMemory, executeSubmitBulk, isDialogOpen: dialogBulkState, setIsDialogOpen: setIsDialogBulkState, resetForm: resetBulkForm, setResetForm: setResetBulkForm, removeData, editData, cancelEdit, editingIndex, initialValues } = useBulkSubmission(formId, actionColumns, template);
 
-    const stableOnEdit = useCallback((i: number) => editDataRef.current(i), []);
-    const stableOnDelete = useCallback((i: number) => removeDataRef.current(i), []);
-
-    const actionColumns = useMemo(
-        () => createBaseColumns({ onEdit: stableOnEdit, onDelete: stableOnDelete }),
-        [stableOnEdit, stableOnDelete],
-    );
-
-    const { columns, data, handleAddDataToMemory, executeSubmitBulk, isDialogOpen: dialogStudentState, setIsDialogOpen: setIsDialogStudentState, resetForm: resetBulkForm, setResetForm: setResetBulkForm, removeData, editData, cancelEdit, editingIndex, initialValues } = useBulkSubmission(formId, actionColumns, template);
+    useEffect(() => {
+        if (scrollToTop && editingId) {
+            const element = document.getElementById("page-top");
+            if (element) {
+                element.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+            setScrollToTop(false);
+        }
+    }, [scrollToTop, editingId, setScrollToTop]);
 
     editDataRef.current = editData;
     removeDataRef.current = removeData;
@@ -64,7 +66,7 @@ export function ScholarshipReport({ formId }: ScholarshipReportProps) {
 
     if (template.hasBulk) {
         return (
-            <div className="w-full max-w-6xl mx-auto py-10">
+            <div className="w-full max-w-6xl mx-auto py-10" id="page-top">
                 <div className="mb-8">
                     <span className="text-xs font-bold uppercase tracking-widest text-primary/60">
                         Módulo: {template.module.replace('_', ' ')}
@@ -79,15 +81,18 @@ export function ScholarshipReport({ formId }: ScholarshipReportProps) {
                 />
 
                 <DynamicForm
-                    template={template}
-                    onSubmit={handleAddDataToMemory}
+                    key={editingId ? `response-edit-${editingId}` : `bulk-${editingIndex ?? 'new'}`}
+                    template={template!}
+                    onSubmit={editingId ? handleFormSubmitRequest : handleAddDataToMemory}
                     className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                    submitLabel={editingIndex !== null ? "Actualizar registro" : "Agregar a la lista"}
-                    resetForm={resetBulkForm}
-                    setResetForm={setResetBulkForm}
-                    initialValues={initialValues}
-                    editingIndex={editingIndex}
-                    cancelEdit={cancelEdit}
+                    submitLabel={editingId ? "Guardar Cambios" : editingIndex !== null ? "Actualizar registro" : "Agregar a la lista"}
+                    resetForm={editingId ? resetResponseForm : resetBulkForm}
+                    setResetForm={editingId ? setResetResponseForm : setResetBulkForm}
+                    initialValues={editingId ? initialData : initialValues}
+                    editingIndex={editingId ? null : editingIndex}
+                    cancelEdit={editingId ? undefined : cancelEdit}
+                    isEditing={!!editingId}
+                    onCancelEdit={editingId ? handleCancelEdit : undefined}
                 />
 
                 <div className="grid grid-cols-1 gap-8">
@@ -95,12 +100,12 @@ export function ScholarshipReport({ formId }: ScholarshipReportProps) {
                     <div className="flex flex-col gap-4">
                         <Card className="shadow-sm border-border flex-1">
                             <CardHeader className="flex flex-row items-center justify-between">
-                                <CardTitle className="text-lg">Estudiantes por registrar ({data.length})</CardTitle>
+                                <CardTitle className="text-lg">Becarios por registrar ({data.length})</CardTitle>
                             </CardHeader>
                             <CardContent className="p-4 sm:p-6">
                                 {data.length === 0 ? (
                                     <div className="h-40 flex items-center justify-center border-2 border-dashed rounded-lg text-muted-foreground">
-                                        No hay estudiantes en la lista. Llena el formulario para comenzar.
+                                        No hay becarios en la lista. Llena el formulario para comenzar.
                                     </div>
                                 ) : (
                                     <DataTable<Record<string, unknown>, unknown>
@@ -116,38 +121,57 @@ export function ScholarshipReport({ formId }: ScholarshipReportProps) {
                             <Button
                                 size="lg"
                                 disabled={data.length === 0}
-                                onClick={() => setIsDialogStudentState(true)}
+                                onClick={() => setIsDialogBulkState(true)}
                                 className="w-full sm:w-auto font-bold"
                             >
                                 <SaveAll className="mr-2 size-5" />
-                                Finalizar y Enviar ({data.length}) Estudiantes
+                                Finalizar y Enviar ({data.length}) Becarios
                             </Button>
                         </div>
                     </div>
                 </div>
 
                 <AlertDialogCustom
-                    open={dialogStudentState}
-                    onOpenChange={setIsDialogStudentState}
+                    open={dialogBulkState}
+                    onOpenChange={setIsDialogBulkState}
                     message="Confirmar envío"
-                    description={`Estás a punto de enviar el formulario para el registro de Estudiantes. Revisa que los datos sean correctos antes de continuar.`}
+                    description={`Estás a punto de enviar el formulario para el registro de Becas. Revisa que los datos sean correctos antes de continuar.`}
                     actionLabel="Enviar Reporte"
                     cancelLabel="Revisar de nuevo"
                     onConfirm={() => {
-                        setIsDialogStudentState(false);
+                        setIsDialogBulkState(false);
                         executeSubmitBulk();
                     }}
                     onCancel={() => {
-                        setIsDialogStudentState(false);
+                        setIsDialogBulkState(false);
                     }}
+                />
+
+                <AlertDialogCustom
+                    open={isConfirmDialogOpen}
+                    onOpenChange={setIsConfirmDialogOpen}
+                    message="Confirmar actualización"
+                    description="Estás a punto de actualizar este registro. Revisa que los datos sean correctos antes de continuar."
+                    actionLabel="Guardar Cambios"
+                    cancelLabel="Revisar de nuevo"
+                    onConfirm={confirmSubmit}
+                    onCancel={cancelSubmit}
+                />
+
+                <ResponsesPanel
+                    formId={formId}
+                    module={template?.module as FormModules}
+                    variant='embedded'
+                    onDelete={handleDelete}
+                    onEdit={handleEdit}
                 />
             </div>
         )
     }
 
-    // 4. MAIN RENDER
+    // 4. MAIN RENDER (non-bulk)
     return (
-        <div className="w-full max-w-6xl mx-auto py-10">
+        <div className="w-full max-w-6xl mx-auto py-10" id="page-top">
             <div className="mb-8">
                 <span className="text-xs font-bold uppercase tracking-widest text-primary/60">
                     Módulo: {template.module.replace('_', ' ')}
@@ -162,22 +186,35 @@ export function ScholarshipReport({ formId }: ScholarshipReportProps) {
             />
 
             <DynamicForm
-                template={template}
+                key={`edit-${editingId ?? 'new'}`}
+                template={template!}
                 className="grid grid-cols-1 md:grid-cols-2 gap-4"
                 onSubmit={handleFormSubmitRequest}
-                resetForm={resetForm}
-                setResetForm={setResetForm}
+                resetForm={resetResponseForm}
+                setResetForm={setResetResponseForm}
+                initialValues={initialData}
+                isEditing={!!editingId}
+                submitLabel={editingId ? "Guardar Cambios" : "Enviar Reporte"}
+                onCancelEdit={handleCancelEdit}
             />
 
             <AlertDialogCustom
-                open={isDialogOpen}
-                onOpenChange={setIsDialogOpen}
+                open={isConfirmDialogOpen}
+                onOpenChange={setIsConfirmDialogOpen}
                 message="Confirmar envío"
                 description={`Estás a punto de enviar el formulario para el registro de Becas. Revisa que los datos sean correctos antes de continuar.`}
                 actionLabel="Enviar Reporte"
                 cancelLabel="Revisar de nuevo"
                 onConfirm={confirmSubmit}
                 onCancel={cancelSubmit}
+            />
+
+            <ResponsesPanel
+                formId={formId}
+                module={template?.module as FormModules}
+                variant='embedded'
+                onDelete={handleDelete}
+                onEdit={handleEdit}
             />
         </div>
     );

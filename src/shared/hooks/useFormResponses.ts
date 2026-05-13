@@ -8,6 +8,8 @@ import {
   getDocs,
   orderBy,
   getDoc,
+  deleteDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "#/shared/lib/firebase";
 import { FormModules, type FormResponseDef } from "../types/dynamic-form";
@@ -31,9 +33,8 @@ export function useSubmitFormResponse() {
       return responseToSave;
     },
     onSuccess: (_data, variables) => {
-      // Invalidamos las queries del módulo afectado para refrescar la tabla
       queryClient.invalidateQueries({
-        queryKey: ["responses", variables.module],
+        queryKey: ["responses", variables.module, variables.templateId],
       });
       useToast({
         title: "Éxito",
@@ -89,6 +90,84 @@ export function useResponsesByModule(module: FormModules) {
     enabled: !!module,
   });
 }
+
+export const useDeleteFormResponse = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ module, id }: { module: FormModules; id: string }) => {
+      const docRef = doc(db, module, id);
+      await deleteDoc(docRef);
+    },
+
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["responses", variables.module],
+      });
+      useToast({
+        title: "Éxito",
+        type: "success",
+        duration: 5000,
+        closeButton: true,
+        position: "top-right",
+        message: "Respuesta eliminada correctamente",
+      });
+    },
+    onError: (_error) => {
+      useToast({
+        title: "Error",
+        type: "error",
+        duration: 5000,
+        closeButton: true,
+        position: "top-right",
+        message:
+          "Algo salio mal al eliminar la respuesta, no te preocupes puedes volver a intentarlo",
+      });
+    },
+  });
+};
+export const useUpdateFormResponse = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      module,
+      response,
+    }: {
+      id: string;
+      module: FormModules;
+      response: Record<string, unknown>;
+    }) => {
+      const docRef = doc(db, module, id);
+      await updateDoc(docRef, { response });
+    },
+    onSuccess(_data, variables) {
+      queryClient.invalidateQueries({
+        queryKey: ["responses", variables.module],
+      });
+      useToast({
+        title: "Éxito",
+        type: "success",
+        duration: 5000,
+        closeButton: true,
+        position: "top-right",
+        message: "Respuesta actualizada correctamente",
+      });
+    },
+    onError() {
+      useToast({
+        title: "Error",
+        type: "error",
+        duration: 5000,
+        closeButton: true,
+        position: "top-right",
+        message:
+          "Algo salio mal al actualizar la respuesta, no te preocupes puedes volver a intentarlo",
+      });
+    },
+  });
+};
 
 const ALL_MODULES = Object.values(FormModules);
 
