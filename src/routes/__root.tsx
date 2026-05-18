@@ -14,6 +14,7 @@ import { AuthProvider } from '#/features/auth/providers/AuthProvider'
 import { DirectorProfileGate } from '#/features/director-profile/components/DirectorProfileGate'
 import { Toaster } from "@/shared/ui/sonner"
 import { RouteErrorState, RouteNotFoundState } from "#/shared/components/routing/RouteState"
+import { TooltipProvider } from "#/shared/ui/tooltip"
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -51,20 +52,22 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body className="font-sans antialiased wrap-anywhere selection:bg-[rgba(79,184,178,0.24)]">
-        <AuthProvider>
-          <SidebarProvider className='bg-sidebar'>
-            <DashboardSidebar />
-            <div className="h-svh overflow-hidden lg:p-2 w-full">
-              <div className="lg:border lg:rounded-md overflow-hidden flex flex-col h-full w-full bg-background">
-                <main className="w-full flex-1 overflow-auto p-1">
-                  {children}
-                </main>
-                <Toaster />
+        <TooltipProvider delayDuration={0}>
+          <AuthProvider>
+            <SidebarProvider className='bg-sidebar'>
+              <DashboardSidebar />
+              <div className="h-svh overflow-hidden lg:p-2 w-full">
+                <div className="lg:border lg:rounded-md overflow-hidden flex flex-col h-full w-full bg-background">
+                  <main className="w-full flex-1 overflow-auto p-1">
+                    {children}
+                  </main>
+                  <Toaster />
+                </div>
               </div>
-            </div>
-          </SidebarProvider>
-          <DirectorProfileGate />
-        </AuthProvider>
+            </SidebarProvider>
+            <DirectorProfileGate />
+          </AuthProvider>
+        </TooltipProvider>
         <Scripts />
       </body>
     </html>

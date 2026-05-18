@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { FileSpreadsheet, BarChart3, Pencil, Trash2 } from 'lucide-react';
 import { DataTable } from '#/shared/ui/data-table';
+import { Tooltip, TooltipContent, TooltipTrigger } from '#/shared/ui/tooltip';
 
 import { useFormTemplateById } from '#/shared/hooks/useFormBuilder';
 import { useGetResponses } from '#/shared/hooks/useFormResponses';
@@ -121,14 +122,28 @@ export function ResponsesPanel({ formId, module, variant = 'page', onDelete, onE
                 cell: ({ row }) => (
                     <div className="flex items-center gap-1">
                         {canEdit && (
-                            <Button variant="ghost" size="icon" onClick={() => onEdit(row.original)} className="h-8 w-8 hover:bg-primary/10 hover:text-primary">
-                                <Pencil className="h-4 w-4" />
-                            </Button>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button variant="ghost" size="icon" onClick={() => onEdit(row.original)} className="h-8 w-8 hover:bg-primary/10 hover:text-primary">
+                                        <Pencil className="h-4 w-4" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Actualizar Registro</p>
+                                </TooltipContent>
+                            </Tooltip>
                         )}
                         {canDelete && (
-                            <Button variant="ghost" size="icon" onClick={() => onDelete(row.original.id)} className="h-8 w-8 hover:bg-destructive/10 text-destructive hover:text-destructive">
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button variant="ghost" size="icon" onClick={() => onDelete(row.original.id)} className="h-8 w-8 hover:bg-destructive/10 text-destructive hover:text-destructive">
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Eliminar Registro</p>
+                                </TooltipContent>
+                            </Tooltip>
                         )}
                     </div>
                 )
