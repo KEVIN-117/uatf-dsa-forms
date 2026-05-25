@@ -6,15 +6,12 @@ import { useAllResponses } from "#/shared/hooks/useFormResponses";
 import { useFormTemplates } from "#/shared/hooks/useFormBuilder";
 import { useDirectorProgress } from "#/features/reports/hooks/useDirectorProgress";
 import { FormModules, type FormResponseDef } from "#/shared/types/dynamic-form";
-import { Award, BookOpen, CalendarDays, CheckCircle2, Clock, FileText, GraduationCap, LayoutDashboard, TrendingUp, Users } from "lucide-react";
+import { Award, BookOpen, CalendarDays, CheckCircle2, Clock, FileCheck, FileText, GraduationCap, LayoutDashboard, TrendingUp, Users } from "lucide-react";
 import { Badge } from "#/shared/ui/badge";
 import { Loader } from "#/shared/components/Loader";
-const MODULE_LABEL: Record<FormModules, string> = {
-  [FormModules.student]: "Estudiantes",
-  [FormModules.graduate]: "Graduados",
-  [FormModules.teacher]: "Docentes",
-  [FormModules.scholarships]: "Becas",
-};
+import { Link } from "@tanstack/react-router";
+import { Button } from "#/shared/ui/button";
+import { MODULE_LABELS } from "#/features/reports/utils/moduleLabels"
 
 const MODULE_ICON: Record<FormModules, typeof Users> = {
   [FormModules.student]: Users,
@@ -141,7 +138,7 @@ function ModuleCard({ mod, count }: { mod: FormModules; count: number }) {
             <Icon className={`w-5 h-5 ${MODULE_ACCENT[mod]}`} />
           </div>
           <div>
-            <p className="text-sm font-semibold text-foreground">{MODULE_LABEL[mod]}</p>
+            <p className="text-sm font-semibold text-foreground">{MODULE_LABELS[mod]}</p>
             <p className="text-[11px] text-muted-foreground">Registros enviados</p>
           </div>
         </div>
@@ -161,7 +158,7 @@ function ResponseItem({ resp }: { resp: FormResponseDef }) {
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <p className="text-sm font-semibold text-foreground truncate">{MODULE_LABEL[resp.module]}</p>
+          <p className="text-sm font-semibold text-foreground truncate">{MODULE_LABELS[resp.module]}</p>
           <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 shrink-0 border-border/50">
             {resp.templateId.slice(0, 8)}
           </Badge>
@@ -287,6 +284,26 @@ export function DashboardHome() {
               <ProgressBar value={completedStepsCount} max={totalSteps} label="Avance total" />
             </CardContent>
           </Card>
+
+          {/* Receipt link — visible when the director has submissions */}
+          {myResponses.length > 0 && (
+            <Card className="border-border/40 bg-linear-to-br from-emerald-500/8 via-card to-primary/5 backdrop-blur-sm shadow-sm overflow-hidden dash-animate dash-delay-2">
+              <CardContent className="p-5 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-500/10">
+                    <FileCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">Comprobante de envío</p>
+                    <p className="text-xs text-muted-foreground">Consulta o descarga tu resumen de reportes</p>
+                  </div>
+                </div>
+                <Button asChild size="sm" className="gap-2 font-semibold hover-lift shrink-0">
+                  <Link to="/formStatus/success" search={{ completed: true }}>Ver comprobante</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          )}
 
           <Card className="border-border/40 bg-card/80 backdrop-blur-sm shadow-sm overflow-hidden dash-animate dash-delay-3">
             <CardHeader>

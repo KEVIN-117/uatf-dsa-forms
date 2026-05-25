@@ -24,7 +24,10 @@ export const useBulkSubmission = (
   const [data, setData] = useState<Record<string, unknown>[]>([]);
   const [resetForm, setResetForm] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [initialValues, setInitialValues] = useState<Record<string, unknown> | null>(null);
+  const [initialValues, setInitialValues] = useState<Record<
+    string,
+    unknown
+  > | null>(null);
 
   const columns = useMemo<ColumnDef<Record<string, unknown>, any>[]>(() => {
     if (!template) return [];
@@ -189,7 +192,7 @@ export const useBulkSubmission = (
           type: "success",
           message: "Has finalizado todos los formularios requeridos.",
         });
-        navigate({ to: "/formStatus/success", replace: true });
+        navigate({ to: "/formStatus/success", search: { completed: true }, replace: true });
       }
     } catch (error: unknown) {
       useToast({

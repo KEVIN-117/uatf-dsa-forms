@@ -5,6 +5,7 @@ import { auth } from '#/shared/lib/firebase';
 import { DynamicReportPageSkeleton } from '#/shared/components/DynamicReportPageSkeleton';
 import { DynamicReportPageState } from '#/shared/components/DynamicReportPageState';
 import { RouteErrorState, RouteNotFoundState } from '#/shared/components/routing/RouteState';
+import { useState } from 'react';
 
 export const Route = createFileRoute('/demo/$formId')({
   component: DynamicReportPage,
@@ -16,6 +17,7 @@ function DynamicReportPage() {
   // 1. HOOK ZONE
   const { formId } = Route.useParams();
   const { template, isPending, isError, error } = useFormTemplateById(formId);
+  const [resetForm, setResetForm] = useState(false);
 
   // 2. FUNCTIONS AND LOGIC
   const handleFormSubmit = async (
@@ -70,6 +72,8 @@ function DynamicReportPage() {
       <DynamicForm
         template={template}
         onSubmit={handleFormSubmit}
+        resetForm={resetForm}
+        setResetForm={setResetForm}
       />
     </div>
   );
