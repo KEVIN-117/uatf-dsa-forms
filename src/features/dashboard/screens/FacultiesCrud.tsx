@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { type ColumnDef } from "@tanstack/react-table"
+import type { ColumnDef } from "@tanstack/react-table"
 import { Pencil, Trash2, Plus, Building2 } from "lucide-react"
 
 import { useProtectedRoute } from "#/features/auth/hooks/useProtectedRoute"
@@ -16,7 +16,7 @@ import { Button } from "#/shared/ui/button"
 import { Input } from "#/shared/ui/input"
 import { Label } from "#/shared/ui/label"
 import { Card, CardContent } from "#/shared/ui/card"
-import { useToast } from "#/shared/components/Toast"
+import { Toast } from "#/shared/components/Toast"
 import { PageHeader } from "#/shared/components/PageHeader"
 import { InlineLoader } from "#/shared/components/InlineLoader"
 import { Loader } from "#/shared/components/Loader"
@@ -55,7 +55,7 @@ export function FacultiesCrud() {
         try {
             if (editingItem) {
                 await updateMutation.mutateAsync({ ...form, docId: editingItem.docId })
-                useToast({
+                Toast({
                     title: "Facultad actualizada correctamente",
                     type: "success",
                     duration: 5000,
@@ -65,7 +65,7 @@ export function FacultiesCrud() {
                 });
             } else {
                 await addMutation.mutateAsync(form)
-                useToast({
+                Toast({
                     title: "Facultad creada correctamente",
                     type: "success",
                     duration: 5000,
@@ -77,7 +77,7 @@ export function FacultiesCrud() {
             setSheetOpen(false)
             setForm(emptyForm)
         } catch (error: unknown) {
-            useToast({
+            Toast({
                 title: "Error",
                 type: "error",
                 duration: 5000,
@@ -92,7 +92,7 @@ export function FacultiesCrud() {
         if (!confirm(`¿Estás seguro de eliminar la facultad "${item.name}"?`)) return
         try {
             await deleteMutation.mutateAsync(item.docId)
-            useToast({
+            Toast({
                 title: "Facultad eliminada correctamente",
                 type: "success",
                 duration: 5000,
@@ -101,7 +101,7 @@ export function FacultiesCrud() {
                 message: "La facultad ha sido eliminada correctamente.",
             });
         } catch (error: unknown) {
-            useToast({
+            Toast({
                 title: "Error",
                 type: "error",
                 duration: 5000,

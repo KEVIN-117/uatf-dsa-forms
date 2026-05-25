@@ -1,6 +1,6 @@
 import React from 'react'
 import { sortingFns } from '@tanstack/react-table'
-import { compareItems, rankItem } from '@tanstack/match-sorter-utils'
+import { compareItems } from '@tanstack/match-sorter-utils'
 import type { ColumnDef, FilterFn, SortingFn } from '@tanstack/react-table'
 import type { RankingInfo } from '@tanstack/match-sorter-utils'
 
@@ -15,12 +15,6 @@ import { DataTable } from '#/shared/ui/data-table'
 declare module '@tanstack/react-table' {
     interface FilterFns { fuzzy: FilterFn<unknown> }
     interface FilterMeta { itemRank: RankingInfo }
-}
-
-const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-    const itemRank = rankItem(row.getValue(columnId), value)
-    addMeta({ itemRank })
-    return itemRank.passed
 }
 
 const fuzzySort: SortingFn<any> = (rowA, rowB, columnId) => {

@@ -25,7 +25,7 @@ import { BuilderSkeleton } from '#/features/dynamic-form/components/BuilderSkele
 import { StatePanel } from '#/features/dynamic-form/components/StatePanel';
 import { FieldEditor } from '#/features/dynamic-form/components/FieldEditor';
 import { EntityFormSheet } from "#/shared/ui/entity-form-sheet";
-import { useToast } from '#/shared/components/Toast';
+import { Toast } from '#/shared/components/Toast';
 
 export default function FormBuilderPanel() {
     // 1. HOOK ZONE
@@ -55,7 +55,7 @@ export default function FormBuilderPanel() {
         const cleaned = normalizeTemplate(draft);
 
         if (!cleaned.id.trim() || !cleaned.title.trim()) {
-            useToast({
+            Toast({
                 title: "Campos incompletos",
                 type: "error",
                 duration: 5000,
@@ -67,7 +67,7 @@ export default function FormBuilderPanel() {
         }
 
         if (cleaned.fields.length === 0) {
-            useToast({
+            Toast({
                 title: "Plantilla vacía",
                 type: "warning",
                 duration: 5000,
@@ -81,7 +81,7 @@ export default function FormBuilderPanel() {
         try {
             await upsertTemplate(cleaned);
             setSelectedTemplateId(cleaned.id);
-            useToast({
+            Toast({
                 title: "Plantilla guardada",
                 type: "success",
                 duration: 5000,
@@ -90,7 +90,7 @@ export default function FormBuilderPanel() {
                 message: "Los cambios se han guardado correctamente en la base de datos.",
             });
         } catch (_err) {
-            useToast({
+            Toast({
                 title: "Error",
                 type: "error",
                 duration: 5000,
@@ -119,7 +119,7 @@ export default function FormBuilderPanel() {
 
         setDraft(duplicated);
         setSelectedTemplateId('new');
-        useToast({
+        Toast({
             title: "Plantilla duplicada",
             type: "success",
             duration: 5000,
@@ -193,7 +193,7 @@ export default function FormBuilderPanel() {
             return { ...current, fields };
         });
 
-        useToast({
+        Toast({
             title: "Campo clonado",
             type: "success",
             duration: 5000,
@@ -351,7 +351,7 @@ export default function FormBuilderPanel() {
                             <DynamicForm
                                 template={previewTemplate}
                                 onSubmit={async () => {
-                                    useToast({
+                                    Toast({
                                         title: "Vista previa enviada",
                                         type: "success",
                                         duration: 5000,

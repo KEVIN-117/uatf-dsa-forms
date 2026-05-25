@@ -13,7 +13,7 @@ import { Label } from "#/shared/ui/label";
 import { useLogin } from "../hooks/useAuth";
 import { useUsers } from "#/features/reference-data/useUsers";
 import { FirebaseError } from "firebase/app";
-import { useToast } from "#/shared/components/Toast";
+import { Toast } from "#/shared/components/Toast";
 import { useNavigate } from "@tanstack/react-router";
 
 interface DirectorLoginProps {
@@ -55,7 +55,7 @@ export function DirectorLogin({ onSuccess }: DirectorLoginProps) {
         onSuccess?.();
         navigate({ to: "/dashboard/dashboard" });
       } catch (error: unknown) {
-        useToast({
+        Toast({
           title: "Error de acceso",
           type: "error",
           message: "Carnet de identidad no registrado o incorrecto.",

@@ -14,7 +14,7 @@ import {
 import { db } from "#/shared/lib/firebase";
 import { FormModules, type FormResponseDef } from "../types/dynamic-form";
 import { useMemo } from "react";
-import { useToast } from "../components/Toast";
+import { Toast } from "../components/Toast";
 
 export function useSubmitFormResponse() {
   const queryClient = useQueryClient();
@@ -36,7 +36,7 @@ export function useSubmitFormResponse() {
       queryClient.invalidateQueries({
         queryKey: ["responses"],
       });
-      useToast({
+      Toast({
         title: "Éxito",
         type: "success",
         duration: 5000,
@@ -46,7 +46,7 @@ export function useSubmitFormResponse() {
       });
     },
     onError: (_error) => {
-      useToast({
+      Toast({
         title: "Error",
         type: "error",
         duration: 5000,
@@ -104,7 +104,7 @@ export const useDeleteFormResponse = () => {
       queryClient.invalidateQueries({
         queryKey: ["responses"],
       });
-      useToast({
+      Toast({
         title: "Éxito",
         type: "success",
         duration: 5000,
@@ -114,7 +114,7 @@ export const useDeleteFormResponse = () => {
       });
     },
     onError: (_error) => {
-      useToast({
+      Toast({
         title: "Error",
         type: "error",
         duration: 5000,
@@ -146,7 +146,7 @@ export const useUpdateFormResponse = () => {
       queryClient.invalidateQueries({
         queryKey: ["responses"],
       });
-      useToast({
+      Toast({
         title: "Éxito",
         type: "success",
         duration: 5000,
@@ -156,7 +156,7 @@ export const useUpdateFormResponse = () => {
       });
     },
     onError() {
-      useToast({
+      Toast({
         title: "Error",
         type: "error",
         duration: 5000,

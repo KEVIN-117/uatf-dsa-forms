@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { type ColumnDef } from "@tanstack/react-table"
+import type { ColumnDef } from "@tanstack/react-table"
 import { Pencil, Trash2, Plus, Award } from "lucide-react"
 
 import { useProtectedRoute } from "#/features/auth/hooks/useProtectedRoute"
@@ -16,7 +16,7 @@ import { Button } from "#/shared/ui/button"
 import { Input } from "#/shared/ui/input"
 import { Label } from "#/shared/ui/label"
 import { Card, CardContent } from "#/shared/ui/card"
-import { useToast } from "#/shared/components/Toast"
+import { Toast } from "#/shared/components/Toast"
 import { PageHeader } from "#/shared/components/PageHeader"
 import { InlineLoader } from "#/shared/components/InlineLoader"
 import { Loader } from "#/shared/components/Loader"
@@ -49,7 +49,7 @@ export function GraduationModalitiesCrud() {
         try {
             if (editing) {
                 await updateMut.mutateAsync({ ...form, docId: editing.docId })
-                useToast({
+                Toast({
                     title: "Modalidad actualizada",
                     type: "success",
                     duration: 5000,
@@ -59,7 +59,7 @@ export function GraduationModalitiesCrud() {
                 });
             } else {
                 await addMut.mutateAsync(form)
-                useToast({
+                Toast({
                     title: "Modalidad creada",
                     type: "success",
                     duration: 5000,
@@ -70,7 +70,7 @@ export function GraduationModalitiesCrud() {
             }
             setSheetOpen(false); setForm(emptyForm)
         } catch {
-            useToast({
+            Toast({
                 title: "Error al guardar",
                 type: "error",
                 duration: 5000,
@@ -85,7 +85,7 @@ export function GraduationModalitiesCrud() {
         if (!confirm(`¿Eliminar "${item.name}"?`)) return
         try {
             await deleteMut.mutateAsync(item.docId);
-            useToast({
+            Toast({
                 title: "Modalidad eliminada",
                 type: "success",
                 duration: 5000,
@@ -94,7 +94,7 @@ export function GraduationModalitiesCrud() {
                 message: "Modalidad de graduación eliminada correctamente.",
             });
         } catch {
-            useToast({
+            Toast({
                 title: "Error al eliminar",
                 type: "error",
                 duration: 5000,

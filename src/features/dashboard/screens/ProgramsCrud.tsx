@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { type ColumnDef } from "@tanstack/react-table"
+import type { ColumnDef } from "@tanstack/react-table"
 import { Pencil, Trash2, Plus, GraduationCap, CheckCircle2 } from "lucide-react"
 
 import { useProtectedRoute } from "#/features/auth/hooks/useProtectedRoute"
@@ -20,7 +20,7 @@ import { Label } from "#/shared/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "#/shared/ui/select"
 import { Card, CardContent } from "#/shared/ui/card"
 import { Switch } from "#/shared/ui/switch"
-import { useToast } from "#/shared/components/Toast"
+import { Toast } from "#/shared/components/Toast"
 import { PageHeader } from "#/shared/components/PageHeader"
 import { InlineLoader } from "#/shared/components/InlineLoader"
 import { Loader } from "#/shared/components/Loader"
@@ -81,7 +81,7 @@ export function ProgramsCrud() {
         try {
             if (editingItem) {
                 await updateMutation.mutateAsync({ ...form, docId: editingItem.docId })
-                useToast({
+                Toast({
                     title: "Carrera actualizada",
                     type: "success",
                     duration: 5000,
@@ -91,7 +91,7 @@ export function ProgramsCrud() {
                 });
             } else {
                 await addMutation.mutateAsync(form)
-                useToast({
+                Toast({
                     title: "Carrera creada",
                     type: "success",
                     duration: 5000,
@@ -102,8 +102,8 @@ export function ProgramsCrud() {
             }
             setSheetOpen(false)
             setForm(emptyForm)
-        } catch (error) {
-            useToast({
+        } catch (_error) {
+            Toast({
                 title: "Error al guardar",
                 type: "error",
                 duration: 5000,
@@ -118,7 +118,7 @@ export function ProgramsCrud() {
         if (!confirm(`¿Estás seguro de eliminar la carrera "${item.name}"?`)) return
         try {
             await deleteMutation.mutateAsync(item.docId)
-            useToast({
+            Toast({
                 title: "Carrera eliminada",
                 type: "success",
                 duration: 5000,
@@ -126,8 +126,8 @@ export function ProgramsCrud() {
                 position: 'top-right',
                 message: "Carrera eliminada correctamente.",
             });
-        } catch (error) {
-            useToast({
+        } catch (_error) {
+            Toast({
                 title: "Error al eliminar",
                 type: "error",
                 duration: 5000,

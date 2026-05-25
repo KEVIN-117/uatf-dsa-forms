@@ -1,5 +1,5 @@
 import { useAuth } from "#/features/auth/providers/AuthProvider";
-import { useToast } from "#/shared/components/Toast";
+import { Toast } from "#/shared/components/Toast";
 import { useMarkStepCompleted } from "#/features/reports/hooks/useDirectorProgress";
 import {
   useDeleteFormResponse,
@@ -78,7 +78,7 @@ export const useReportSubmission = (
           id: id,
         });
       } catch {
-        useToast({
+        Toast({
           type: "error",
           title: "Error al eliminar",
           message: "No se pudo eliminar el registro. Inténtalo nuevamente.",
@@ -126,7 +126,7 @@ export const useReportSubmission = (
         setInitialData(null);
         setResetForm(true);
         setPendingData(null);
-        useToast({
+        Toast({
           title: "Registro actualizado",
           type: "success",
           duration: 5000,
@@ -147,7 +147,7 @@ export const useReportSubmission = (
           response: transformedData,
         });
         await markStepCompleted(template.step);
-        useToast({
+        Toast({
           title: "Reporte guardado exitosamente",
           type: "success",
           duration: 5000,
@@ -159,7 +159,7 @@ export const useReportSubmission = (
         if (nextUrl) {
           navigate({ to: nextUrl, replace: true });
         } else {
-          useToast({
+          Toast({
             title: "¡Proceso Completado!",
             type: "success",
             message: "Has finalizado todos los formularios requeridos.",
@@ -168,7 +168,7 @@ export const useReportSubmission = (
         }
       }
     } catch (error: unknown) {
-      useToast({
+      Toast({
         title: "Error",
         type: "error",
         duration: 5000,
@@ -188,7 +188,7 @@ export const useReportSubmission = (
   const cancelSubmit = () => {
     setIsDialogOpen(false);
     setPendingData(null);
-    useToast({
+    Toast({
       title: "Reporte cancelado",
       type: "warning",
       duration: 5000,

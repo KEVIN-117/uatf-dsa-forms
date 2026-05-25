@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setFacultyId(null);
           setProgramId(null);
         }
-      } catch (error) {
+      } catch (_error) {
         setUser(null);
         setUserRole(null);
         setFacultyId(null);

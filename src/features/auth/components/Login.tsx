@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "#/sha
 import { Input } from "#/shared/ui/input";
 import { Label } from "#/shared/ui/label";
 import { FirebaseError } from "firebase/app";
-import { useToast } from "#/shared/components/Toast";
+import { Toast } from "#/shared/components/Toast";
 
 interface LoginProps {
   onSuccess?: () => void;
@@ -50,7 +50,7 @@ export function Login({
           navigate({ to: redirectTo });
         }
       } catch (error: unknown) {
-        useToast({
+        Toast({
           title: "Error de acceso",
           type: "error",
           message: "Credenciales incorrectos.",

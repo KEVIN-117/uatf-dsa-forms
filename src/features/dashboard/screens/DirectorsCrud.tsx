@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { type ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { Pencil, Plus, Trash2, Users } from "lucide-react";
 import { useProtectedRoute } from "#/features/auth/hooks/useProtectedRoute";
 import { useAddUser, useDeleteUser, useUpdateUser, useUsers } from "#/features/reference-data/useUsers";

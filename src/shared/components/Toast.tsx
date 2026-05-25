@@ -31,7 +31,7 @@ interface ToastProps {
     className?: string;
 }
 
-export function useToast({ message, type, title, description, duration, closeButton, position, style, className }: ToastProps) {
+export function Toast({ message, type, title, description, duration, closeButton, position, style, className }: ToastProps) {
     return (
         toast[type](title ?? "", {
             description: description ?? message,
@@ -45,7 +45,7 @@ export function useToast({ message, type, title, description, duration, closeBut
 }
 
 
-export function useToastPromise<T>({
+export function ToastPromise<T>({
     promise,
     pendingText,
     successText,

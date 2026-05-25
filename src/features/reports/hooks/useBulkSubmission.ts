@@ -1,5 +1,5 @@
 import { useAuth } from "#/features/auth/providers/AuthProvider";
-import { useToast } from "#/shared/components/Toast";
+import { Toast } from "#/shared/components/Toast";
 import { useMarkStepCompleted } from "#/features/reports/hooks/useDirectorProgress";
 import { useSubmitFormResponse } from "#/shared/hooks/useFormResponses";
 import type { FormTemplateDef } from "#/shared/types/dynamic-form";
@@ -64,7 +64,7 @@ export const useBulkSubmission = (
         setEditingIndex((prev) => (prev !== null ? prev - 1 : null));
       }
 
-      useToast({
+      Toast({
         title: "Registro eliminado",
         type: "warning",
         message: "El registro fue eliminado de la tabla temporal.",
@@ -125,7 +125,7 @@ export const useBulkSubmission = (
       setEditingIndex(null);
       setInitialValues(null);
 
-      useToast({
+      Toast({
         title: "Registro actualizado",
         type: "success",
         message:
@@ -135,7 +135,7 @@ export const useBulkSubmission = (
       // Add a new row
       setData((prev) => [...prev, record]);
 
-      useToast({
+      Toast({
         title: "Dato agregado",
         type: "success",
         message:
@@ -176,7 +176,7 @@ export const useBulkSubmission = (
       await markStepCompleted(template.step);
 
       setResetForm(true);
-      useToast({
+      Toast({
         title: "Reporte guardado exitosamente",
         type: "success",
         duration: 5000,
@@ -187,7 +187,7 @@ export const useBulkSubmission = (
       if (nextUrl) {
         navigate({ to: nextUrl, replace: true });
       } else {
-        useToast({
+        Toast({
           title: "¡Proceso Completado!",
           type: "success",
           message: "Has finalizado todos los formularios requeridos.",
@@ -195,7 +195,7 @@ export const useBulkSubmission = (
         navigate({ to: "/formStatus/success", search: { completed: true }, replace: true });
       }
     } catch (error: unknown) {
-      useToast({
+      Toast({
         title: "Error",
         type: "error",
         duration: 5000,

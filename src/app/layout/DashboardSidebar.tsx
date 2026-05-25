@@ -41,7 +41,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "#/features/auth/providers/AuthProvider";
-import { Role, type MenuItem, type MenuItemGroup } from "#/shared/types";
+import { Role, type IconSvgObject, type MenuItem, type MenuItemGroup } from "#/shared/types";
 import { useDynamicMenuItemsGrouped, useDynamicResultsMenuItemsGrouped } from "#/shared/hooks/useDynamicMenuItemsGrouped";
 import { Tooltip, TooltipContent, TooltipTrigger } from "#/shared/ui/tooltip";
 import { Button } from "#/shared/ui/button";
@@ -50,7 +50,7 @@ import ThemeToggle from "./ThemeToggle";
 import logoUATF from '/dsa-icon.png'
 import { Card, CardContent, CardHeader, CardTitle } from "#/shared/ui/card";
 
-type NavItem = { label: string; to: string; icon: any; roles: Role[] };
+type NavItem = { label: string; to: string; icon: IconSvgObject; roles: Role[] };
 
 const PRIMARY_NAV: NavItem[] = [
     { label: "Dashboard", to: "/dashboard/dashboard", icon: Home02Icon, roles: [Role.ADMIN, Role.DIRECTOR] },
