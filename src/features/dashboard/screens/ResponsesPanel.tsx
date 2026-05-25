@@ -77,7 +77,6 @@ export function ResponsesPanel({ formId, module, variant = 'page', onDelete, onE
         const isAdmin = userRole === "administrator";
         const isDirector = userRole === "director";
 
-        // Columnas base de metadata (solo para admin)
         const baseColumns: ColumnDef<FormResponseDef, any>[] = isAdmin ? [
             {
                 accessorKey: 'submittedBy',
@@ -93,15 +92,12 @@ export function ResponsesPanel({ formId, module, variant = 'page', onDelete, onE
             },
         ] : [];
 
-        // Columnas dinámicas (basadas en los campos del JSON de la plantilla)
         const dynamicColumns: ColumnDef<FormResponseDef, any>[] = template.fields.map((field) => ({
-            // Buscamos el valor dentro del objeto 'response' usando el name del campo
             accessorFn: (row: any) => row.response?.[field.name],
             id: field.id,
-            header: field.label, // El título de la columna es el Label del campo
+            header: field.label,
             cell: (info) => {
                 const val = info.getValue();
-                // Si el campo es un booleano (switch), mostramos algo legible
                 if (typeof val === 'boolean') return val ? 'Sí' : 'No';
                 return val || '-';
             },
@@ -109,9 +105,6 @@ export function ResponsesPanel({ formId, module, variant = 'page', onDelete, onE
 
         const finalColumns = [...baseColumns, ...dynamicColumns];
 
-        // Columna de acciones según el rol:
-        // - Director: solo editar (onEdit)
-        // - Admin: editar (onEdit) y eliminar (onDelete)
         const canEdit = onEdit && (isAdmin || isDirector);
         const canDelete = onDelete && isAdmin;
 
@@ -164,13 +157,11 @@ export function ResponsesPanel({ formId, module, variant = 'page', onDelete, onE
         <div className={isEmbedded ? "space-y-6 mt-16 pt-8 border-t border-border/50" : "p-6 space-y-6 max-w-8xl mx-auto"}>
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between animate-fade-up">
                 {!isEmbedded && (
-                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between animate-fade-up">
-                        <PageHeader
-                            icon={BarChart3}
-                            title={`Resultados: ${template.title}`}
-                            description={`Módulo: ${template.module.toUpperCase()} • Total registros: ${responses.length}`}
-                        />
-                    </div>
+                    <PageHeader
+                        icon={BarChart3}
+                        title={`Resultados: ${template.title}`}
+                        description={`Módulo: ${template.module.toUpperCase()} • Total registros: ${responses.length}`}
+                    />
                 )}
 
                 {isEmbedded && (

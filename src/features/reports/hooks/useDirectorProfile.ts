@@ -21,7 +21,15 @@ export function useDirectorProfile() {
       const snapshot = await getDocs(q);
       if (!snapshot.empty) {
         const data = snapshot.docs[0].data();
-        return `${data.name} ${data.paternalSurname} ${data.maternalSurname}`;
+        const name = typeof data.name === "string" ? data.name.trim() : "";
+        const paternalSurname =
+          typeof data.paternalSurname === "string" ? data.paternalSurname.trim() : "";
+        const maternalSurname =
+          typeof data.maternalSurname === "string" ? data.maternalSurname.trim() : "";
+        if (!name || !paternalSurname || !maternalSurname) {
+          return null;
+        }
+        return `${name} ${paternalSurname} ${maternalSurname}`;
       }
       return null;
     },

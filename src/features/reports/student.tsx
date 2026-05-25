@@ -9,7 +9,7 @@ import { PageHeader } from "#/shared/components/PageHeader";
 import { SaveAll, User } from "lucide-react";
 import { useProgramModalities } from "../reference-data/hooks/useProgramModalities";
 import { useAuth } from "../auth/providers/AuthProvider";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import type { FormModules, FormTemplateDef } from "#/shared/types/dynamic-form";
 import { Card, CardContent, CardHeader, CardTitle } from "#/shared/ui/card";
 import { Button } from "#/shared/ui/button";
@@ -46,7 +46,7 @@ export function StudentReport({ formId }: StudentReportProps) {
 
 
 
-    const { handleFormSubmitRequest, isDialogOpen, setIsDialogOpen, confirmSubmit, cancelSubmit, resetForm, setResetForm, initialData, editingId, handleDelete, handleEdit, handleCancelEdit, setScrollToTop, scrollToTop } = useReportSubmission(formId, template);
+    const { handleFormSubmitRequest, isDialogOpen, setIsDialogOpen, confirmSubmit, cancelSubmit, resetForm, setResetForm, initialData, editingId, handleDelete, handleEdit, handleCancelEdit } = useReportSubmission(formId, template);
     const { columns, data, handleAddDataToMemory, executeSubmitBulk, isDialogOpen: dialogStudentState, setIsDialogOpen: setIsDialogStudentState, resetForm: resetBulkForm, setResetForm: setResetBulkForm, removeData, editData, cancelEdit, editingIndex, initialValues } = useBulkSubmission(formId, actionColumns, template);
 
     editDataRef.current = editData;
@@ -83,18 +83,7 @@ export function StudentReport({ formId }: StudentReportProps) {
 
     }, [template, allowedModalities, submittedModalities])
 
-    useEffect(() => {
-        if (scrollToTop && editingId) {
-            const element = document.getElementById("page-top");
-            if (element) {
-                element.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
-            }
-            setScrollToTop(false);
-        }
-    }, [scrollToTop, editingId, setScrollToTop]);
+
 
     // 3. EARLY RETURNS
     if (isPending) {
@@ -135,7 +124,7 @@ export function StudentReport({ formId }: StudentReportProps) {
                 />
 
                 <DynamicForm
-                    key={editingId ? `response-edit-${editingId}` : `bulk-${editingIndex ?? 'new'}`}
+                    key={editingId ? `response-edit-stud-${editingId}` : `bulk-stud-${editingIndex ?? 'new'}`}
                     template={filteredTemplate!}
                     onSubmit={editingId ? handleFormSubmitRequest : handleAddDataToMemory}
                     className="grid grid-cols-1 md:grid-cols-2 gap-4"
@@ -143,10 +132,12 @@ export function StudentReport({ formId }: StudentReportProps) {
                     resetForm={editingId ? resetForm : resetBulkForm}
                     setResetForm={editingId ? setResetForm : setResetBulkForm}
                     initialValues={editingId ? initialData : initialValues}
-                    editingIndex={editingId ? null : editingIndex}
-                    cancelEdit={editingId ? undefined : cancelEdit}
-                    isEditing={!!editingId}
-                    onCancelEdit={editingId ? handleCancelEdit : undefined}
+                    editMode={editingId
+                        ? { type: 'single', onCancel: handleCancelEdit }
+                        : editingIndex !== null
+                            ? { type: 'bulk', index: editingIndex, onCancel: cancelEdit }
+                            : { type: 'none' }
+                    }
                     modalityLimits={template.step > 1 ? modalityLimits : undefined}
                 />
 
@@ -245,9 +236,11 @@ export function StudentReport({ formId }: StudentReportProps) {
                 resetForm={resetForm}
                 setResetForm={setResetForm}
                 initialValues={initialData}
-                isEditing={!!editingId}
+                editMode={editingId
+                    ? { type: 'single', onCancel: handleCancelEdit }
+                    : { type: 'none' }
+                }
                 submitLabel={editingId ? "Guardar Cambios" : "Enviar Reporte"}
-                onCancelEdit={handleCancelEdit}
             />
 
             <AlertDialogCustom

@@ -11,7 +11,7 @@ import { SaveAll, User, X } from "lucide-react";
 import { PageHeader } from "#/shared/components/PageHeader";
 import { useBulkSubmission } from "./hooks/useBulkSubmission";
 import { useOnEditTableActions } from "./BaseColumns";
-import { useEffect } from "react";
+
 import { useReportSubmission } from "./hooks/useReportSubmission";
 import { ResponsesPanel } from "../dashboard/screens/ResponsesPanel";
 import type { FormModules } from "#/shared/types/dynamic-form";
@@ -26,7 +26,7 @@ export function TeacherReport({ formId }: TeacherReportProps) {
     // Use refs to break the circular dependency between useBulkSubmission and createBaseColumns
     const { actionColumns, editDataRef, removeDataRef } = useOnEditTableActions();
 
-    const { handleFormSubmitRequest, cancelSubmit, confirmSubmit, initialData, editingId, handleDelete, handleEdit, handleCancelEdit, isDialogOpen: isConfirmDialogOpen, setIsDialogOpen: setIsConfirmDialogOpen, scrollToTop, setScrollToTop, resetForm: resetResponseForm, setResetForm: setResetResponseForm } = useReportSubmission(formId, template);
+    const { handleFormSubmitRequest, cancelSubmit, confirmSubmit, initialData, editingId, handleDelete, handleEdit, handleCancelEdit, isDialogOpen: isConfirmDialogOpen, setIsDialogOpen: setIsConfirmDialogOpen, resetForm: resetResponseForm, setResetForm: setResetResponseForm } = useReportSubmission(formId, template);
 
     const {
         columns,
@@ -44,15 +44,7 @@ export function TeacherReport({ formId }: TeacherReportProps) {
         initialValues,
     } = useBulkSubmission(formId, actionColumns, template);
 
-    useEffect(() => {
-        if (scrollToTop && editingId) {
-            const element = document.getElementById("page-top");
-            if (element) {
-                element.scrollIntoView({ behavior: "smooth", block: "start" });
-            }
-            setScrollToTop(false);
-        }
-    }, [scrollToTop, editingId, setScrollToTop]);
+
 
     // Keep refs in sync with the latest callbacks from the hook
     editDataRef.current = editData;
@@ -113,7 +105,7 @@ export function TeacherReport({ formId }: TeacherReportProps) {
                 </CardHeader>
                 <CardContent>
                     <DynamicForm
-                        key={editingId ? `response-edit-${editingId}` : `bulk-${editingIndex ?? 'new'}`}
+                        key={editingId ? `response-edit-teach-${editingId}` : `bulk-teach-${editingIndex ?? 'new'}`}
                         template={template!}
                         onSubmit={editingId ? handleFormSubmitRequest : handleAddTeacherToMemory}
                         className="grid grid-cols-1 md:grid-cols-3 gap-4"
@@ -121,10 +113,12 @@ export function TeacherReport({ formId }: TeacherReportProps) {
                         resetForm={editingId ? resetResponseForm : resetForm}
                         setResetForm={editingId ? setResetResponseForm : setResetForm}
                         initialValues={editingId ? initialData : initialValues}
-                        editingIndex={editingId ? null : editingIndex}
-                        cancelEdit={editingId ? undefined : cancelEdit}
-                        isEditing={!!editingId}
-                        onCancelEdit={editingId ? handleCancelEdit : undefined}
+                        editMode={editingId
+                            ? { type: 'single', onCancel: handleCancelEdit }
+                            : editingIndex !== null
+                                ? { type: 'bulk', index: editingIndex, onCancel: cancelEdit }
+                                : { type: 'none' }
+                        }
                     />
                 </CardContent>
             </Card>

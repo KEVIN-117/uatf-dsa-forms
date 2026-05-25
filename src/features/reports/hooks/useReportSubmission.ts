@@ -12,7 +12,7 @@ import type {
   FormTemplateDef,
 } from "#/shared/types/dynamic-form";
 import { useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useGetNextTemplateUrl } from "./useNextFormRoute";
 
 export const useReportSubmission = (
@@ -41,6 +41,17 @@ export const useReportSubmission = (
   const updateMutation = useUpdateFormResponse();
   const deleteMutation = useDeleteFormResponse();
 
+  // Auto-scroll to top when entering edit mode (triggered by handleEdit)
+  useEffect(() => {
+    if (scrollToTop && editingId) {
+      const element = document.getElementById("page-top");
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      setScrollToTop(false);
+    }
+  }, [scrollToTop, editingId]);
+
   // 2. FUNCTIONS AND LOGIC
 
   const handleEdit = (response: FormResponseDef) => {
@@ -61,15 +72,18 @@ export const useReportSubmission = (
         "¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.",
       )
     ) {
-      await deleteMutation.mutateAsync({
-        module: template?.module as FormModules,
-        id: id,
-      });
-      useToast({
-        type: "success",
-        title: "Eliminado",
-        message: "Registro eliminado correctamente.",
-      });
+      try {
+        await deleteMutation.mutateAsync({
+          module: template?.module as FormModules,
+          id: id,
+        });
+      } catch {
+        useToast({
+          type: "error",
+          title: "Error al eliminar",
+          message: "No se pudo eliminar el registro. Inténtalo nuevamente.",
+        });
+      }
     }
   };
 
@@ -86,7 +100,7 @@ export const useReportSubmission = (
 
     const { data, module } = pendingData;
     try {
-      const tranformedData = Object.entries(data).reduce(
+      const transformedData = Object.entries(data).reduce(
         (acc, [key, value]) => {
           const [_id, name] = key.split("@");
           acc[name || key] = value;
@@ -105,7 +119,7 @@ export const useReportSubmission = (
         await updateMutation.mutateAsync({
           id: editingId,
           module: module as FormModules,
-          response: tranformedData,
+          response: transformedData,
         });
         // Limpiar estado de edición y resetear formulario
         setEditingId(null);
@@ -130,7 +144,7 @@ export const useReportSubmission = (
           faculty: faculty as string,
           programId: programId as string,
           program: program as string,
-          response: tranformedData,
+          response: transformedData,
         });
         await markStepCompleted(template.step);
         useToast({
@@ -202,7 +216,5 @@ export const useReportSubmission = (
     handleCancelEdit,
     deleteMutation,
     updateMutation,
-    scrollToTop,
-    setScrollToTop,
   };
 };

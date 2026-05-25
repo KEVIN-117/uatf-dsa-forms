@@ -13,10 +13,6 @@ interface ReceiptSummaryProps {
   program: string;
 }
 
-/**
- * Displays a compact receipt-style summary card with a download/print button.
- * Receives all data via props — no internal data fetching.
- */
 export function ReceiptSummary({ groups, directorName, faculty, program }: ReceiptSummaryProps) {
   const totalRecords = groups.reduce((sum, g) => sum + g.responses.length, 0);
 
@@ -30,10 +26,9 @@ export function ReceiptSummary({ groups, directorName, faculty, program }: Recei
     printWindow.document.close();
     printWindow.focus();
 
-    // Wait for content to render before printing
-    setTimeout(() => {
+    printWindow.onload = () => {
       printWindow.print();
-    }, 400);
+    };
   }, [groups, directorName, faculty, program]);
 
   return (

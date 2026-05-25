@@ -4,30 +4,19 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "#/shared/u
 import { Link } from "@tanstack/react-router";
 
 interface SuccessCardProps {
-  /** When true, shows a loading state instead of the success message */
   isLoading?: boolean;
-  /** Custom loading text */
   loadingText?: string;
   variant?: "default" | "minimal" | "readonly";
 }
 
-/**
- * Dual-mode card component:
- * - **Loading mode** (`isLoading=true`): shows an animated loader with shimmer text
- * - **Success mode** (`isLoading=false`): shows the animated success message
- *
- * Both modes share the same card shell for a seamless visual transition.
- */
 export function SuccessCard({ isLoading = false, loadingText = "Cargando resumen de envíos...", variant = "default" }: SuccessCardProps) {
   return (
     <Card className="w-full max-w-md mx-auto text-center glass-card shadow-lg border-border/40 overflow-hidden relative animate-fade-up">
-      {/* Decorative gradient background */}
       <div className="gradient-blob -top-16 -right-16 w-40 h-40 bg-emerald-500/8" />
       <div className="gradient-blob -bottom-12 -left-12 w-36 h-36 bg-primary/5" />
 
       <CardHeader className="relative flex flex-col items-center space-y-4 pt-8">
         {isLoading ? (
-          /* ---------- Loading State ---------- */
           <div className="relative flex items-center justify-center w-20 h-20">
             <div
               className="absolute inset-0 rounded-full border-[3px] border-primary/10"
@@ -54,7 +43,6 @@ export function SuccessCard({ isLoading = false, loadingText = "Cargando resumen
             </div>
           </div>
         ) : (
-          /* ---------- Success State ---------- */
           <div className="relative">
             <div className="rounded-full bg-emerald-500/10 p-4 dark:bg-emerald-400/10 animate-scale-bounce">
               <CheckCircle2 className="h-12 w-12 text-emerald-600 dark:text-emerald-400" />
@@ -103,7 +91,7 @@ export function SuccessCard({ isLoading = false, loadingText = "Cargando resumen
         )}
       </CardContent>
 
-      {!isLoading && variant !== "default" && (
+      {!isLoading && variant === "default" && (
         <CardFooter className="relative flex justify-center pb-8">
           <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 hover-lift">
             <Link to="/">Volver al Inicio</Link>

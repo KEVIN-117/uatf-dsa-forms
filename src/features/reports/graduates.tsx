@@ -9,7 +9,7 @@ import { GraduationCap, SaveAll } from "lucide-react";
 import { PageHeader } from "#/shared/components/PageHeader";
 import { useProgramGraduationModalities } from "../reference-data/hooks/useProgramModalities";
 import { useAuth } from "../auth/providers/AuthProvider";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import type { FormModules, FormTemplateDef } from "#/shared/types/dynamic-form";
 import { useBulkSubmission } from "./hooks/useBulkSubmission";
 import { Card, CardContent, CardHeader, CardTitle } from "#/shared/ui/card";
@@ -29,7 +29,7 @@ export function GraduatesReport({ formId }: GraduatesReportProps) {
 
     const { actionColumns, editDataRef, removeDataRef } = useOnEditTableActions();
 
-    const { handleFormSubmitRequest, isDialogOpen, setIsDialogOpen, confirmSubmit, cancelSubmit, resetForm: resetResponseForm, setResetForm: setResetResponseForm, initialData, editingId, handleDelete, handleEdit, handleCancelEdit, setScrollToTop, scrollToTop } = useReportSubmission(formId, template);
+    const { handleFormSubmitRequest, isDialogOpen, setIsDialogOpen, confirmSubmit, cancelSubmit, resetForm: resetResponseForm, setResetForm: setResetResponseForm, initialData, editingId, handleDelete, handleEdit, handleCancelEdit } = useReportSubmission(formId, template);
     const { columns, data, handleAddDataToMemory, executeSubmitBulk, isDialogOpen: dialogBulkState, setIsDialogOpen: setIsDialogBulkState, resetForm: resetBulkForm, setResetForm: setResetBulkForm, removeData, editData, cancelEdit, editingIndex, initialValues } = useBulkSubmission(formId, actionColumns, template);
 
     editDataRef.current = editData;
@@ -57,15 +57,7 @@ export function GraduatesReport({ formId }: GraduatesReportProps) {
         } as FormTemplateDef
     }, [template, allowedGraduationModalities])
 
-    useEffect(() => {
-        if (scrollToTop && editingId) {
-            const element = document.getElementById("page-top");
-            if (element) {
-                element.scrollIntoView({ behavior: "smooth", block: "start" });
-            }
-            setScrollToTop(false);
-        }
-    }, [scrollToTop, editingId, setScrollToTop]);
+
 
     // 3. EARLY RETURNS
     if (isPending) {
@@ -106,7 +98,7 @@ export function GraduatesReport({ formId }: GraduatesReportProps) {
                 />
 
                 <DynamicForm
-                    key={editingId ? `response-edit-${editingId}` : `bulk-${editingIndex ?? 'new'}`}
+                    key={editingId ? `response-edit-grad-${editingId}` : `bulk-grad-${editingIndex ?? 'new'}`}
                     template={filteredTemplate!}
                     onSubmit={editingId ? handleFormSubmitRequest : handleAddDataToMemory}
                     className="grid grid-cols-1 md:grid-cols-2 gap-4"
@@ -114,10 +106,12 @@ export function GraduatesReport({ formId }: GraduatesReportProps) {
                     resetForm={editingId ? resetResponseForm : resetBulkForm}
                     setResetForm={editingId ? setResetResponseForm : setResetBulkForm}
                     initialValues={editingId ? initialData : initialValues}
-                    editingIndex={editingId ? null : editingIndex}
-                    cancelEdit={editingId ? undefined : cancelEdit}
-                    isEditing={!!editingId}
-                    onCancelEdit={editingId ? handleCancelEdit : undefined}
+                    editMode={editingId
+                        ? { type: 'single', onCancel: handleCancelEdit }
+                        : editingIndex !== null
+                            ? { type: 'bulk', index: editingIndex, onCancel: cancelEdit }
+                            : { type: 'none' }
+                    }
                 />
 
                 <div className="grid grid-cols-1 gap-8">
@@ -216,9 +210,11 @@ export function GraduatesReport({ formId }: GraduatesReportProps) {
                 resetForm={resetResponseForm}
                 setResetForm={setResetResponseForm}
                 initialValues={initialData}
-                isEditing={!!editingId}
+                editMode={editingId
+                    ? { type: 'single', onCancel: handleCancelEdit }
+                    : { type: 'none' }
+                }
                 submitLabel={editingId ? "Guardar Cambios" : "Enviar Reporte"}
-                onCancelEdit={handleCancelEdit}
             />
 
             <AlertDialogCustom

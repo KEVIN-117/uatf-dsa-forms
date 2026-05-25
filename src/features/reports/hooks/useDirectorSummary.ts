@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "#/shared/lib/firebase";
 import {
@@ -15,53 +15,53 @@ export interface TemplateSummary {
   responses: FormResponseDef[];
 }
 
-/**
- * Fetches all responses submitted by the current director (by email)
- * across all modules, grouped by template.
- *
- * Single responsibility: response aggregation only.
- * For director profile data, use `useDirectorProfile`.
- */
+const ALL_MODULES = Object.values(FormModules);
+
+/** 5 minutes — receipt data doesn't change often once submitted */
+const STALE_TIME = 5 * 60 * 1000;
+
 export function useDirectorSummary() {
   const { user } = useAuth();
   const { data: templates, isPending: isTemplatesPending } = useFormTemplates();
   const email = user?.email ?? "";
 
-  const responsesQuery = useQuery({
-    queryKey: ["director-responses", email],
-    queryFn: async () => {
-      const allModules = Object.values(FormModules);
-
-      const results = await Promise.all(
-        allModules.map(async (module) => {
-          // Only filter by submittedBy — no orderBy to avoid requiring a composite index
-          const q = query(
-            collection(db, module),
-            where("submittedBy", "==", email),
-          );
-          const snapshot = await getDocs(q);
-          return snapshot.docs.map((doc) => doc.data() as FormResponseDef);
-        }),
-      );
-
-      // Sort in-memory by createdAt ascending (oldest first)
-      return results.flat().sort((a, b) => a.createdAt - b.createdAt);
-    },
-    enabled: !!email,
+  const moduleQueries = useQueries({
+    queries: ALL_MODULES.map((module) => ({
+      queryKey: ["responses", module, "by-email", email],
+      queryFn: async () => {
+        const q = query(
+          collection(db, module),
+          where("submittedBy", "==", email),
+        );
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map((d) => d.data() as FormResponseDef);
+      },
+      enabled: !!email,
+      staleTime: STALE_TIME,
+    })),
   });
 
-  const grouped = useMemo<TemplateSummary[]>(() => {
-    if (!templates || !responsesQuery.data) return [];
+  const isPending = isTemplatesPending || moduleQueries.some((q) => q.isPending);
+  const isError = moduleQueries.every((q) => q.isError);
+  const error = moduleQueries.find((q) => q.error)?.error ?? null;
 
-    // Group responses by templateId
+  const allResponses = useMemo(() => {
+    return moduleQueries
+      .filter((q) => q.status === "success" && q.data)
+      .flatMap((q) => q.data!)
+      .sort((a, b) => a.createdAt - b.createdAt);
+  }, [moduleQueries]);
+
+  const grouped = useMemo<TemplateSummary[]>(() => {
+    if (!templates || allResponses.length === 0) return [];
+
     const responseMap = new Map<string, FormResponseDef[]>();
-    for (const response of responsesQuery.data) {
+    for (const response of allResponses) {
       const existing = responseMap.get(response.templateId) ?? [];
       existing.push(response);
       responseMap.set(response.templateId, existing);
     }
 
-    // Match templates that have responses, sorted by step
     return templates
       .filter((t) => responseMap.has(t.id))
       .sort((a, b) => a.step - b.step)
@@ -69,12 +69,12 @@ export function useDirectorSummary() {
         template,
         responses: responseMap.get(template.id) ?? [],
       }));
-  }, [templates, responsesQuery.data]);
+  }, [templates, allResponses]);
 
   return {
     data: grouped,
-    isPending: isTemplatesPending || responsesQuery.isPending,
-    isError: responsesQuery.isError,
-    error: responsesQuery.error,
+    isPending,
+    isError,
+    error,
   };
 }

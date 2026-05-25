@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "#/shared/ui/card";
 import { DataTable } from "#/shared/ui/data-table";
 import { Button } from "#/shared/ui/button";
 import { useOnEditTableActions } from "./BaseColumns";
-import { useEffect } from "react";
+
 import type { FormModules } from "#/shared/types/dynamic-form";
 import { ResponsesPanel } from "../dashboard/screens/ResponsesPanel";
 
@@ -24,20 +24,12 @@ interface ScholarshipReportProps {
 export function ScholarshipReport({ formId }: ScholarshipReportProps) {
     // 1. HOOK ZONE
     const { template, isPending, isError, error } = useFormTemplateByModuleAndId('scholarships', formId);
-    const { handleFormSubmitRequest, cancelSubmit, confirmSubmit, initialData, editingId, handleDelete, handleEdit, handleCancelEdit, isDialogOpen: isConfirmDialogOpen, setIsDialogOpen: setIsConfirmDialogOpen, scrollToTop, setScrollToTop, resetForm: resetResponseForm, setResetForm: setResetResponseForm } = useReportSubmission(formId, template);
+    const { handleFormSubmitRequest, cancelSubmit, confirmSubmit, initialData, editingId, handleDelete, handleEdit, handleCancelEdit, isDialogOpen: isConfirmDialogOpen, setIsDialogOpen: setIsConfirmDialogOpen, resetForm: resetResponseForm, setResetForm: setResetResponseForm } = useReportSubmission(formId, template);
     const { actionColumns, editDataRef, removeDataRef } = useOnEditTableActions();
 
     const { columns, data, handleAddDataToMemory, executeSubmitBulk, isDialogOpen: dialogBulkState, setIsDialogOpen: setIsDialogBulkState, resetForm: resetBulkForm, setResetForm: setResetBulkForm, removeData, editData, cancelEdit, editingIndex, initialValues } = useBulkSubmission(formId, actionColumns, template);
 
-    useEffect(() => {
-        if (scrollToTop && editingId) {
-            const element = document.getElementById("page-top");
-            if (element) {
-                element.scrollIntoView({ behavior: "smooth", block: "start" });
-            }
-            setScrollToTop(false);
-        }
-    }, [scrollToTop, editingId, setScrollToTop]);
+
 
     editDataRef.current = editData;
     removeDataRef.current = removeData;
@@ -81,7 +73,7 @@ export function ScholarshipReport({ formId }: ScholarshipReportProps) {
                 />
 
                 <DynamicForm
-                    key={editingId ? `response-edit-${editingId}` : `bulk-${editingIndex ?? 'new'}`}
+                    key={editingId ? `response-edit-schol-${editingId}` : `bulk-schol-${editingIndex ?? 'new'}`}
                     template={template!}
                     onSubmit={editingId ? handleFormSubmitRequest : handleAddDataToMemory}
                     className="grid grid-cols-1 md:grid-cols-2 gap-4"
@@ -89,10 +81,12 @@ export function ScholarshipReport({ formId }: ScholarshipReportProps) {
                     resetForm={editingId ? resetResponseForm : resetBulkForm}
                     setResetForm={editingId ? setResetResponseForm : setResetBulkForm}
                     initialValues={editingId ? initialData : initialValues}
-                    editingIndex={editingId ? null : editingIndex}
-                    cancelEdit={editingId ? undefined : cancelEdit}
-                    isEditing={!!editingId}
-                    onCancelEdit={editingId ? handleCancelEdit : undefined}
+                    editMode={editingId
+                        ? { type: 'single', onCancel: handleCancelEdit }
+                        : editingIndex !== null
+                            ? { type: 'bulk', index: editingIndex, onCancel: cancelEdit }
+                            : { type: 'none' }
+                    }
                 />
 
                 <div className="grid grid-cols-1 gap-8">
@@ -186,23 +180,25 @@ export function ScholarshipReport({ formId }: ScholarshipReportProps) {
             />
 
             <DynamicForm
-                key={`edit-${editingId ?? 'new'}`}
+                key={`edit-schol-${editingId ?? 'new'}`}
                 template={template!}
                 className="grid grid-cols-1 md:grid-cols-2 gap-4"
                 onSubmit={handleFormSubmitRequest}
                 resetForm={resetResponseForm}
                 setResetForm={setResetResponseForm}
                 initialValues={initialData}
-                isEditing={!!editingId}
+                editMode={editingId
+                    ? { type: 'single', onCancel: handleCancelEdit }
+                    : { type: 'none' }
+                }
                 submitLabel={editingId ? "Guardar Cambios" : "Enviar Reporte"}
-                onCancelEdit={handleCancelEdit}
             />
 
             <AlertDialogCustom
                 open={isConfirmDialogOpen}
                 onOpenChange={setIsConfirmDialogOpen}
                 message="Confirmar envío"
-                description={`Estás a punto de enviar el formulario para el registro de Becas. Revisa que los datos sean correctos antes de continuar.`}
+                description={`Estás a punto de enviar el formulario para el registro de Becarios. Revisa que los datos sean correctos antes de continuar.`}
                 actionLabel="Enviar Reporte"
                 cancelLabel="Revisar de nuevo"
                 onConfirm={confirmSubmit}

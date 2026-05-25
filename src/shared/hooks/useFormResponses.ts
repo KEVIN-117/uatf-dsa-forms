@@ -32,9 +32,9 @@ export function useSubmitFormResponse() {
       await setDoc(newDocRef, responseToSave);
       return responseToSave;
     },
-    onSuccess: (_data, variables) => {
+    onSuccess: (_data, _variables) => {
       queryClient.invalidateQueries({
-        queryKey: ["responses", variables.module, variables.templateId],
+        queryKey: ["responses"],
       });
       useToast({
         title: "Éxito",
@@ -53,7 +53,7 @@ export function useSubmitFormResponse() {
         closeButton: true,
         position: "top-right",
         message:
-          "Algo salio mal al guardar la respuesta, no te preocupes puedes volver a intentarlo",
+          "Algo salió mal al guardar la respuesta, no te preocupes puedes volver a intentarlo",
       });
     },
   });
@@ -100,9 +100,9 @@ export const useDeleteFormResponse = () => {
       await deleteDoc(docRef);
     },
 
-    onSuccess: (_data, variables) => {
+    onSuccess: (_data) => {
       queryClient.invalidateQueries({
-        queryKey: ["responses", variables.module],
+        queryKey: ["responses"],
       });
       useToast({
         title: "Éxito",
@@ -121,7 +121,7 @@ export const useDeleteFormResponse = () => {
         closeButton: true,
         position: "top-right",
         message:
-          "Algo salio mal al eliminar la respuesta, no te preocupes puedes volver a intentarlo",
+          "Algo salió mal al eliminar la respuesta, no te preocupes puedes volver a intentarlo",
       });
     },
   });
@@ -142,9 +142,9 @@ export const useUpdateFormResponse = () => {
       const docRef = doc(db, module, id);
       await updateDoc(docRef, { response });
     },
-    onSuccess(_data, variables) {
+    onSuccess(_data) {
       queryClient.invalidateQueries({
-        queryKey: ["responses", variables.module],
+        queryKey: ["responses"],
       });
       useToast({
         title: "Éxito",
@@ -163,7 +163,7 @@ export const useUpdateFormResponse = () => {
         closeButton: true,
         position: "top-right",
         message:
-          "Algo salio mal al actualizar la respuesta, no te preocupes puedes volver a intentarlo",
+          "Algo salió mal al actualizar la respuesta, no te preocupes puedes volver a intentarlo",
       });
     },
   });

@@ -11,12 +11,7 @@ import { Badge } from "#/shared/ui/badge";
 import { Loader } from "#/shared/components/Loader";
 import { Link } from "@tanstack/react-router";
 import { Button } from "#/shared/ui/button";
-const MODULE_LABEL: Record<FormModules, string> = {
-  [FormModules.student]: "Estudiantes",
-  [FormModules.graduate]: "Graduados",
-  [FormModules.teacher]: "Docentes",
-  [FormModules.scholarships]: "Becas",
-};
+import { MODULE_LABELS } from "#/features/reports/utils/moduleLabels"
 
 const MODULE_ICON: Record<FormModules, typeof Users> = {
   [FormModules.student]: Users,
@@ -143,7 +138,7 @@ function ModuleCard({ mod, count }: { mod: FormModules; count: number }) {
             <Icon className={`w-5 h-5 ${MODULE_ACCENT[mod]}`} />
           </div>
           <div>
-            <p className="text-sm font-semibold text-foreground">{MODULE_LABEL[mod]}</p>
+            <p className="text-sm font-semibold text-foreground">{MODULE_LABELS[mod]}</p>
             <p className="text-[11px] text-muted-foreground">Registros enviados</p>
           </div>
         </div>
@@ -163,7 +158,7 @@ function ResponseItem({ resp }: { resp: FormResponseDef }) {
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <p className="text-sm font-semibold text-foreground truncate">{MODULE_LABEL[resp.module]}</p>
+          <p className="text-sm font-semibold text-foreground truncate">{MODULE_LABELS[resp.module]}</p>
           <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 shrink-0 border-border/50">
             {resp.templateId.slice(0, 8)}
           </Badge>

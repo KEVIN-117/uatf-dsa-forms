@@ -8,6 +8,17 @@ import { Button } from '../ui/button';
 import { FormContainer } from './FormContainer';
 import { useEffect, useMemo } from 'react';
 
+/**
+ * Discriminated union for the form's edit mode.
+ * - `none`   : Default — fresh form, no editing.
+ * - `bulk`   : Editing an in-memory row (by index) before bulk submission.
+ * - `single` : Editing an existing persisted response (by Firestore ID).
+ */
+export type EditMode =
+    | { type: 'none' }
+    | { type: 'bulk'; index: number; onCancel: () => void }
+    | { type: 'single'; onCancel: () => void };
+
 interface DynamicFormProps {
     template: FormTemplateDef;
     onSubmit: (data: Record<string, any>, module: string) => Promise<void>;
@@ -16,14 +27,12 @@ interface DynamicFormProps {
     resetForm: boolean;
     setResetForm: (value: boolean) => void;
     initialValues?: Record<string, unknown> | null;
-    editingIndex?: number | null;
-    cancelEdit?: () => void;
+    editMode?: EditMode;
     modalityLimits?: ModalityLimits;
-    isEditing?: boolean;
-    onCancelEdit?: () => void;
 }
 
-export function DynamicForm({ template, onSubmit, className, submitLabel = "Enviar Reporte", resetForm, setResetForm, initialValues, editingIndex, cancelEdit, modalityLimits, isEditing, onCancelEdit }: DynamicFormProps) {
+export function DynamicForm({ template, onSubmit, className, submitLabel = "Enviar Reporte", resetForm, setResetForm, initialValues, editMode = { type: 'none' }, modalityLimits }: DynamicFormProps) {
+    const isEditing = editMode.type === 'single';
     // Compute defaultValues from initialValues when in edit mode,
     // so the form mounts already pre-filled instead of relying on setFieldValue after mount
     const defaultValues = useMemo(() => {
@@ -244,11 +253,11 @@ export function DynamicForm({ template, onSubmit, className, submitLabel = "Envi
                             </Button>
                         )}
                     />
-                    {(editingIndex !== null || isEditing) && (
+                    {editMode.type !== 'none' && (
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={editingIndex !== null ? cancelEdit : onCancelEdit}
+                            onClick={editMode.onCancel}
                             className="w-full font-bold mt-6 py-6 text-base hover-lift gap-2"
                         >
                             <X className="h-4 w-4 mr-1" />

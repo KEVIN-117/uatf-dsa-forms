@@ -1,10 +1,16 @@
 import type { TemplateSummary } from "#/features/reports/hooks/useDirectorSummary";
 import { MODULE_LABELS } from "#/features/reports/utils/moduleLabels";
 
-/**
- * Generates a compact, one-page printable receipt HTML document.
- * This is a pure function with no side effects.
- */
+/** Replace HTML-special characters to prevent XSS when interpolating into raw HTML. */
+function escapeHTML(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export function generateReceiptHTML(
   groups: TemplateSummary[],
   directorName: string,
@@ -27,19 +33,19 @@ export function generateReceiptHTML(
       const lastDate =
         g.responses.length > 0
           ? new Date(
-              Math.max(...g.responses.map((r) => r.createdAt)),
-            ).toLocaleDateString("es-ES", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            })
+            Math.max(...g.responses.map((r) => r.createdAt)),
+          ).toLocaleDateString("es-ES", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })
           : "-";
       return `<tr>
         <td>${g.template.step}</td>
-        <td>${moduleLabel}</td>
-        <td>${g.template.title}</td>
+        <td>${escapeHTML(moduleLabel)}</td>
+        <td>${escapeHTML(g.template.title)}</td>
         <td style="text-align:center;font-weight:600">${g.responses.length}</td>
-        <td>${lastDate}</td>
+        <td>${escapeHTML(lastDate)}</td>
       </tr>`;
     })
     .join("");
@@ -144,16 +150,16 @@ export function generateReceiptHTML(
 
   <div class="info-box">
     <div class="info-row">
-      <span>Director:</span> <strong>${directorName}</strong>
+      <span>Director:</span> <strong>${escapeHTML(directorName)}</strong>
     </div>
     <div class="info-row">
-      <span>Facultad:</span> <strong>${faculty}</strong>
+      <span>Facultad:</span> <strong>${escapeHTML(faculty)}</strong>
     </div>
     <div class="info-row">
-      <span>Carrera:</span> <strong>${program}</strong>
+      <span>Carrera:</span> <strong>${escapeHTML(program)}</strong>
     </div>
     <div class="info-row">
-      <span>Fecha de emisión:</span> <strong>${now}</strong>
+      <span>Fecha de emisión:</span> <strong>${escapeHTML(now)}</strong>
     </div>
   </div>
 
@@ -180,7 +186,7 @@ export function generateReceiptHTML(
   <div class="signature">
     <div class="signature-box">
       <div class="signature-line">Firma del Director</div>
-      <div>${directorName}</div>
+      <div>${escapeHTML(directorName)}</div>
     </div>
   </div>
 

@@ -1,9 +1,8 @@
-/**
- * Human-readable labels for each form module.
- */
+import { FormModules } from "#/shared/types/dynamic-form";
+
 export const MODULE_LABELS: Record<string, string> = {
-  student: "Estudiantes",
-  teacher: "Docentes",
-  graduate: "Egresados",
-  scholarships: "Becas",
+  [FormModules.student]: "Estudiantes",
+  [FormModules.graduate]: "Graduados",
+  [FormModules.teacher]: "Docentes",
+  [FormModules.scholarships]: "Becas",
 };
