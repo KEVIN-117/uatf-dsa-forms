@@ -1,7 +1,7 @@
-import { useDirectorSummary } from "#/features/reports/hooks/useDirectorSummary";
-import { useDirectorProfile } from "#/features/reports/hooks/useDirectorProfile";
-import { useAuth } from "#/features/auth/providers/AuthProvider";
 import { useSearch } from "@tanstack/react-router";
+import { useAuth } from "#/features/auth/providers/AuthProvider";
+import { useDirectorProfile } from "#/features/reports/hooks/useDirectorProfile";
+import { useDirectorSummary } from "#/features/reports/hooks/useDirectorSummary";
 import { FormSuccess } from "#/shared/components/FormSuccess";
 
 /**
@@ -14,19 +14,19 @@ import { FormSuccess } from "#/shared/components/FormSuccess";
  * This keeps the route logic separate from the reusable FormSuccess component.
  */
 export function FormSuccessPage() {
-  const { completed } = useSearch({ from: "/formStatus/success" });
-  const { data: groups, isPending } = useDirectorSummary();
-  const { data: directorName } = useDirectorProfile();
-  const { faculty, program } = useAuth();
+	const { completed } = useSearch({ from: "/formStatus/success" });
+	const { data: groups, isPending } = useDirectorSummary();
+	const { data: directorName } = useDirectorProfile();
+	const { faculty, program } = useAuth();
 
-  return (
-    <FormSuccess
-      variant={completed ? "completion" : "readonly"}
-      isLoading={isPending}
-      groups={groups}
-      directorName={directorName ?? "Director"}
-      faculty={faculty ?? "-"}
-      program={program ?? "-"}
-    />
-  );
+	return (
+		<FormSuccess
+			variant={completed ? "completion" : "readonly"}
+			isLoading={isPending}
+			groups={groups}
+			directorName={directorName ?? "Director"}
+			faculty={faculty ?? "-"}
+			program={program ?? "-"}
+		/>
+	);
 }

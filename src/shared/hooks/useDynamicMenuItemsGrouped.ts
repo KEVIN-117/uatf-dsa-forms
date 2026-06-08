@@ -1,179 +1,179 @@
-import { useMemo } from "react";
 import {
-  FormModules,
-  type FormResponseDef,
-  type FormTemplateDef,
+	Bitcoin03Icon,
+	Male02Icon,
+	Quiz03Icon,
+	StudentIcon,
+	TeachingFreeIcons,
+} from "@hugeicons/core-free-icons";
+import { CheckCircle2, Lock } from "lucide-react";
+import { useMemo } from "react";
+import { useAuth } from "#/features/auth/providers/AuthProvider";
+import type { MenuItem, MenuItemGroup } from "#/shared/types";
+import { useDirectorProgress } from "../../features/reports/hooks/useDirectorProgress";
+import {
+	FormModules,
+	type FormResponseDef,
+	type FormTemplateDef,
 } from "../types/dynamic-form";
 import { useFormTemplates } from "./useFormBuilder";
-import {
-  Bitcoin03Icon,
-  Male02Icon,
-  Quiz03Icon,
-  StudentIcon,
-  TeachingFreeIcons,
-} from "@hugeicons/core-free-icons";
 import { useAllResponses } from "./useFormResponses";
-import { useDirectorProgress } from "../../features/reports/hooks/useDirectorProgress";
-import { CheckCircle2, Lock } from "lucide-react";
-import type { MenuItem, MenuItemGroup } from "#/shared/types";
-import { useAuth } from "#/features/auth/providers/AuthProvider";
 
 const MODULE_CONFIG: Record<
-  FormModules,
-  { name: string; icon: any; path: string }
+	FormModules,
+	{ name: string; icon: any; path: string }
 > = {
-  [FormModules.student]: {
-    name: "Reporte de estudiantes",
-    icon: Male02Icon,
-    path: "student-report",
-  },
-  [FormModules.graduate]: {
-    name: "Reporte de graduados",
-    icon: StudentIcon,
-    path: "graduates-report",
-  },
-  [FormModules.teacher]: {
-    name: "Reporte docente",
-    icon: TeachingFreeIcons,
-    path: "teacher-report",
-  },
-  [FormModules.scholarships]: {
-    name: "Reporte de becas",
-    icon: Bitcoin03Icon,
-    path: "scholarship-report",
-  },
+	[FormModules.student]: {
+		name: "Reporte de estudiantes",
+		icon: Male02Icon,
+		path: "student-report",
+	},
+	[FormModules.graduate]: {
+		name: "Reporte de graduados",
+		icon: StudentIcon,
+		path: "graduates-report",
+	},
+	[FormModules.teacher]: {
+		name: "Reporte docente",
+		icon: TeachingFreeIcons,
+		path: "teacher-report",
+	},
+	[FormModules.scholarships]: {
+		name: "Reporte de becas",
+		icon: Bitcoin03Icon,
+		path: "scholarship-report",
+	},
 };
 
 export const useDynamicMenuItemsGrouped = (): MenuItemGroup[] => {
-  const templatesQuery = useFormTemplates();
-  const progressQuery = useDirectorProgress();
-  const { userRole } = useAuth();
-  const isDirector = userRole === "director";
+	const templatesQuery = useFormTemplates();
+	const progressQuery = useDirectorProgress();
+	const { userRole } = useAuth();
+	const isDirector = userRole === "director";
 
-  const menuGroups = useMemo(() => {
-    if (!templatesQuery.data) return [];
+	const menuGroups = useMemo(() => {
+		if (!templatesQuery.data) return [];
 
-    const completedSteps = isDirector
-      ? progressQuery.data?.completedSteps || []
-      : [];
-    const allSortedTemplates = [...templatesQuery.data].sort(
-      (a, b) => a.step - b.step,
-    );
+		const completedSteps = isDirector
+			? progressQuery.data?.completedSteps || []
+			: [];
+		const allSortedTemplates = [...templatesQuery.data].sort(
+			(a, b) => a.step - b.step,
+		);
 
-    const nextaAvailableTemplate = allSortedTemplates.find(
-      (t) => !completedSteps.includes(t.step),
-    );
+		const nextaAvailableTemplate = allSortedTemplates.find(
+			(t) => !completedSteps.includes(t.step),
+		);
 
-    const currentActiveStep = nextaAvailableTemplate
-      ? nextaAvailableTemplate.step
-      : Infinity;
+		const currentActiveStep = nextaAvailableTemplate
+			? nextaAvailableTemplate.step
+			: Infinity;
 
-    const groupedData = templatesQuery.data.reduce(
-      (acc, template) => {
-        const mod = template.module;
-        if (!acc[mod]) {
-          acc[mod] = [];
-        }
-        acc[mod].push(template);
-        return acc;
-      },
-      {} as Record<FormModules, FormTemplateDef[]>,
-    );
+		const groupedData = templatesQuery.data.reduce(
+			(acc, template) => {
+				const mod = template.module;
+				if (!acc[mod]) {
+					acc[mod] = [];
+				}
+				acc[mod].push(template);
+				return acc;
+			},
+			{} as Record<FormModules, FormTemplateDef[]>,
+		);
 
-    const menuArray = Object.entries(groupedData).map(
-      ([moduleKey, templates]) => {
-        const moduleEnum = moduleKey as FormModules;
-        const config = MODULE_CONFIG[moduleEnum];
-        const childrenItems: MenuItem[] = templates
-          .sort((a, b) => a.step - b.step)
-          .map((template) => {
-            const isCompleted = isDirector
-              ? completedSteps.includes(template.step)
-              : false;
-            const isLocked = isDirector
-              ? !isCompleted && template.step > currentActiveStep
-              : false;
-            let statusIcon = CheckCircle2;
-            if (isDirector && isLocked) statusIcon = Lock;
-            if (!isDirector) statusIcon = config.icon;
+		const menuArray = Object.entries(groupedData).map(
+			([moduleKey, templates]) => {
+				const moduleEnum = moduleKey as FormModules;
+				const config = MODULE_CONFIG[moduleEnum];
+				const childrenItems: MenuItem[] = templates
+					.sort((a, b) => a.step - b.step)
+					.map((template) => {
+						const isCompleted = isDirector
+							? completedSteps.includes(template.step)
+							: false;
+						const isLocked = isDirector
+							? !isCompleted && template.step > currentActiveStep
+							: false;
+						let statusIcon = CheckCircle2;
+						if (isDirector && isLocked) statusIcon = Lock;
+						if (!isDirector) statusIcon = config.icon;
 
-            return {
-              id: template.id,
-              name: template.title.replace(/_/g, " "),
-              icon: statusIcon,
-              href: isLocked ? "#" : `/${config.path}/${template.id}`,
-              isLocked,
-              isCompleted,
-            };
-          });
+						return {
+							id: template.id,
+							name: template.title.replace(/_/g, " "),
+							icon: statusIcon,
+							href: isLocked ? "#" : `/${config.path}/${template.id}`,
+							isLocked,
+							isCompleted,
+						};
+					});
 
-        return {
-          id: config.path,
-          name: config.name,
-          icon: config.icon,
-          children: childrenItems,
-        } as MenuItemGroup;
-      },
-    );
+				return {
+					id: config.path,
+					name: config.name,
+					icon: config.icon,
+					children: childrenItems,
+				} as MenuItemGroup;
+			},
+		);
 
-    return menuArray;
-  }, [templatesQuery.data, progressQuery.data, isDirector]);
+		return menuArray;
+	}, [templatesQuery.data, progressQuery.data, isDirector]);
 
-  return menuGroups;
+	return menuGroups;
 };
 
 export const useDynamicResultsMenuItemsGrouped = (): MenuItemGroup[] => {
-  const templatesQuery = useAllResponses();
-  const { data: allFormTemplates } = useFormTemplates();
+	const templatesQuery = useAllResponses();
+	const { data: allFormTemplates } = useFormTemplates();
 
-  const menuGroups = useMemo(() => {
-    if (!templatesQuery.data) return [];
+	const menuGroups = useMemo(() => {
+		if (!templatesQuery.data) return [];
 
-    const groupedData = templatesQuery.data.reduce(
-      (acc, response) => {
-        const mod = response.module;
-        if (!acc[mod]) acc[mod] = [];
-        acc[mod].push(response);
-        return acc;
-      },
-      {} as Record<FormModules, FormResponseDef[]>,
-    );
+		const groupedData = templatesQuery.data.reduce(
+			(acc, response) => {
+				const mod = response.module;
+				if (!acc[mod]) acc[mod] = [];
+				acc[mod].push(response);
+				return acc;
+			},
+			{} as Record<FormModules, FormResponseDef[]>,
+		);
 
-    const menuArray = Object.entries(groupedData).map(
-      ([moduleKey, responses]) => {
-        const moduleEnum = moduleKey as FormModules;
-        const config = MODULE_CONFIG[moduleEnum];
+		const menuArray = Object.entries(groupedData).map(
+			([moduleKey, responses]) => {
+				const moduleEnum = moduleKey as FormModules;
+				const config = MODULE_CONFIG[moduleEnum];
 
-        const uniqueByTemplate = new Map<string, FormResponseDef>();
-        for (const resp of responses) {
-          if (!uniqueByTemplate.has(resp.templateId)) {
-            uniqueByTemplate.set(resp.templateId, resp);
-          }
-        }
+				const uniqueByTemplate = new Map<string, FormResponseDef>();
+				for (const resp of responses) {
+					if (!uniqueByTemplate.has(resp.templateId)) {
+						uniqueByTemplate.set(resp.templateId, resp);
+					}
+				}
 
-        const childrenItems: MenuItem[] = Array.from(
-          uniqueByTemplate.values(),
-        ).map((response) => ({
-          id: response.templateId,
-          name:
-            allFormTemplates?.find((t) => t.id === response.templateId)
-              ?.title ?? "sin titulo",
-          icon: Quiz03Icon,
-          href: `/dashboard/reports/${response.templateId}/${moduleEnum}`,
-          isLocked: false,
-          isCompleted: true,
-        }));
+				const childrenItems: MenuItem[] = Array.from(
+					uniqueByTemplate.values(),
+				).map((response) => ({
+					id: response.templateId,
+					name:
+						allFormTemplates?.find((t) => t.id === response.templateId)
+							?.title ?? "sin titulo",
+					icon: Quiz03Icon,
+					href: `/dashboard/reports/${response.templateId}/${moduleEnum}`,
+					isLocked: false,
+					isCompleted: true,
+				}));
 
-        return {
-          id: config.path,
-          name: config.name,
-          icon: config.icon,
-          children: childrenItems,
-        } as MenuItemGroup;
-      },
-    );
-    return menuArray;
-  }, [templatesQuery.data, allFormTemplates]);
+				return {
+					id: config.path,
+					name: config.name,
+					icon: config.icon,
+					children: childrenItems,
+				} as MenuItemGroup;
+			},
+		);
+		return menuArray;
+	}, [templatesQuery.data, allFormTemplates]);
 
-  return menuGroups;
+	return menuGroups;
 };

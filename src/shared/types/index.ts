@@ -1,81 +1,81 @@
 export interface Modality {
-  docId: string;
-  id: string;
-  modality: string;
-  code: string;
+	docId: string;
+	id: string;
+	modality: string;
+	code: string;
 }
 
 export interface GraduationModality {
-  docId: string;
-  id: string;
-  name: string;
-  code: string;
+	docId: string;
+	id: string;
+	name: string;
+	code: string;
 }
 
 export interface Faculty {
-  docId: string;
-  id: string; // id_facultad (A, B, C...)
-  name: string; // facultad_completo
-  code: string; // COD
+	docId: string;
+	id: string; // id_facultad (A, B, C...)
+	name: string; // facultad_completo
+	code: string; // COD
 }
 
 export interface Program {
-  docId: string;
-  id: string; // id_programa (APT, SIS, etc.)
-  name: string; // programa
-  code: string; // orden (ej: A11)
-  facultyId: string; // Relación con Faculty
-  campusId: string; // id_sede
-  level: string; // LIC, TUS, TUM (del archivo fac_y_carreras)
-  allowedModalitiesIds: string[];
-  allowedGraduationModalitiesIds: string[];
+	docId: string;
+	id: string; // id_programa (APT, SIS, etc.)
+	name: string; // programa
+	code: string; // orden (ej: A11)
+	facultyId: string; // Relación con Faculty
+	campusId: string; // id_sede
+	level: string; // LIC, TUS, TUM (del archivo fac_y_carreras)
+	allowedModalitiesIds: string[];
+	allowedGraduationModalitiesIds: string[];
 }
 
 export type IconSvgObject =
-  | [
-      string,
-      {
-        [key: string]: string | number;
-      },
-    ][]
-  | readonly (readonly [
-      string,
-      {
-        readonly [key: string]: string | number;
-      },
-    ])[];
+	| [
+			string,
+			{
+				[key: string]: string | number;
+			},
+	  ][]
+	| readonly (readonly [
+			string,
+			{
+				readonly [key: string]: string | number;
+			},
+	  ])[];
 
 export interface MenuItem {
-  id: string;
-  name: string;
-  icon: any;
-  href: string;
-  isLocked: boolean;
-  isCompleted: boolean;
+	id: string;
+	name: string;
+	icon: any;
+	href: string;
+	isLocked: boolean;
+	isCompleted: boolean;
 }
 
 export interface MenuItemGroup {
-  id: string;
-  name: string;
-  icon: any;
-  children: MenuItem[];
+	id: string;
+	name: string;
+	icon: any;
+	children: MenuItem[];
 }
 
 export enum Role {
-  ADMIN = "administrator",
-  DIRECTOR = "director",
+	ADMIN = "administrator",
+	DIRECTOR = "director",
 }
 
 export interface User {
-  docId?: string;
-  ci: number;
-  createdAt: number;
-  email: string;
-  facultyId: string;
-  maternalSurname: string;
-  name: string;
-  paternalSurname: string;
-  programId: string;
-  role: Role;
-  updatedAt: number;
+	docId?: string;
+	ci: number;
+	createdAt: number;
+	email: string;
+	facultyId: string;
+	maternalSurname: string;
+	name: string;
+	paternalSurname: string;
+	programId: string;
+	role: Role;
+	updatedAt: number;
 }

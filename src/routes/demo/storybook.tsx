@@ -1,104 +1,110 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { useProtectedRoute } from "#/features/auth/hooks/useProtectedRoute";
+import {
+	RouteErrorState,
+	RouteNotFoundState,
+} from "#/shared/components/routing/RouteState";
+import { Button } from "#/shared/storybook/button";
+import { Dialog } from "#/shared/storybook/dialog";
+import { Input } from "#/shared/storybook/input";
+import { RadioGroup } from "#/shared/storybook/radio-group";
+import { Slider } from "#/shared/storybook/slider";
 
-import { Dialog } from '#/shared/storybook/dialog'
-import { Input } from '#/shared/storybook/input'
-import { RadioGroup } from '#/shared/storybook/radio-group'
-import { Slider } from '#/shared/storybook/slider'
-import { Button } from '#/shared/storybook/button'
-import { useProtectedRoute } from '#/features/auth/hooks/useProtectedRoute'
-import { RouteErrorState, RouteNotFoundState } from '#/shared/components/routing/RouteState'
-
-export const Route = createFileRoute('/demo/storybook')({
-  component: StorybookDemo,
-  notFoundComponent: () => <RouteNotFoundState scope="demo" />,
-  errorComponent: ({ error }) => <RouteErrorState error={error} scope="demo" />,
-})
+export const Route = createFileRoute("/demo/storybook")({
+	component: StorybookDemo,
+	notFoundComponent: () => <RouteNotFoundState scope="demo" />,
+	errorComponent: ({ error }) => <RouteErrorState error={error} scope="demo" />,
+});
 
 function StorybookDemo() {
-  const { isLoading, isAuthenticated } = useProtectedRoute();
+	const { isLoading, isAuthenticated } = useProtectedRoute();
 
-  if (isLoading) {
-    return <div className="flex h-full items-center justify-center">Verificando sesión...</div>;
-  }
+	if (isLoading) {
+		return (
+			<div className="flex h-full items-center justify-center">
+				Verificando sesión...
+			</div>
+		);
+	}
 
-  if (!isAuthenticated) return null;
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [employmentType, setEmploymentType] = useState('full-time')
-  const [coffeeCups, setCoffeeCups] = useState(3)
+	if (!isAuthenticated) return null;
+	const [firstName, setFirstName] = useState("");
+	const [lastName, setLastName] = useState("");
+	const [employmentType, setEmploymentType] = useState("full-time");
+	const [coffeeCups, setCoffeeCups] = useState(3);
 
-  const handleSubmit = () => { }
+	const handleSubmit = () => {};
 
-  const handleReset = () => {
-    setFirstName('')
-    setLastName('')
-    setEmploymentType('full-time')
-    setCoffeeCups(3)
-  }
+	const handleReset = () => {
+		setFirstName("");
+		setLastName("");
+		setEmploymentType("full-time");
+		setCoffeeCups(3);
+	};
 
-  return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        <Dialog
-          title="Employee Information Form"
-          footer={
-            <div className="flex gap-3 justify-end">
-              <Button variant="secondary" size="medium" onClick={handleReset}>
-                Reset
-              </Button>
-              <Button
-                variant="primary"
-                size="medium"
-                type="submit"
-                onClick={handleSubmit}
-              >
-                Submit
-              </Button>
-            </div>
-          }
-        >
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <Input
-              label="First Name"
-              id="firstName"
-              value={firstName}
-              onChange={setFirstName}
-              placeholder="John"
-              required
-            />
+	return (
+		<div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4">
+			<div className="max-w-2xl mx-auto">
+				<Dialog
+					title="Employee Information Form"
+					footer={
+						<div className="flex gap-3 justify-end">
+							<Button variant="secondary" size="medium" onClick={handleReset}>
+								Reset
+							</Button>
+							<Button
+								variant="primary"
+								size="medium"
+								type="submit"
+								onClick={handleSubmit}
+							>
+								Submit
+							</Button>
+						</div>
+					}
+				>
+					<form onSubmit={handleSubmit} className="space-y-6">
+						<Input
+							label="First Name"
+							id="firstName"
+							value={firstName}
+							onChange={setFirstName}
+							placeholder="John"
+							required
+						/>
 
-            <Input
-              label="Last Name"
-              id="lastName"
-              value={lastName}
-              onChange={setLastName}
-              placeholder="Doe"
-              required
-            />
+						<Input
+							label="Last Name"
+							id="lastName"
+							value={lastName}
+							onChange={setLastName}
+							placeholder="Doe"
+							required
+						/>
 
-            <RadioGroup
-              label="Employment Type"
-              name="employmentType"
-              options={[
-                { value: 'full-time', label: 'Full Time' },
-                { value: 'part-time', label: 'Part Time' },
-              ]}
-              value={employmentType}
-              onChange={setEmploymentType}
-            />
+						<RadioGroup
+							label="Employment Type"
+							name="employmentType"
+							options={[
+								{ value: "full-time", label: "Full Time" },
+								{ value: "part-time", label: "Part Time" },
+							]}
+							value={employmentType}
+							onChange={setEmploymentType}
+						/>
 
-            <Slider
-              label="Coffee Cups Per Day"
-              id="coffeeCups"
-              value={coffeeCups}
-              onChange={setCoffeeCups}
-              min={0}
-              max={10}
-            />
-          </form>
-        </Dialog>
-      </div>
-    </div>
-  )
+						<Slider
+							label="Coffee Cups Per Day"
+							id="coffeeCups"
+							value={coffeeCups}
+							onChange={setCoffeeCups}
+							min={0}
+							max={10}
+						/>
+					</form>
+				</Dialog>
+			</div>
+		</div>
+	);
 }

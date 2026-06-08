@@ -1,8 +1,8 @@
+import { useQuery } from "@tanstack/react-query";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { useAuth } from "#/features/auth/providers/AuthProvider";
 import { db } from "#/shared/lib/firebase";
 import type { FormResponseDef } from "#/shared/types/dynamic-form";
-import { useQuery } from "@tanstack/react-query";
-import { collection, getDocs, query, where } from "firebase/firestore";
 
 /**
  * Mapa de límites por modalidad.
@@ -23,37 +23,37 @@ export type ModalityLimits = Record<string, Record<string, number>>;
  * @param module - Nombre del módulo/colección en Firestore (e.g., "student")
  */
 export const useSubmittedModalities = (
-  sourceTemplateId: string,
-  module: string,
+	sourceTemplateId: string,
+	module: string,
 ) => {
-  const { programId } = useAuth();
+	const { programId } = useAuth();
 
-  return useQuery<string[]>({
-    queryKey: ["submitted-modalities", module, sourceTemplateId, programId],
-    queryFn: async () => {
-      if (!programId) return [];
+	return useQuery<string[]>({
+		queryKey: ["submitted-modalities", module, sourceTemplateId, programId],
+		queryFn: async () => {
+			if (!programId) return [];
 
-      const q = query(
-        collection(db, module),
-        where("templateId", "==", sourceTemplateId),
-        where("programId", "==", programId),
-      );
+			const q = query(
+				collection(db, module),
+				where("templateId", "==", sourceTemplateId),
+				where("programId", "==", programId),
+			);
 
-      const snapshot = await getDocs(q);
-      const modalities = new Set<string>();
+			const snapshot = await getDocs(q);
+			const modalities = new Set<string>();
 
-      for (const doc of snapshot.docs) {
-        const data = doc.data() as FormResponseDef;
-        const modalidad = data.response?.modalidad;
-        if (modalidad) {
-          modalities.add(String(modalidad));
-        }
-      }
+			for (const doc of snapshot.docs) {
+				const data = doc.data() as FormResponseDef;
+				const modalidad = data.response?.modalidad;
+				if (modalidad) {
+					modalities.add(String(modalidad));
+				}
+			}
 
-      return Array.from(modalities);
-    },
-    enabled: !!sourceTemplateId && !!module && !!programId,
-  });
+			return Array.from(modalities);
+		},
+		enabled: !!sourceTemplateId && !!module && !!programId,
+	});
 };
 
 /**
@@ -73,48 +73,53 @@ export const useSubmittedModalities = (
  * @param module - Nombre del módulo/colección en Firestore (e.g., "student")
  */
 export const useSubmittedResponseLimits = (
-  sourceTemplateId: string,
-  module: string,
+	sourceTemplateId: string,
+	module: string,
 ) => {
-  const { programId } = useAuth();
+	const { programId } = useAuth();
 
-  return useQuery<ModalityLimits>({
-    queryKey: ["submitted-response-limits", module, sourceTemplateId, programId],
-    queryFn: async () => {
-      if (!programId) return {};
+	return useQuery<ModalityLimits>({
+		queryKey: [
+			"submitted-response-limits",
+			module,
+			sourceTemplateId,
+			programId,
+		],
+		queryFn: async () => {
+			if (!programId) return {};
 
-      const q = query(
-        collection(db, module),
-        where("templateId", "==", sourceTemplateId),
-        where("programId", "==", programId),
-      );
+			const q = query(
+				collection(db, module),
+				where("templateId", "==", sourceTemplateId),
+				where("programId", "==", programId),
+			);
 
-      const snapshot = await getDocs(q);
-      const limits: ModalityLimits = {};
+			const snapshot = await getDocs(q);
+			const limits: ModalityLimits = {};
 
-      for (const doc of snapshot.docs) {
-        const data = doc.data() as FormResponseDef;
-        const response = data.response;
-        if (!response) continue;
+			for (const doc of snapshot.docs) {
+				const data = doc.data() as FormResponseDef;
+				const response = data.response;
+				if (!response) continue;
 
-        const modalidad = String(response.modalidad ?? "");
-        if (!modalidad) continue;
+				const modalidad = String(response.modalidad ?? "");
+				if (!modalidad) continue;
 
-        // Extraer todos los campos numéricos (excluir modalidad y total)
-        const numericFields: Record<string, number> = {};
-        for (const [key, value] of Object.entries(response)) {
-          if (key === "modalidad" || key === "total") continue;
-          const numValue = Number(value);
-          if (Number.isFinite(numValue)) {
-            numericFields[key] = numValue;
-          }
-        }
+				// Extraer todos los campos numéricos (excluir modalidad y total)
+				const numericFields: Record<string, number> = {};
+				for (const [key, value] of Object.entries(response)) {
+					if (key === "modalidad" || key === "total") continue;
+					const numValue = Number(value);
+					if (Number.isFinite(numValue)) {
+						numericFields[key] = numValue;
+					}
+				}
 
-        limits[modalidad] = numericFields;
-      }
+				limits[modalidad] = numericFields;
+			}
 
-      return limits;
-    },
-    enabled: !!sourceTemplateId && !!module && !!programId,
-  });
+			return limits;
+		},
+		enabled: !!sourceTemplateId && !!module && !!programId,
+	});
 };
