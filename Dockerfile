@@ -47,9 +47,9 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# Añadir un usuario sin privilegios por seguridad
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 reactapp
+# Añadir un usuario sin privilegios por seguridad (Sintaxis Alpine compatible)
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -u 1001 -S -G nodejs reactapp
 
 COPY --from=builder --chown=reactapp:nodejs /app/package.json ./
 # Copiamos la salida construida (cliente, servidor SSR y el server Express compilado)
@@ -57,7 +57,8 @@ COPY --from=builder --chown=reactapp:nodejs /app/dist ./dist
 COPY --from=builder --chown=reactapp:nodejs /app/pnpm-lock.yaml ./
 COPY --from=builder --chown=reactapp:nodejs /app/public ./public
 
-RUN pnpm install --prod --frozen-lockfile
+RUN pnpm install --prod --frozen-lockfile && \
+    chown -R reactapp:nodejs /app
 
 RUN ls -la /app
 

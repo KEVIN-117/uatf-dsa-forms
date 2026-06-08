@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   uatf-forms:
-    image: ${DOCKERHUB_USERNAME}/uatf-forms:${IMAGE_TAG}
+    image: ${DOCKERHUB_USERNAME:-kevin117}/uatf-forms:${IMAGE_TAG:-latest}
     container_name: uatf-forms
     ports:
       - "${PORT:-3000}:3000"

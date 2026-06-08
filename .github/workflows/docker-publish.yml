@@ -33,9 +33,9 @@ jobs:
         with:
           images: ${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms
           tags: |
-            # Tag 'latest' solo para main
+            # Tag 'latest' solo para la rama main (producción)
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
-            # Tag 'dev' para la rama develop
+            # Tag 'dev' para la rama develop (pruebas locales/desarrollo)
             type=raw,value=dev,enable=${{ github.ref == 'refs/heads/develop' }}
             # Tags para versiones (v1.0.0)
             type=semver,pattern={{version}}
@@ -60,3 +60,15 @@ jobs:
             VITE_FIREBASE_APP_ID=${{ secrets.VITE_FIREBASE_APP_ID }}
             VITE_FIREBASE_MEASUREMENT_ID=${{ secrets.VITE_FIREBASE_MEASUREMENT_ID }}
             VITE_AUTH_PARSE=${{ secrets.VITE_AUTH_PARSE }}
+
+      - name: Trigger Render Deploy (Production Only)
+        if: github.ref == 'refs/heads/main' && (env.RENDER_HOOK_PROD != '' || env.RENDER_HOOK_GEN != '')
+        env:
+          RENDER_HOOK_PROD: ${{ secrets.RENDER_DEPLOY_HOOK_URL_PRODUCTION }}
+          RENDER_HOOK_GEN: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -n "$RENDER_HOOK_PROD" ]; then
+            curl -fX POST "$RENDER_HOOK_PROD"
+          else
+            curl -fX POST "$RENDER_HOOK_GEN"
+          fi
