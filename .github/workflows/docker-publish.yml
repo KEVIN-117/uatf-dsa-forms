@@ -42,6 +42,35 @@ jobs:
             type=semver,pattern={{version}}
             type=sha
 
+      # 1. Configurar Node.js y Pnpm en el runner de GitHub
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Pnpm
+        run: npm install -g pnpm
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 2. Inyectar la Service Account de Firebase según el entorno (Rama)
+      - name: Write Firebase Service Account Key
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PROD }}' > serviceAccountKey.json
+            echo "NODE_ENV=production" > .env
+          else
+            echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}' > serviceAccountKey.json
+            echo "NODE_ENV=development" > .env
+          fi
+
+      # 3. Ejecutar los seeders en la base de datos correspondiente
+      - name: Run Database Seeding
+        run: |
+          pnpm seed
+          pnpm seed:admins
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -71,13 +100,19 @@ jobs:
             curl -X POST \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" \
-            -d '{"serviceId":"'"${{ secrets.RENDER_SERVICE_ID_PROD }}"'"}' \
+            -d '{
+                "serviceId":"'"${{ secrets.RENDER_SERVICE_ID_PROD }}"'",
+                "imageUrl": "'"docker.io/${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms:latest'""
+              }' \
             https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_PROD }}/deploys
           else
             curl -X POST \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" \
-            -d '{"serviceId":"'"${{ secrets.RENDER_SERVICE_ID_PROD }}"'"}' \
+            -d '{
+                "serviceId":"'"${{ secrets.RENDER_SERVICE_ID_PROD }}"'",
+                "imageUrl": "'"docker.io/${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms:latest'""
+              }' \
             https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_PROD }}/deploys
           fi
 
@@ -91,12 +126,18 @@ jobs:
             curl -X POST \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" \
-            -d '{"serviceId":"'"${{ secrets.RENDER_SERVICE_ID_DEV }}"'"}' \
+            -d '{
+                "serviceId":"'"${{ secrets.RENDER_SERVICE_ID_DEV }}"'",
+                "imageUrl": "'"docker.io/${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms:dev'""
+              }' \
             https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_DEV }}/deploys
           else
             curl -X POST \
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" \
-            -d '{"serviceId":"'"${{ secrets.RENDER_SERVICE_ID_DEV }}"'"}' \
+            -d '{
+                "serviceId":"'"${{ secrets.RENDER_SERVICE_ID_DEV }}"'",
+                "imageUrl": "'"docker.io/${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms:dev'""
+              }' \
             https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_DEV }}/deploys
           fi

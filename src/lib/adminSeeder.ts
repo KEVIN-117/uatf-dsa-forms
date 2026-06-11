@@ -103,8 +103,8 @@ const directors: Array<DirectorType> = JSON.parse(
 async function CreateUser() {
 	console.log("🚀 Starting seeders for user...");
 
-	try {
-		for (const director of directors) {
+	for (const director of directors) {
+		try {
 			const createdUser = await auth.createUser({
 				email: director.email,
 				password: `${director.ci}@2026`,
@@ -130,18 +130,45 @@ async function CreateUser() {
 				createdAt: new Date().getTime(),
 				updatedAt: new Date().getTime(),
 			});
+		} catch (error: any) {
+			if (error.code === "auth/email-already-exists") {
+				console.log(`ℹ️ El director ${director.email} ya existe. Actualizando claims y Firestore...`);
+				try {
+					const existingUser = await auth.getUserByEmail(director.email);
+					const customClaim = {
+						role: roles.DIRECTOR,
+						facultyId: director.facultyId,
+						programId: director.programId,
+					};
+					await auth.setCustomUserClaims(existingUser.uid, customClaim);
+					await db.collection("users").doc(existingUser.uid).set({
+						ci: director.ci,
+						name: director.name,
+						email: director.email,
+						paternalSurname: director.paternalSurname,
+						maternalSurname: director.maternalSurname,
+						role: roles.DIRECTOR,
+						facultyId: director.facultyId,
+						programId: director.programId,
+						updatedAt: new Date().getTime(),
+					}, { merge: true });
+				} catch (innerError) {
+					console.error(`❌ Error al actualizar director existente ${director.email}:`, innerError);
+					process.exit(1);
+				}
+			} else {
+				console.error(`❌ Error al crear director ${director.email}:`, error);
+				process.exit(1);
+			}
 		}
-	} catch (error) {
-		console.log("🚀 Error creating user:", error);
-		process.exit(1);
 	}
 }
 
 async function createAdmin() {
 	console.log("🚀 Starting seeders for admin...");
 
-	try {
-		for (const adminSeeder of adminSeedUsers) {
+	for (const adminSeeder of adminSeedUsers) {
+		try {
 			const createdUser = await auth.createUser({
 				email: adminSeeder.email,
 				password: adminSeeder.password,
@@ -160,10 +187,30 @@ async function createAdmin() {
 				createdAt: new Date().getTime(),
 				updatedAt: new Date().getTime(),
 			});
+		} catch (error: any) {
+			if (error.code === "auth/email-already-exists") {
+				console.log(`ℹ️ El admin ${adminSeeder.email} ya existe. Actualizando claims y Firestore...`);
+				try {
+					const existingUser = await auth.getUserByEmail(adminSeeder.email);
+					const customClaim = {
+						role: adminSeeder.role,
+					};
+					await auth.setCustomUserClaims(existingUser.uid, customClaim);
+					await db.collection("users").doc(existingUser.uid).set({
+						name: adminSeeder.name,
+						email: adminSeeder.email,
+						role: adminSeeder.role,
+						updatedAt: new Date().getTime(),
+					}, { merge: true });
+				} catch (innerError) {
+					console.error(`❌ Error al actualizar admin existente ${adminSeeder.email}:`, innerError);
+					process.exit(1);
+				}
+			} else {
+				console.error(`❌ Error al crear admin ${adminSeeder.email}:`, error);
+				process.exit(1);
+			}
 		}
-	} catch (error) {
-		console.log("🚀 Error creating admin:", error);
-		process.exit(1);
 	}
 }
 
