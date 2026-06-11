@@ -2,7 +2,7 @@
 FROM node:22.12.0-alpine3.21 AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN npm install -g pnpm@10
+RUN npm install -g pnpm
 
 
 # 2. Dependencies stage

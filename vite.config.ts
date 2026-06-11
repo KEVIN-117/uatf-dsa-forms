@@ -17,7 +17,7 @@ const config = defineConfig({
 		devtools(),
 		tailwindcss(),
 		!isStorybook && tanstackStart(),
-		isStorybook && viteReact(),
+		viteReact(),
 	].filter(Boolean),
 });
 

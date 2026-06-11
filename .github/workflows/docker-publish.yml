@@ -42,31 +42,6 @@ jobs:
             type=semver,pattern={{version}}
             type=sha
 
-      # 1. Configurar Node.js y Pnpm en el runner de GitHub
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install Pnpm
-        run: npm install -g pnpm@10
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
-      # 2. Inyectar la Service Account de Firebase según el entorno (Rama)
-      - name: Write Firebase Service Account Key for development
-        if: github.ref == 'refs/heads/develop'
-        run: |
-          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}' > serviceAccountKey.json
-          echo "NODE_ENV=development" > .env
-
-      # 3. Ejecutar los seeders en la base de datos correspondiente
-      - name: Run Database Seeding for development
-        if: github.ref == 'refs/heads/develop'
-        run: |
-          pnpm seed
-          pnpm seed:admins
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5

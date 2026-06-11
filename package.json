@@ -91,13 +91,5 @@
     "vite": "^8.0.0",
     "vite-node": "^6.0.0",
     "vitest": "^3.0.5"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@firebase/util",
-      "esbuild",
-      "lightningcss",
-      "protobufjs"
-    ]
   }
 }
