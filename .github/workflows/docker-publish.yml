@@ -65,6 +65,9 @@ jobs:
             echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}' > serviceAccountKey.json
             echo "NODE_ENV=development" > .env
           fi
+          ls -la
+          cat serviceAccountKey.json
+          cat .env
 
       # 3. Ejecutar los seeders en la base de datos correspondiente
       - name: Run Database Seeding

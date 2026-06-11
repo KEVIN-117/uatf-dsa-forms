@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ override: true });
 
 import * as admin from "firebase-admin";
 import * as fs from "fs";
