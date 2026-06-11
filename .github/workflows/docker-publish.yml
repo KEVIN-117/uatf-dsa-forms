@@ -68,7 +68,35 @@ jobs:
           RENDER_HOOK_GEN: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
         run: |
           if [ -n "$RENDER_HOOK_PROD" ]; then
-            curl -fX POST "$RENDER_HOOK_PROD"
+            curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"serviceId":"'"${{ secrets.RENDER_SERVICE_ID_PROD }}"'"}' \
+            https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_PROD }}/deploys
           else
-            curl -fX POST "$RENDER_HOOK_GEN"
+            curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"serviceId":"'"${{ secrets.RENDER_SERVICE_ID_PROD }}"'"}' \
+            https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_PROD }}/deploys
+          fi
+
+      - name: Trigger Render Deploy (Development Only)
+        if: github.ref == 'refs/heads/develop' && (env.RENDER_HOOK_DEV != '' || env.RENDER_HOOK_GEN != '')
+        env:
+          RENDER_HOOK_DEV: ${{ secrets.RENDER_DEPLOY_HOOK_URL_DEVELOP }}
+          RENDER_HOOK_GEN: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -n "$RENDER_HOOK_DEV" ]; then
+            curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"serviceId":"'"${{ secrets.RENDER_SERVICE_ID_DEV }}"'"}' \
+            https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_DEV }}/deploys
+          else
+            curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"serviceId":"'"${{ secrets.RENDER_SERVICE_ID_DEV }}"'"}' \
+            https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_DEV }}/deploys
           fi

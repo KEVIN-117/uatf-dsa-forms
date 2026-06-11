@@ -57,6 +57,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "#/shared/ui/tooltip";
 import logoUATF from "/dsa-icon.png";
 import ThemeToggle from "./ThemeToggle";
+import { Badge } from "#/shared/ui/badge";
 
 type NavItem = {
 	label: string;
@@ -467,6 +468,11 @@ export function DashboardSidebar({
 							</Button>
 						)}
 					</div>
+				</div>
+				{/* dev tag */}
+				<div className="text-xs text-center text-muted-foreground">
+					UATF - DSA Forms
+					<Badge className="ml-2">{import.meta.env.VITE_NODE_ENV}</Badge>
 				</div>
 			</SidebarFooter>
 		</Sidebar>
