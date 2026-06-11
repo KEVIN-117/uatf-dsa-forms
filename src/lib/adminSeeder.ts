@@ -62,14 +62,16 @@ const isProd = process.env.NODE_ENV === "production";
 const adminsFilePath = path.resolve(__dirname, "admins.json");
 const adminsSamplePath = path.resolve(__dirname, "admins.sample.json");
 
-let adminsFileToLoad = adminsFilePath;
-if (!fs.existsSync(adminsFilePath)) {
-	if (isProd) {
+let adminsFileToLoad = adminsSamplePath;
+if (isProd) {
+	if (!fs.existsSync(adminsFilePath)) {
 		console.error("❌ Error fatal: Falta el archivo 'admins.json' requerido para el entorno de producción.");
 		process.exit(1);
 	}
-	console.log("ℹ️ No se encontró 'admins.json'. Usando 'admins.sample.json' para desarrollo.");
-	adminsFileToLoad = adminsSamplePath;
+	adminsFileToLoad = adminsFilePath;
+	console.log("🚀 Cargando datos originales de administradores para producción...");
+} else {
+	console.log("🌱 Cargando datos mock de administradores para desarrollo...");
 }
 
 const adminSeedUsers: Array<AdminType> = JSON.parse(
@@ -82,14 +84,16 @@ const adminSeedUsers: Array<AdminType> = JSON.parse(
 const directorsFilePath = path.resolve(__dirname, "lista_directores_2026_con_emails.json");
 const directorsSamplePath = path.resolve(__dirname, "lista_directores_2026_con_emails.sample.json");
 
-let directorsFileToLoad = directorsFilePath;
-if (!fs.existsSync(directorsFilePath)) {
-	if (isProd) {
+let directorsFileToLoad = directorsSamplePath;
+if (isProd) {
+	if (!fs.existsSync(directorsFilePath)) {
 		console.error("❌ Error fatal: Falta el archivo 'lista_directores_2026_con_emails.json' requerido para el entorno de producción.");
 		process.exit(1);
 	}
-	console.log("ℹ️ No se encontró 'lista_directores_2026_con_emails.json'. Usando archivo de muestra para desarrollo.");
-	directorsFileToLoad = directorsSamplePath;
+	directorsFileToLoad = directorsFilePath;
+	console.log("🚀 Cargando datos originales de directores para producción...");
+} else {
+	console.log("🌱 Cargando datos mock de directores para desarrollo...");
 }
 
 const directors: Array<DirectorType> = JSON.parse(

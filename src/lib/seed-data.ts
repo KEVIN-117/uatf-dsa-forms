@@ -3601,11 +3601,14 @@ const __dirname = path.dirname(__filename);
 const isProd = process.env.NODE_ENV === "production";
 const directorsRawPath = path.resolve(__dirname, "lista_directores_2026_con_emails.json");
 
-let directorsRaw = directorsRawSample;
-if (fs.existsSync(directorsRawPath)) {
+let directorsRaw;
+if (isProd) {
+	if (!fs.existsSync(directorsRawPath)) {
+		throw new Error("❌ Error fatal: Falta el archivo 'lista_directores_2026_con_emails.json' requerido para el entorno de producción.");
+	}
 	directorsRaw = JSON.parse(fs.readFileSync(directorsRawPath, "utf-8"));
-} else if (isProd) {
-	throw new Error("❌ Error fatal: Falta el archivo 'lista_directores_2026_con_emails.json' requerido para el entorno de producción.");
+} else {
+	directorsRaw = directorsRawSample;
 }
 
 export const directors = (directorsRaw as DirectorSeedRaw[]).map((item) => ({
