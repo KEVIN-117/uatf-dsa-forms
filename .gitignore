@@ -4,6 +4,8 @@ dist
 dist-ssr
 *.local
 .env
+.env.*
+!.env.example
 .nitro
 .tanstack
 .wrangler
@@ -11,6 +13,7 @@ dist-ssr
 .vinxi
 __unconfig*
 todos.json
+serviceAccountKey.*.json
 serviceAccountKey.json
 /lib/*.json
 src/lib/lista_directores_2026_con_emails.json

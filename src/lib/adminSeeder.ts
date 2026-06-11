@@ -1,3 +1,6 @@
+import * as dotenv from "dotenv";
+dotenv.config();
+
 import * as admin from "firebase-admin";
 import * as fs from "fs";
 import * as path from "path";
@@ -51,41 +54,46 @@ interface AdminType extends UserType {
 	password: string;
 }
 
+const isProd = process.env.NODE_ENV === "production";
+
 /**
- * @name CreateUser
- * @description Create a user with the given data and return the user.
+ * @name Load Admins
  */
 const adminsFilePath = path.resolve(__dirname, "admins.json");
+const adminsSamplePath = path.resolve(__dirname, "admins.sample.json");
+
+let adminsFileToLoad = adminsFilePath;
 if (!fs.existsSync(adminsFilePath)) {
-	console.error(
-		"❌ Missing data file: admins.json\n" +
-			"   Copy admins.sample.json to admins.json " +
-			"and populate it with real admin data before running this seeder.",
-	);
-	process.exit(1);
+	if (isProd) {
+		console.error("❌ Error fatal: Falta el archivo 'admins.json' requerido para el entorno de producción.");
+		process.exit(1);
+	}
+	console.log("ℹ️ No se encontró 'admins.json'. Usando 'admins.sample.json' para desarrollo.");
+	adminsFileToLoad = adminsSamplePath;
 }
 
 const adminSeedUsers: Array<AdminType> = JSON.parse(
-	fs.readFileSync(adminsFilePath, "utf-8"),
+	fs.readFileSync(adminsFileToLoad, "utf-8"),
 );
 
-// Copy lista_directores_2026_con_emails.sample.json to lista_directores_2026_con_emails.json
-// and populate it with real data before running this seeder.
-// The real file is gitignored to prevent accidental PII commits.
-const directorsFilePath = path.resolve(
-	__dirname,
-	"lista_directores_2026_con_emails.json",
-);
+/**
+ * @name Load Directors
+ */
+const directorsFilePath = path.resolve(__dirname, "lista_directores_2026_con_emails.json");
+const directorsSamplePath = path.resolve(__dirname, "lista_directores_2026_con_emails.sample.json");
+
+let directorsFileToLoad = directorsFilePath;
 if (!fs.existsSync(directorsFilePath)) {
-	console.error(
-		"❌ Missing data file: lista_directores_2026_con_emails.json\n" +
-			"   Copy lista_directores_2026_con_emails.sample.json to lista_directores_2026_con_emails.json " +
-			"and populate it with real director data before running this seeder.",
-	);
-	process.exit(1);
+	if (isProd) {
+		console.error("❌ Error fatal: Falta el archivo 'lista_directores_2026_con_emails.json' requerido para el entorno de producción.");
+		process.exit(1);
+	}
+	console.log("ℹ️ No se encontró 'lista_directores_2026_con_emails.json'. Usando archivo de muestra para desarrollo.");
+	directorsFileToLoad = directorsSamplePath;
 }
+
 const directors: Array<DirectorType> = JSON.parse(
-	fs.readFileSync(directorsFilePath, "utf-8"),
+	fs.readFileSync(directorsFileToLoad, "utf-8"),
 );
 
 async function CreateUser() {

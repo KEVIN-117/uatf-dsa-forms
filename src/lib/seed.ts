@@ -1,3 +1,6 @@
+import * as dotenv from "dotenv";
+dotenv.config();
+
 import * as admin from "firebase-admin";
 import * as fs from "fs";
 import * as path from "path";
@@ -166,30 +169,18 @@ export async function seedFormResponses() {
 	console.log("🌱 Iniciando la siembra de respuestas de prueba...");
 	const responses: FormResponseDef[] = [];
 
-	const mockModalities = [
-		"Examen de Ingreso",
-		"Curso Preuniversitario",
-		"Ingreso Directo",
-		"Excelencia Académica",
-		"Traspaso",
-	];
-	const mockScholarshipTypes = [
-		"Beca Alimentación",
-		"Beca Trabajo",
-		"Beca Comedor",
-		"Beca Excelencia",
-		"Beca Deporte",
-	];
-	const mockUsers = [
-		"sheylajahel.cadiz@lef.edu.bo",
-		"juanvirgilio.silva@tmc.edu.bo",
-		"ovidiolucio.copa@tuu.edu.bo",
-		"neil.alfaro@ctt.edu.bo",
-	];
+	const mockUsers = directors.length > 0
+		? directors.map((d) => d.email)
+		: [
+			"sheylajahel.cadiz@lef.edu.bo",
+			"juanvirgilio.silva@tmc.edu.bo",
+			"ovidiolucio.copa@tuu.edu.bo",
+			"neil.alfaro@ctt.edu.bo",
+		];
 
 	const directorMetaByEmail = new Map(
 		directors.map((director) => [
-			director.email,
+			director.email.toLowerCase(),
 			{
 				facultyId: director.facultyId || "",
 				faculty: director.faculty || "",
@@ -210,7 +201,7 @@ export async function seedFormResponses() {
 		const total = masculino + femenino;
 
 		const submittedBy = mockUsers[Math.floor(Math.random() * mockUsers.length)];
-		const submitterMeta = directorMetaByEmail.get(submittedBy) ?? {
+		const submitterMeta = directorMetaByEmail.get(submittedBy.toLowerCase()) ?? {
 			facultyId: "",
 			faculty: "",
 			programId: "",
@@ -233,7 +224,7 @@ export async function seedFormResponses() {
 				createdAt,
 				response: {
 					modalidad:
-						mockModalities[Math.floor(Math.random() * mockModalities.length)],
+						modalities[Math.floor(Math.random() * modalities.length)].id,
 					masculino,
 					femenino,
 					total,
@@ -252,7 +243,7 @@ export async function seedFormResponses() {
 				createdAt,
 				response: {
 					modalidad:
-						mockModalities[Math.floor(Math.random() * mockModalities.length)],
+						graduationModalities[Math.floor(Math.random() * graduationModalities.length)].id,
 					masculino,
 					femenino,
 					total,
@@ -295,9 +286,9 @@ export async function seedFormResponses() {
 					nombres: names[Math.floor(Math.random() * names.length)],
 					ci: `${Math.floor(Math.random() * 9000000) + 1000000}`,
 					cel: `${Math.floor(Math.random() * 9000000) + 60000000}`,
-					carga_horaria: `${Math.floor(Math.random() * workloads.length) + 1}`,
-					categoria: `${Math.floor(Math.random() * teachingCategories.length) + 1}`,
-					nivel_academico: `${Math.floor(Math.random() * teachingAcademicLevels.length) + 1}`,
+					carga_horaria: workloads[Math.floor(Math.random() * workloads.length)].id,
+					categoria: teachingCategories[Math.floor(Math.random() * teachingCategories.length)].id,
+					nivel_academico: teachingAcademicLevels[Math.floor(Math.random() * teachingAcademicLevels.length)].id,
 					profesion: [
 						"Ing. Sistemas",
 						"Lic. Matemáticas",
@@ -318,9 +309,7 @@ export async function seedFormResponses() {
 				program: submitterMeta.program,
 				createdAt,
 				response: {
-					tipo: mockScholarshipTypes[
-						Math.floor(Math.random() * mockScholarshipTypes.length)
-					],
+					tipo: ["parcial", "completa"][Math.floor(Math.random() * 2)],
 					masculino,
 					femenino,
 					total,
@@ -430,6 +419,9 @@ export async function runSeed() {
 		await seedTeachingAcademicLevels();
 		await seedScholarshipsTypes();
 		await seedFormFields();
+		if (process.env.NODE_ENV === "development") {
+			await seedFormResponses();
+		}
 
 		console.log("🎉 Proceso de siembra finalizado con éxito.");
 		process.exit(0);

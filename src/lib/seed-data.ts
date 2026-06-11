@@ -1,5 +1,8 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 import type { Faculty, Program } from "#/shared/types";
-import directorsRaw from "./lista_directores_2026_con_emails.sample.json";
+import directorsRawSample from "./lista_directores_2026_con_emails.sample.json";
 import type {
 	AcademicLevel,
 	DirectorSeedRaw,
@@ -3591,6 +3594,19 @@ export const programs: Program[] = [
 		],
 	},
 ];
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const isProd = process.env.NODE_ENV === "production";
+const directorsRawPath = path.resolve(__dirname, "lista_directores_2026_con_emails.json");
+
+let directorsRaw = directorsRawSample;
+if (fs.existsSync(directorsRawPath)) {
+	directorsRaw = JSON.parse(fs.readFileSync(directorsRawPath, "utf-8"));
+} else if (isProd) {
+	throw new Error("❌ Error fatal: Falta el archivo 'lista_directores_2026_con_emails.json' requerido para el entorno de producción.");
+}
 
 export const directors = (directorsRaw as DirectorSeedRaw[]).map((item) => ({
 	ci: Number.parseInt(String(item.ci), 10) || 0,
