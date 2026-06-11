@@ -99,7 +99,8 @@ jobs:
             -H "Content-Type: application/json" \
             -d '{
                 "serviceId": "${{ secrets.RENDER_SERVICE_ID_PROD }}",
-                "imageUrl": "docker.io/${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms:latest"
+                "imageUrl": "docker.io/${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms:latest",
+                "clearCache": "false"
               }' \
             https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_PROD }}/deploys
           else
@@ -108,7 +109,8 @@ jobs:
             -H "Content-Type: application/json" \
             -d '{
                 "serviceId": "${{ secrets.RENDER_SERVICE_ID_PROD }}",
-                "imageUrl": "docker.io/${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms:latest"
+                "imageUrl": "docker.io/${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms:latest",
+                "clearCache": "false"
               }' \
             https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_PROD }}/deploys
           fi
@@ -125,7 +127,8 @@ jobs:
             -H "Content-Type: application/json" \
             -d '{
                 "serviceId": "${{ secrets.RENDER_SERVICE_ID_DEV }}",
-                "imageUrl": "docker.io/${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms:dev"
+                "imageUrl": "docker.io/${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms:dev",
+                "clearCache": "true"
               }' \
             https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_DEV }}/deploys
           else
@@ -134,7 +137,8 @@ jobs:
             -H "Content-Type: application/json" \
             -d '{
                 "serviceId": "${{ secrets.RENDER_SERVICE_ID_DEV }}",
-                "imageUrl": "docker.io/${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms:dev"
+                "imageUrl": "docker.io/${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms:dev",
+                "clearCache": "true"
               }' \
             https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_DEV }}/deploys
           fi

@@ -470,9 +470,22 @@ export function DashboardSidebar({
 					</div>
 				</div>
 				{/* dev tag */}
-				<div className="text-xs text-center text-muted-foreground">
-					UATF - DSA Forms
-					<Badge className="ml-2">{import.meta.env.VITE_NODE_ENV}</Badge>
+				<div className="flex items-center justify-center pt-2">
+					{import.meta.env.VITE_NODE_ENV === "development" ? (
+						<Badge
+							variant="outline"
+							className="bg-amber-500/10 text-amber-500 border-amber-500/20 px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase animate-pulse"
+						>
+							Desarrollo
+						</Badge>
+					) : (
+						<Badge
+							variant="outline"
+							className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase"
+						>
+							Producción
+						</Badge>
+					)}
 				</div>
 			</SidebarFooter>
 		</Sidebar>
