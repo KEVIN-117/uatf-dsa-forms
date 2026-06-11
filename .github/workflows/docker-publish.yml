@@ -57,6 +57,7 @@ jobs:
       # 2. Inyectar la Service Account de Firebase según el entorno (Rama)
       - name: Write Firebase Service Account Key
         run: |
+          echo "${{ github.ref }}"
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
             echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PROD }}' > serviceAccountKey.json
             echo "NODE_ENV=production" > .env
@@ -101,8 +102,8 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{
-                "serviceId":"'"${{ secrets.RENDER_SERVICE_ID_PROD }}"'",
-                "imageUrl": "'"docker.io/${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms:latest'""
+                "serviceId": "${{ secrets.RENDER_SERVICE_ID_PROD }}",
+                "imageUrl": "docker.io/${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms:latest"
               }' \
             https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_PROD }}/deploys
           else
@@ -110,8 +111,8 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{
-                "serviceId":"'"${{ secrets.RENDER_SERVICE_ID_PROD }}"'",
-                "imageUrl": "'"docker.io/${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms:latest'""
+                "serviceId": "${{ secrets.RENDER_SERVICE_ID_PROD }}",
+                "imageUrl": "docker.io/${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms:latest"
               }' \
             https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_PROD }}/deploys
           fi
@@ -127,8 +128,8 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{
-                "serviceId":"'"${{ secrets.RENDER_SERVICE_ID_DEV }}"'",
-                "imageUrl": "'"docker.io/${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms:dev'""
+                "serviceId": "${{ secrets.RENDER_SERVICE_ID_DEV }}",
+                "imageUrl": "docker.io/${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms:dev"
               }' \
             https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_DEV }}/deploys
           else
@@ -136,8 +137,8 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{
-                "serviceId":"'"${{ secrets.RENDER_SERVICE_ID_DEV }}"'",
-                "imageUrl": "'"docker.io/${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms:dev'""
+                "serviceId": "${{ secrets.RENDER_SERVICE_ID_DEV }}",
+                "imageUrl": "docker.io/${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms:dev"
               }' \
             https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_DEV }}/deploys
           fi
