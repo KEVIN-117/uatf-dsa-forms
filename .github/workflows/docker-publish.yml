@@ -55,22 +55,15 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       # 2. Inyectar la Service Account de Firebase según el entorno (Rama)
-      - name: Write Firebase Service Account Key
+      - name: Write Firebase Service Account Key for development
+        if: github.ref == 'refs/heads/develop'
         run: |
-          echo "${{ github.ref }}"
-          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PROD }}' > serviceAccountKey.json
-            echo "NODE_ENV=production" > .env
-          else
-            echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}' > serviceAccountKey.json
-            echo "NODE_ENV=development" > .env
-          fi
-          ls -la
-          cat serviceAccountKey.json
-          cat .env
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}' > serviceAccountKey.json
+          echo "NODE_ENV=development" > .env
 
       # 3. Ejecutar los seeders en la base de datos correspondiente
-      - name: Run Database Seeding
+      - name: Run Database Seeding for development
+        if: github.ref == 'refs/heads/develop'
         run: |
           pnpm seed
           pnpm seed:admins
