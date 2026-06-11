@@ -32,14 +32,14 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ secrets.DOCKERHUB_USERNAME }}/uatf-forms
+          # Tag 'latest' solo para la rama main (producción)
+          # Tag 'dev' para la rama develop (pruebas locales/desarrollo)
+          # Tags para versiones (v1.0.0)
+          # Tag con el SHA del commit
           tags: |
-            # Tag 'latest' solo para la rama main (producción)
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
-            # Tag 'dev' para la rama develop (pruebas locales/desarrollo)
             type=raw,value=dev,enable=${{ github.ref == 'refs/heads/develop' }}
-            # Tags para versiones (v1.0.0)
             type=semver,pattern={{version}}
-            # Tag con el SHA del commit
             type=sha
 
       - name: Build and push Docker image
@@ -50,7 +50,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-to: type=gha,mode=min
           build-args: |
             VITE_FIREBASE_API_KEY=${{ secrets.VITE_FIREBASE_API_KEY }}
             VITE_FIREBASE_AUTH_DOMAIN=${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
