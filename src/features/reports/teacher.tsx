@@ -1,16 +1,15 @@
 import { notFound } from "@tanstack/react-router";
 import { SaveAll, User, X } from "lucide-react";
+import { usePeriodState } from "#/app/providers/period-provider";
 import { AlertDialogCustom } from "#/shared/components/Dialog";
 import { DynamicForm } from "#/shared/components/DynamicForm";
 import { DynamicReportPageSkeleton } from "#/shared/components/DynamicReportPageSkeleton";
 import { DynamicReportPageState } from "#/shared/components/DynamicReportPageState";
 import { PageHeader } from "#/shared/components/PageHeader";
 import { useFormTemplateByModuleAndId } from "#/shared/hooks/useFormBuilder";
-import type { FormModules } from "#/shared/types/dynamic-form";
 import { Button } from "#/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "#/shared/ui/card";
 import { DataTable } from "#/shared/ui/data-table";
-import { ResponsesPanel } from "../dashboard/screens/ResponsesPanel";
 import { useOnEditTableActions } from "./BaseColumns";
 import { useBulkSubmission } from "./hooks/useBulkSubmission";
 import { useReportSubmission } from "./hooks/useReportSubmission";
@@ -20,6 +19,7 @@ interface TeacherReportProps {
 }
 
 export function TeacherReport({ formId }: TeacherReportProps) {
+	const { isReadOnly } = usePeriodState();
 	const { template, isPending, isError, error } = useFormTemplateByModuleAndId(
 		"teacher",
 		formId,
@@ -34,8 +34,6 @@ export function TeacherReport({ formId }: TeacherReportProps) {
 		confirmSubmit,
 		initialData,
 		editingId,
-		handleDelete,
-		handleEdit,
 		handleCancelEdit,
 		isDialogOpen: isConfirmDialogOpen,
 		setIsDialogOpen: setIsConfirmDialogOpen,
@@ -101,93 +99,103 @@ export function TeacherReport({ formId }: TeacherReportProps) {
 				description="Completa los campos requeridos para enviar el reporte."
 			/>
 
-			<Card className="shadow-sm w-full">
-				<CardHeader className="flex flex-row items-center justify-between">
-					<CardTitle className="text-lg">
-						{editingIndex !== null ? "Actualizar Docente" : "Añadir Docente"}
-					</CardTitle>
-					{editingIndex !== null && (
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={cancelEdit}
-							className="text-muted-foreground hover:text-destructive"
-						>
-							<X className="h-4 w-4 mr-1" />
-							Cancelar edición
-						</Button>
-					)}
-				</CardHeader>
-				<CardContent>
-					<DynamicForm
-						key={
-							editingId
-								? `response-edit-teach-${editingId}`
-								: `bulk-teach-${editingIndex ?? "new"}`
-						}
-						template={template!}
-						onSubmit={
-							editingId ? handleFormSubmitRequest : handleAddTeacherToMemory
-						}
-						className="grid grid-cols-1 md:grid-cols-3 gap-4"
-						submitLabel={
-							editingId
-								? "Guardar Cambios"
-								: editingIndex !== null
-									? "Actualizar registro"
-									: "Agregar a la lista"
-						}
-						resetForm={editingId ? resetResponseForm : resetForm}
-						setResetForm={editingId ? setResetResponseForm : setResetForm}
-						initialValues={editingId ? initialData : initialValues}
-						editMode={
-							editingId
-								? { type: "single", onCancel: handleCancelEdit }
-								: editingIndex !== null
-									? { type: "bulk", index: editingIndex, onCancel: cancelEdit }
-									: { type: "none" }
-						}
-					/>
-				</CardContent>
-			</Card>
-
-			<div className="grid grid-cols-1 gap-8">
-				<div className="flex flex-col gap-4">
-					<Card className="shadow-sm border-border flex-1">
+			{!isReadOnly && (
+				<>
+					<Card className="shadow-sm w-full">
 						<CardHeader className="flex flex-row items-center justify-between">
 							<CardTitle className="text-lg">
-								Docentes por registrar ({teachers.length})
+								{editingIndex !== null
+									? "Actualizar Docente"
+									: "Añadir Docente"}
 							</CardTitle>
-						</CardHeader>
-						<CardContent className="p-4 sm:p-6">
-							{teachers.length === 0 ? (
-								<div className="h-40 flex items-center justify-center border-2 border-dashed rounded-lg text-muted-foreground">
-									No hay docentes en la lista. Llena el formulario para
-									comenzar.
-								</div>
-							) : (
-								<DataTable<Record<string, unknown>, unknown>
-									columns={columns}
-									data={teachers}
-									showColumnToggle
-								/>
+							{editingIndex !== null && (
+								<Button
+									variant="ghost"
+									size="sm"
+									onClick={cancelEdit}
+									className="text-muted-foreground hover:text-destructive"
+								>
+									<X className="h-4 w-4 mr-1" />
+									Cancelar edición
+								</Button>
 							)}
+						</CardHeader>
+						<CardContent>
+							<DynamicForm
+								key={
+									editingId
+										? `response-edit-teach-${editingId}`
+										: `bulk-teach-${editingIndex ?? "new"}`
+								}
+								template={template!}
+								onSubmit={
+									editingId ? handleFormSubmitRequest : handleAddTeacherToMemory
+								}
+								className="grid grid-cols-1 md:grid-cols-3 gap-4"
+								submitLabel={
+									editingId
+										? "Guardar Cambios"
+										: editingIndex !== null
+											? "Actualizar registro"
+											: "Agregar a la lista"
+								}
+								resetForm={editingId ? resetResponseForm : resetForm}
+								setResetForm={editingId ? setResetResponseForm : setResetForm}
+								initialValues={editingId ? initialData : initialValues}
+								editMode={
+									editingId
+										? { type: "single", onCancel: handleCancelEdit }
+										: editingIndex !== null
+											? {
+													type: "bulk",
+													index: editingIndex,
+													onCancel: cancelEdit,
+												}
+											: { type: "none" }
+								}
+							/>
 						</CardContent>
 					</Card>
 
-					<div className="flex justify-end">
-						<Button
-							size="lg"
-							disabled={teachers.length === 0}
-							onClick={() => setIsDialogOpen(true)}
-							className="w-full sm:w-auto font-bold"
-						>
-							<SaveAll className="mr-2 size-5" />
-							Finalizar y Enviar ({teachers.length}) Docentes
-						</Button>
+					<div className="grid grid-cols-1 gap-8">
+						<div className="flex flex-col gap-4">
+							<Card className="shadow-sm border-border flex-1">
+								<CardHeader className="flex flex-row items-center justify-between">
+									<CardTitle className="text-lg">
+										Docentes por registrar ({teachers.length})
+									</CardTitle>
+								</CardHeader>
+								<CardContent className="p-4 sm:p-6">
+									{teachers.length === 0 ? (
+										<div className="h-40 flex items-center justify-center border-2 border-dashed rounded-lg text-muted-foreground">
+											No hay docentes en la lista. Llena el formulario para
+											comenzar.
+										</div>
+									) : (
+										<DataTable<Record<string, unknown>, unknown>
+											columns={columns}
+											data={teachers}
+											showColumnToggle
+										/>
+									)}
+								</CardContent>
+							</Card>
+
+							<div className="flex justify-end">
+								<Button
+									size="lg"
+									disabled={teachers.length === 0}
+									onClick={() => setIsDialogOpen(true)}
+									className="w-full sm:w-auto font-bold"
+								>
+									<SaveAll className="mr-2 size-5" />
+									Finalizar y Enviar ({teachers.length}) Docentes
+								</Button>
+							</div>
+						</div>
 					</div>
-				</div>
-			</div>
+				</>
+			)}
 
 			<AlertDialogCustom
 				open={isDialogOpen}
@@ -214,14 +222,6 @@ export function TeacherReport({ formId }: TeacherReportProps) {
 				cancelLabel="Revisar de nuevo"
 				onConfirm={confirmSubmit}
 				onCancel={cancelSubmit}
-			/>
-
-			<ResponsesPanel
-				formId={formId}
-				module={template?.module as FormModules}
-				variant="embedded"
-				onDelete={handleDelete}
-				onEdit={handleEdit}
 			/>
 		</div>
 	);

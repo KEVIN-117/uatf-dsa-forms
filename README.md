@@ -143,3 +143,12 @@ pnpm format
 - `src/shared`: Reusable components, hooks, and utilities.
 
 For more detailed architectural information, see `docs/feature-architecture.md` and `GEMINI.md`.
+
+
+  ### 1. Seeding Specific Director Accounts
+
+  The 3 mock directors are created in Firebase Auth and Firestore with correct custom claims:
+
+  •  director1@uatf.edu.bo  (CI/Password:  1111111@2026 ): 100% completed progress (Steps 1–14).
+  •  director2@uatf.edu.bo  (CI/Password:  2222222@2026 ): 50% completed progress (Steps 1–7).
+  •  director3@uatf.edu.bo  (CI/Password:  3333333@2026 ): 0% completed progress (no steps).

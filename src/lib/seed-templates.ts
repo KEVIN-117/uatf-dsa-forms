@@ -11,6 +11,7 @@ import {
 export const studentFormTemplates: FormTemplateDef[] = [
 	{
 		id: "1",
+		periodId: "2026",
 		title: "Postulantes",
 		description: "Número de postulantes por modalidad y sexo",
 		module: FormModules.student,
@@ -54,6 +55,7 @@ export const studentFormTemplates: FormTemplateDef[] = [
 	},
 	{
 		id: "2",
+		periodId: "2026",
 		title: "Postulantes admitidos",
 		description: "Número de postulantes admitidos por modalidad y sexo",
 		module: FormModules.student,
@@ -97,6 +99,7 @@ export const studentFormTemplates: FormTemplateDef[] = [
 	},
 	{
 		id: "3",
+		periodId: "2026",
 		title: "Matrícula",
 		description: "Matrícula estudiantil por sexo",
 		module: FormModules.student,
@@ -129,6 +132,7 @@ export const studentFormTemplates: FormTemplateDef[] = [
 	},
 	{
 		id: "4",
+		periodId: "2026",
 		title: "Matricula nuevos",
 		description: "Matricula estudiantes nuevos por sexo",
 		module: FormModules.student,
@@ -161,6 +165,7 @@ export const studentFormTemplates: FormTemplateDef[] = [
 	},
 	{
 		id: "5",
+		periodId: "2026",
 		title: "Estudiantes programados",
 		description: "Número de estudiantes programados por sexo",
 		module: FormModules.student,
@@ -193,6 +198,7 @@ export const studentFormTemplates: FormTemplateDef[] = [
 	},
 	{
 		id: "6",
+		periodId: "2026",
 		title: "Evaluacion Quantitativa",
 		description:
 			"Número de estudiantes aprobados, reprobados y abandonos de materias",
@@ -236,6 +242,7 @@ export const studentFormTemplates: FormTemplateDef[] = [
 export const graduateFormTemplates: FormTemplateDef[] = [
 	{
 		id: "7",
+		periodId: "2026",
 		title: "Graduados",
 		description: "Numero de graduados por modalidad y sexo",
 		module: FormModules.graduate,
@@ -279,6 +286,7 @@ export const graduateFormTemplates: FormTemplateDef[] = [
 	},
 	{
 		id: "8",
+		periodId: "2026",
 		title: "Graduados nivel académico",
 		description: "Numero de graduados por nivel académico y sexo",
 		module: FormModules.graduate,
@@ -325,6 +333,7 @@ export const graduateFormTemplates: FormTemplateDef[] = [
 export const teacherFormTemplates: FormTemplateDef[] = [
 	{
 		id: "9",
+		periodId: "2026",
 		title: "Docentes",
 		description: "Numero de docentes por nivel académico",
 		module: FormModules.teacher,
@@ -414,6 +423,7 @@ export const teacherFormTemplates: FormTemplateDef[] = [
 export const scholarshipFormTemplates: FormTemplateDef[] = [
 	{
 		id: "10",
+		periodId: "2026",
 		title: "Beca Alimentacion",
 		description: "Numero de beca alimentacion por tipo y sexo",
 		module: FormModules.scholarships,
@@ -457,6 +467,7 @@ export const scholarshipFormTemplates: FormTemplateDef[] = [
 	},
 	{
 		id: "11",
+		periodId: "2026",
 		title: "Auxiliares de docencia",
 		description: "Numero de auxiliares de docencia por tipo y sexo",
 		module: FormModules.scholarships,
@@ -500,6 +511,7 @@ export const scholarshipFormTemplates: FormTemplateDef[] = [
 	},
 	{
 		id: "12",
+		periodId: "2026",
 		title: "Beca Investigación",
 		description: "Numero de beca investigacion por tipo y sexo",
 		module: FormModules.scholarships,
@@ -532,6 +544,7 @@ export const scholarshipFormTemplates: FormTemplateDef[] = [
 	},
 	{
 		id: "13",
+		periodId: "2026",
 		title: "Beca Graduacion",
 		description: "Numero de beca graduacion por tipo y sexo",
 		module: FormModules.scholarships,
@@ -564,6 +577,7 @@ export const scholarshipFormTemplates: FormTemplateDef[] = [
 	},
 	{
 		id: "14",
+		periodId: "2026",
 		title: "Beca Trabajo",
 		description: "Numero de beca trabajo por tipo y sexo",
 		module: FormModules.scholarships,

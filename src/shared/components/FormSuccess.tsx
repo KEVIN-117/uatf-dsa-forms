@@ -75,7 +75,6 @@ export function FormSuccess({
 					<SuccessCard />
 				</div>
 			);
-		case "readonly":
 		default:
 			return (
 				<ReadonlyFlow
@@ -88,7 +87,6 @@ export function FormSuccess({
 			);
 	}
 }
-
 
 interface FlowProps {
 	isLoading: boolean;
@@ -155,7 +153,6 @@ function CompletionFlow({
 	);
 }
 
-
 function ReadonlyFlow({
 	isLoading,
 	groups,
@@ -184,7 +181,6 @@ function ReadonlyFlow({
 		</div>
 	);
 }
-
 
 function SummarySection({
 	isLoading,

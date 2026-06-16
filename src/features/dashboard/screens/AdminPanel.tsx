@@ -3,6 +3,7 @@ import {
 	ArrowRight,
 	Award,
 	Building2,
+	Calendar,
 	DoorOpen,
 	GraduationCap,
 	Settings,
@@ -58,6 +59,15 @@ const adminLinks = [
 		gradient: "from-rose-500/15 to-rose-600/5",
 		accent: "text-rose-600 dark:text-rose-400",
 		iconBg: "bg-rose-500/10 dark:bg-rose-400/10",
+	},
+	{
+		title: "Períodos Académicos",
+		description: "Gestionar períodos y gestiones anuales",
+		href: "/dashboard/periods",
+		icon: Calendar,
+		gradient: "from-sky-500/15 to-sky-600/5",
+		accent: "text-sky-600 dark:text-sky-400",
+		iconBg: "bg-sky-500/10 dark:bg-sky-400/10",
 	},
 ];
 

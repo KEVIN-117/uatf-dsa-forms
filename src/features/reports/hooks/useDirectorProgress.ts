@@ -25,9 +25,10 @@ export const useDirectorProgress = () => {
 			}
 
 			return {
-				completedSteps: [],
+				completedSteps: [] as number[],
+				periodId: "",
 				updatedAt: serverTimestamp(),
-			};
+			} as unknown as DirectorProgressDef;
 		},
 		enabled: !!user,
 	});

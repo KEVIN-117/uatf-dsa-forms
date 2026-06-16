@@ -81,31 +81,35 @@ service cloud.firestore {
     
     match /student/{responseId} {
       allow read, write: if isAdmin();
-      allow create: if isDirector();
+      allow create: if isDirector() && request.resource.data.programId == request.auth.token.programId;
       // Un director solo puede ver respuestas de su propia carrera (programId)
       allow read: if isDirector() && (resource == null || resource.data.programId == request.auth.token.programId);
-      allow update, delete: if false; 
+      allow update: if isDirector() && resource.data.programId == request.auth.token.programId && request.resource.data.programId == request.auth.token.programId;
+      allow delete: if isDirector() && resource.data.programId == request.auth.token.programId;
     }
     
     match /teacher/{responseId} {
       allow read, write: if isAdmin();
-      allow create: if isDirector();
+      allow create: if isDirector() && request.resource.data.programId == request.auth.token.programId;
       allow read: if isDirector() && (resource == null || resource.data.programId == request.auth.token.programId);
-      allow update, delete: if false; 
+      allow update: if isDirector() && resource.data.programId == request.auth.token.programId && request.resource.data.programId == request.auth.token.programId;
+      allow delete: if isDirector() && resource.data.programId == request.auth.token.programId;
     }
     
     match /graduate/{responseId} {
       allow read, write: if isAdmin();
-      allow create: if isDirector();
+      allow create: if isDirector() && request.resource.data.programId == request.auth.token.programId;
       allow read: if isDirector() && (resource == null || resource.data.programId == request.auth.token.programId);
-      allow update, delete: if false; 
+      allow update: if isDirector() && resource.data.programId == request.auth.token.programId && request.resource.data.programId == request.auth.token.programId;
+      allow delete: if isDirector() && resource.data.programId == request.auth.token.programId;
     }
 
     match /scholarships/{responseId} {
       allow read, write: if isAdmin();
-      allow create: if isDirector();
+      allow create: if isDirector() && request.resource.data.programId == request.auth.token.programId;
       allow read: if isDirector() && (resource == null || resource.data.programId == request.auth.token.programId);
-      allow update, delete: if false; 
+      allow update: if isDirector() && resource.data.programId == request.auth.token.programId && request.resource.data.programId == request.auth.token.programId;
+      allow delete: if isDirector() && resource.data.programId == request.auth.token.programId;
     }
 
     // 4. ESTADO DE PROGRESO / DIRECTOR PROGRESS
@@ -114,7 +118,12 @@ service cloud.firestore {
     }
 
     match /director_progress/{progressId} {
-      allow read, write: if isAdmin() || (isDirector() && request.auth.uid == progressId);
+      allow read, write: if isAdmin() || (isDirector() && request.auth.token.email == progressId);
+    }
+
+    match /periods/{id} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
     }
 
     // ==========================================

@@ -12,7 +12,7 @@ const VALID_MODULES = new Set<string>(Object.values(FormModules));
 
 export const Route = createFileRoute("/dashboard/reports/$templateId/$module")({
 	component: RouteComponent,
-	beforeLoad: () => requireRole([Role.ADMIN]),
+	beforeLoad: () => requireRole([Role.ADMIN, Role.DIRECTOR]),
 	notFoundComponent: () => (
 		<RouteNotFoundState scope="resultados de reportes" />
 	),
