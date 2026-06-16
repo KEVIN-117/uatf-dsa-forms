@@ -100,6 +100,15 @@ export function PeriodsCrud() {
 				: null;
 			const end = form.endDate ? new Date(`${form.endDate}T23:59:59`) : null;
 
+			if (start && end && start > end) {
+				Toast({
+					title: "Rango de fechas inválido",
+					type: "error",
+					message: "La fecha de inicio no puede ser posterior a la fecha de fin.",
+				});
+				return;
+			}
+
 			const periodData = {
 				id: form.id.trim(),
 				name: form.name.trim(),
