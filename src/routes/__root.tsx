@@ -6,6 +6,7 @@ import {
 	Scripts,
 } from "@tanstack/react-router";
 import { DashboardSidebar } from "#/app/layout/DashboardSidebar";
+import { PeriodProvider } from "#/app/providers/period-provider";
 import { AuthProvider } from "#/features/auth/providers/AuthProvider";
 import { DirectorProfileGate } from "#/features/director-profile/components/DirectorProfileGate";
 import {
@@ -57,18 +58,20 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<body className="font-sans antialiased wrap-anywhere selection:bg-[rgba(79,184,178,0.24)]">
 				<TooltipProvider delayDuration={0}>
 					<AuthProvider>
-						<SidebarProvider className="bg-sidebar">
-							<DashboardSidebar />
-							<div className="h-svh overflow-hidden lg:p-2 w-full">
-								<div className="lg:border lg:rounded-md overflow-hidden flex flex-col h-full w-full bg-background">
-									<main className="w-full flex-1 overflow-auto p-1">
-										{children}
-									</main>
-									<Toaster />
+						<PeriodProvider>
+							<SidebarProvider className="bg-sidebar">
+								<DashboardSidebar />
+								<div className="h-svh overflow-hidden lg:p-2 w-full">
+									<div className="lg:border lg:rounded-md overflow-hidden flex flex-col h-full w-full bg-background">
+										<main className="w-full flex-1 overflow-auto p-1">
+											{children}
+										</main>
+										<Toaster />
+									</div>
 								</div>
-							</div>
-						</SidebarProvider>
-						<DirectorProfileGate />
+							</SidebarProvider>
+							<DirectorProfileGate />
+						</PeriodProvider>
 					</AuthProvider>
 				</TooltipProvider>
 				<Scripts />

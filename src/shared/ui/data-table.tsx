@@ -252,14 +252,10 @@ export function DataTable<TData, TValue>({
 															</div>
 														) : null}
 														{header.column.columnDef.header === "Estado" && (
-															<>
-																{
-																	<StatusFilter
-																		key={header.id}
-																		column={header.column}
-																	/>
-																}
-															</>
+															<StatusFilter
+																key={header.id}
+																column={header.column}
+															/>
 														)}
 													</div>
 												)}

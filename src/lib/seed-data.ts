@@ -8,10 +8,30 @@ import type {
 	DirectorSeedRaw,
 	GraduationModality,
 	Modality,
+	PeriodType,
 	ScholarshipsType,
 	TeachingCategory,
 	Workload,
 } from "./seed-types";
+
+export const periods: PeriodType[] = [
+	{
+		id: "2025",
+		name: "Gestion Academica 2025",
+		isActive: false,
+		isClosed: true,
+		startDate: new Date("2025-01-01"),
+		endDate: new Date("2025-12-31"),
+	},
+	{
+		id: "2026",
+		name: "Gestion Academica 2026",
+		isActive: true,
+		isClosed: false,
+		startDate: new Date("2026-01-01"),
+		endDate: new Date("2026-12-31"),
+	},
+];
 
 export const workloads: Workload[] = [
 	{
@@ -3599,12 +3619,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const isProd = process.env.NODE_ENV === "production";
-const directorsRawPath = path.resolve(__dirname, "lista_directores_2026_con_emails.json");
+const directorsRawPath = path.resolve(
+	__dirname,
+	"lista_directores_2026_con_emails.json",
+);
 
 let directorsRaw;
 if (isProd) {
 	if (!fs.existsSync(directorsRawPath)) {
-		throw new Error("❌ Error fatal: Falta el archivo 'lista_directores_2026_con_emails.json' requerido para el entorno de producción.");
+		throw new Error(
+			"❌ Error fatal: Falta el archivo 'lista_directores_2026_con_emails.json' requerido para el entorno de producción.",
+		);
 	}
 	directorsRaw = JSON.parse(fs.readFileSync(directorsRawPath, "utf-8"));
 } else {

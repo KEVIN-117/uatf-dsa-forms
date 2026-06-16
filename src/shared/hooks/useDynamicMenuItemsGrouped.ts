@@ -125,11 +125,18 @@ export const useDynamicMenuItemsGrouped = (): MenuItemGroup[] => {
 export const useDynamicResultsMenuItemsGrouped = (): MenuItemGroup[] => {
 	const templatesQuery = useAllResponses();
 	const { data: allFormTemplates } = useFormTemplates();
+	const { userRole, user } = useAuth();
 
 	const menuGroups = useMemo(() => {
 		if (!templatesQuery.data) return [];
 
-		const groupedData = templatesQuery.data.reduce(
+		const responsesList = templatesQuery.data;
+		const filteredResponses =
+			userRole === "director"
+				? responsesList.filter((r) => r.submittedBy === user?.email)
+				: responsesList;
+
+		const groupedData = filteredResponses.reduce(
 			(acc, response) => {
 				const mod = response.module;
 				if (!acc[mod]) acc[mod] = [];
@@ -173,7 +180,7 @@ export const useDynamicResultsMenuItemsGrouped = (): MenuItemGroup[] => {
 			},
 		);
 		return menuArray;
-	}, [templatesQuery.data, allFormTemplates]);
+	}, [templatesQuery.data, allFormTemplates, user?.email, userRole]);
 
 	return menuGroups;
 };

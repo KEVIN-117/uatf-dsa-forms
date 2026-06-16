@@ -19,6 +19,7 @@ import { Route as DemoStorybookRouteImport } from './routes/demo/storybook'
 import { Route as DemoFormIdRouteImport } from './routes/demo/$formId'
 import { Route as DashboardTableRouteImport } from './routes/dashboard/table'
 import { Route as DashboardProgramsRouteImport } from './routes/dashboard/programs'
+import { Route as DashboardPeriodsRouteImport } from './routes/dashboard/periods'
 import { Route as DashboardModalitiesRouteImport } from './routes/dashboard/modalities'
 import { Route as DashboardGraduationModalitiesRouteImport } from './routes/dashboard/graduation-modalities'
 import { Route as DashboardFormBuilderRouteImport } from './routes/dashboard/form-builder'
@@ -79,6 +80,11 @@ const DashboardProgramsRoute = DashboardProgramsRouteImport.update({
   path: '/dashboard/programs',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardPeriodsRoute = DashboardPeriodsRouteImport.update({
+  id: '/dashboard/periods',
+  path: '/dashboard/periods',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardModalitiesRoute = DashboardModalitiesRouteImport.update({
   id: '/dashboard/modalities',
   path: '/dashboard/modalities',
@@ -137,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/form-builder': typeof DashboardFormBuilderRoute
   '/dashboard/graduation-modalities': typeof DashboardGraduationModalitiesRoute
   '/dashboard/modalities': typeof DashboardModalitiesRoute
+  '/dashboard/periods': typeof DashboardPeriodsRoute
   '/dashboard/programs': typeof DashboardProgramsRoute
   '/dashboard/table': typeof DashboardTableRoute
   '/demo/$formId': typeof DemoFormIdRoute
@@ -158,6 +165,7 @@ export interface FileRoutesByTo {
   '/dashboard/form-builder': typeof DashboardFormBuilderRoute
   '/dashboard/graduation-modalities': typeof DashboardGraduationModalitiesRoute
   '/dashboard/modalities': typeof DashboardModalitiesRoute
+  '/dashboard/periods': typeof DashboardPeriodsRoute
   '/dashboard/programs': typeof DashboardProgramsRoute
   '/dashboard/table': typeof DashboardTableRoute
   '/demo/$formId': typeof DemoFormIdRoute
@@ -180,6 +188,7 @@ export interface FileRoutesById {
   '/dashboard/form-builder': typeof DashboardFormBuilderRoute
   '/dashboard/graduation-modalities': typeof DashboardGraduationModalitiesRoute
   '/dashboard/modalities': typeof DashboardModalitiesRoute
+  '/dashboard/periods': typeof DashboardPeriodsRoute
   '/dashboard/programs': typeof DashboardProgramsRoute
   '/dashboard/table': typeof DashboardTableRoute
   '/demo/$formId': typeof DemoFormIdRoute
@@ -203,6 +212,7 @@ export interface FileRouteTypes {
     | '/dashboard/form-builder'
     | '/dashboard/graduation-modalities'
     | '/dashboard/modalities'
+    | '/dashboard/periods'
     | '/dashboard/programs'
     | '/dashboard/table'
     | '/demo/$formId'
@@ -224,6 +234,7 @@ export interface FileRouteTypes {
     | '/dashboard/form-builder'
     | '/dashboard/graduation-modalities'
     | '/dashboard/modalities'
+    | '/dashboard/periods'
     | '/dashboard/programs'
     | '/dashboard/table'
     | '/demo/$formId'
@@ -245,6 +256,7 @@ export interface FileRouteTypes {
     | '/dashboard/form-builder'
     | '/dashboard/graduation-modalities'
     | '/dashboard/modalities'
+    | '/dashboard/periods'
     | '/dashboard/programs'
     | '/dashboard/table'
     | '/demo/$formId'
@@ -267,6 +279,7 @@ export interface RootRouteChildren {
   DashboardFormBuilderRoute: typeof DashboardFormBuilderRoute
   DashboardGraduationModalitiesRoute: typeof DashboardGraduationModalitiesRoute
   DashboardModalitiesRoute: typeof DashboardModalitiesRoute
+  DashboardPeriodsRoute: typeof DashboardPeriodsRoute
   DashboardProgramsRoute: typeof DashboardProgramsRoute
   DashboardTableRoute: typeof DashboardTableRoute
   DemoFormIdRoute: typeof DemoFormIdRoute
@@ -351,6 +364,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardProgramsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/periods': {
+      id: '/dashboard/periods'
+      path: '/dashboard/periods'
+      fullPath: '/dashboard/periods'
+      preLoaderRoute: typeof DashboardPeriodsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/modalities': {
       id: '/dashboard/modalities'
       path: '/dashboard/modalities'
@@ -427,6 +447,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardFormBuilderRoute: DashboardFormBuilderRoute,
   DashboardGraduationModalitiesRoute: DashboardGraduationModalitiesRoute,
   DashboardModalitiesRoute: DashboardModalitiesRoute,
+  DashboardPeriodsRoute: DashboardPeriodsRoute,
   DashboardProgramsRoute: DashboardProgramsRoute,
   DashboardTableRoute: DashboardTableRoute,
   DemoFormIdRoute: DemoFormIdRoute,

@@ -11,6 +11,7 @@ import {
 	setDoc,
 } from "firebase/firestore";
 import { useEffect, useMemo } from "react";
+import { usePeriodState } from "#/app/providers/period-provider";
 import { db } from "#/shared/lib/firebase";
 import type { FormTemplateDef } from "../types/dynamic-form";
 
@@ -21,6 +22,7 @@ const createFormTemplatesQuery = () =>
 
 export const useFormTemplates = () => {
 	const queryClient = useQueryClient();
+	const { selectedPeriodId } = usePeriodState();
 
 	useEffect(() => {
 		const unsubscribe = onSnapshot(
@@ -40,7 +42,7 @@ export const useFormTemplates = () => {
 		return () => unsubscribe();
 	}, [queryClient]);
 
-	return useQuery({
+	const queryResult = useQuery({
 		queryKey: formTemplatesQueryKey,
 		queryFn: async () => {
 			const snapshot = await getDocs(createFormTemplatesQuery());
@@ -50,6 +52,17 @@ export const useFormTemplates = () => {
 		},
 		staleTime: Infinity,
 	});
+
+	const filteredData = useMemo(() => {
+		if (!queryResult.data) return [];
+		return queryResult.data.filter((t) => t.periodId === selectedPeriodId);
+	}, [queryResult.data, selectedPeriodId]);
+
+	return {
+		...queryResult,
+		allTemplates: queryResult.data || [],
+		data: filteredData,
+	};
 };
 
 export const useAddFormTemplate = () => {
@@ -97,8 +110,8 @@ export const useUpsertFormTemplate = () => {
 export const useFormTemplateById = (id: string) => {
 	const templatesQuery = useFormTemplates();
 	const template = useMemo(
-		() => templatesQuery.data?.find((candidate) => candidate.id === id),
-		[templatesQuery.data, id],
+		() => templatesQuery.allTemplates?.find((candidate) => candidate.id === id),
+		[templatesQuery.allTemplates, id],
 	);
 
 	return {
@@ -124,10 +137,10 @@ export const useFormTemplateByModuleAndId = (module: string, id: string) => {
 	const templatesQuery = useFormTemplates();
 	const template = useMemo(
 		() =>
-			templatesQuery.data?.find(
+			templatesQuery.allTemplates?.find(
 				(candidate) => candidate.module === module && candidate.id === id,
 			),
-		[templatesQuery.data, module, id],
+		[templatesQuery.allTemplates, module, id],
 	);
 
 	return {

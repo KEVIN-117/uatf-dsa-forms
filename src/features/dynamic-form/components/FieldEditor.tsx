@@ -67,6 +67,7 @@ export function FieldEditor({
 	onMoveUp,
 	onMoveDown,
 	onClone,
+	disabled = false,
 }: {
 	field: FormFieldDef;
 	index: number;
@@ -76,6 +77,7 @@ export function FieldEditor({
 	onMoveUp: () => void;
 	onMoveDown: () => void;
 	onClone: () => void;
+	disabled?: boolean;
 }) {
 	const optionsText = useMemo(
 		() => serializeOptions(field.options ?? []),
@@ -122,7 +124,7 @@ export function FieldEditor({
 						variant="outline"
 						size="sm"
 						onClick={onMoveUp}
-						disabled={index === 0}
+						disabled={disabled || index === 0}
 					>
 						<ArrowUp className="size-4" />
 					</Button>
@@ -131,11 +133,17 @@ export function FieldEditor({
 						variant="outline"
 						size="sm"
 						onClick={onMoveDown}
-						disabled={index === total - 1}
+						disabled={disabled || index === total - 1}
 					>
 						<ArrowDown className="size-4" />
 					</Button>
-					<Button type="button" variant="outline" size="sm" onClick={onClone}>
+					<Button
+						type="button"
+						variant="outline"
+						size="sm"
+						onClick={onClone}
+						disabled={disabled}
+					>
 						<Copy className="size-4" />
 					</Button>
 					<Button
@@ -143,6 +151,7 @@ export function FieldEditor({
 						variant="destructive"
 						size="sm"
 						onClick={onDelete}
+						disabled={disabled}
 					>
 						<Trash2 className="size-4" />
 					</Button>
@@ -156,6 +165,7 @@ export function FieldEditor({
 						value={field.id}
 						onChange={(event) => onChange({ id: event.target.value })}
 						placeholder="field_1"
+						disabled={disabled}
 					/>
 				</div>
 
@@ -165,6 +175,7 @@ export function FieldEditor({
 						value={field.label}
 						onChange={(event) => onChange({ label: event.target.value })}
 						placeholder="Nombre del campo"
+						disabled={disabled}
 					/>
 				</div>
 
@@ -172,6 +183,7 @@ export function FieldEditor({
 					<Label>Tipo</Label>
 					<Select
 						value={field.type}
+						disabled={disabled}
 						onValueChange={(value) => {
 							const nextType = value as FieldType;
 							onChange({
@@ -200,6 +212,7 @@ export function FieldEditor({
 						value={field.placeholder ?? ""}
 						onChange={(event) => onChange({ placeholder: event.target.value })}
 						placeholder="Texto de ayuda"
+						disabled={disabled}
 					/>
 				</div>
 
@@ -212,6 +225,7 @@ export function FieldEditor({
 					</div>
 					<Switch
 						checked={!!field.required}
+						disabled={disabled}
 						onCheckedChange={(checked) => onChange({ required: checked })}
 					/>
 				</div>
@@ -229,6 +243,7 @@ export function FieldEditor({
 							})
 						}
 						placeholder="campo_a, campo_b"
+						disabled={disabled}
 					/>
 				</div>
 			</div>
@@ -248,7 +263,7 @@ export function FieldEditor({
 									size="sm"
 									className="text-xs"
 									key={m.collection}
-									disabled={loadingCollection !== null} // Deshabilita botones mientras carga
+									disabled={disabled || loadingCollection !== null} // Deshabilita botones mientras carga
 									onClick={() => handleLoadDefaultOptions(m.collection)}
 								>
 									{isLoading && (
@@ -273,6 +288,7 @@ export function FieldEditor({
 								onChange({ options: parseOptions(event.target.value) })
 							}
 							placeholder={"Etiqueta 1 | valor1\nEtiqueta 2 | valor2"}
+							disabled={disabled}
 						/>
 						<p className="text-xs text-muted-foreground">
 							Usa una linea por opcion con el formato{" "}

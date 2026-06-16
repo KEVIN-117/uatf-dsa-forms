@@ -75,3 +75,22 @@ export function ToastPromise<T>({
 		duration: duration,
 	});
 }
+
+export function ToastConfirm({
+	message,
+	description,
+	duration,
+	closeButton,
+	position,
+	style,
+	className,
+}: ToastProps) {
+	return toast.promise(new Promise((resolve) => resolve(message)), {
+		description: description ?? message,
+		duration,
+		closeButton,
+		position,
+		style: { ...toastStyles.warning, ...style },
+		className,
+	});
+}
