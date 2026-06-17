@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { onAuthStateChanged } from "firebase/auth";
 import {
 	collection,
 	deleteDoc,
@@ -11,33 +12,52 @@ import {
 	updateDoc,
 } from "firebase/firestore";
 import { useEffect } from "react";
-import { db } from "#/shared/lib/firebase";
+import { auth, db } from "#/shared/lib/firebase";
 import type { Program } from "#/shared/types";
 
 export const usePrograms = () => {
 	const queryClient = useQueryClient();
 
 	useEffect(() => {
-		const programsQuery = query(
-			collection(db, "programs"),
-			orderBy("name", "asc"),
-		);
+		let unsubscribeFirestore: (() => void) | null = null;
 
-		const unsubscribe = onSnapshot(
-			programsQuery,
-			(snapshot) => {
-				const programs = snapshot.docs.map((docSnap) => ({
-					docId: docSnap.id,
-					...docSnap.data(),
-				})) as Program[];
-				queryClient.setQueryData(["programs"], programs);
-			},
-			(error) => {
-				console.error("Error escuchando programas:", error);
-			},
-		);
+		const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+			if (user) {
+				if (unsubscribeFirestore) return;
 
-		return () => unsubscribe();
+				const programsQuery = query(
+					collection(db, "programs"),
+					orderBy("name", "asc"),
+				);
+
+				unsubscribeFirestore = onSnapshot(
+					programsQuery,
+					(snapshot) => {
+						const programs = snapshot.docs.map((docSnap) => ({
+							docId: docSnap.id,
+							...docSnap.data(),
+						})) as Program[];
+						queryClient.setQueryData(["programs"], programs);
+					},
+					(error) => {
+						console.error("Error escuchando programas:", error);
+					},
+				);
+			} else {
+				if (unsubscribeFirestore) {
+					unsubscribeFirestore();
+					unsubscribeFirestore = null;
+				}
+				queryClient.setQueryData(["programs"], []);
+			}
+		});
+
+		return () => {
+			unsubscribeAuth();
+			if (unsubscribeFirestore) {
+				unsubscribeFirestore();
+			}
+		};
 	}, [queryClient]);
 
 	return useQuery({

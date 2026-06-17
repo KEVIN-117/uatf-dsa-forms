@@ -610,8 +610,8 @@ export async function runSeed() {
 		await seedScholarshipsTypes();
 		await seedFormFields();
 		if (process.env.NODE_ENV !== "production") {
-			await seedFormResponses();
-			await seedSpecificDirectorsData();
+			// await seedFormResponses();
+			// await seedSpecificDirectorsData();
 		}
 
 		console.log("🎉 Proceso de siembra finalizado con éxito.");

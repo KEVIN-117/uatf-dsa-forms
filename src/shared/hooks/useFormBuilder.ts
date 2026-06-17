@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { onAuthStateChanged } from "firebase/auth";
 import {
 	addDoc,
 	collection,
@@ -12,7 +13,7 @@ import {
 } from "firebase/firestore";
 import { useEffect, useMemo } from "react";
 import { usePeriodState } from "#/app/providers/period-provider";
-import { db } from "#/shared/lib/firebase";
+import { auth, db } from "#/shared/lib/firebase";
 import type { FormTemplateDef } from "../types/dynamic-form";
 
 const formTemplatesQueryKey = ["formTemplates"] as const;
@@ -25,21 +26,40 @@ export const useFormTemplates = () => {
 	const { selectedPeriodId } = usePeriodState();
 
 	useEffect(() => {
-		const unsubscribe = onSnapshot(
-			createFormTemplatesQuery(),
-			(snapshot) => {
-				const templates = snapshot.docs.map((doc) => ({
-					...doc.data(),
-				})) as FormTemplateDef[];
+		let unsubscribeFirestore: (() => void) | null = null;
 
-				queryClient.setQueryData(formTemplatesQueryKey, templates);
-			},
-			(error) => {
-				console.error("Error escuchando plantillas de formularios:", error);
-			},
-		);
+		const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+			if (user) {
+				if (unsubscribeFirestore) return;
 
-		return () => unsubscribe();
+				unsubscribeFirestore = onSnapshot(
+					createFormTemplatesQuery(),
+					(snapshot) => {
+						const templates = snapshot.docs.map((doc) => ({
+							...doc.data(),
+						})) as FormTemplateDef[];
+
+						queryClient.setQueryData(formTemplatesQueryKey, templates);
+					},
+					(error) => {
+						console.error("Error escuchando plantillas de formularios:", error);
+					},
+				);
+			} else {
+				if (unsubscribeFirestore) {
+					unsubscribeFirestore();
+					unsubscribeFirestore = null;
+				}
+				queryClient.setQueryData(formTemplatesQueryKey, []);
+			}
+		});
+
+		return () => {
+			unsubscribeAuth();
+			if (unsubscribeFirestore) {
+				unsubscribeFirestore();
+			}
+		};
 	}, [queryClient]);
 
 	const queryResult = useQuery({

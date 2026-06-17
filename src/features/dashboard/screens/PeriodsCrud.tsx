@@ -104,7 +104,8 @@ export function PeriodsCrud() {
 				Toast({
 					title: "Rango de fechas inválido",
 					type: "error",
-					message: "La fecha de inicio no puede ser posterior a la fecha de fin.",
+					message:
+						"La fecha de inicio no puede ser posterior a la fecha de fin.",
 				});
 				return;
 			}

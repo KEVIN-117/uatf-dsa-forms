@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { onAuthStateChanged } from "firebase/auth";
 import {
 	collection,
 	deleteDoc,
@@ -14,31 +15,50 @@ import {
 	writeBatch,
 } from "firebase/firestore";
 import { useEffect } from "react";
-import { db } from "#/shared/lib/firebase";
+import { auth, db } from "#/shared/lib/firebase";
 import type { Period } from "#/shared/types";
 
 export const usePeriods = () => {
 	const queryClient = useQueryClient();
 
 	useEffect(() => {
-		const q = query(collection(db, "periods"), orderBy("id", "desc"));
+		let unsubscribeFirestore: (() => void) | null = null;
 
-		const unsubscribe = onSnapshot(
-			q,
-			(snapshot) => {
-				const periods = snapshot.docs.map((docSnap) => ({
-					docId: docSnap.id,
-					...docSnap.data(),
-				})) as Period[];
+		const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+			if (user) {
+				if (unsubscribeFirestore) return;
 
-				queryClient.setQueryData(["periods"], periods);
-			},
-			(error) => {
-				console.error("Error escuchando periodos:", error);
-			},
-		);
+				const q = query(collection(db, "periods"), orderBy("id", "desc"));
 
-		return () => unsubscribe();
+				unsubscribeFirestore = onSnapshot(
+					q,
+					(snapshot) => {
+						const periods = snapshot.docs.map((docSnap) => ({
+							docId: docSnap.id,
+							...docSnap.data(),
+						})) as Period[];
+
+						queryClient.setQueryData(["periods"], periods);
+					},
+					(error) => {
+						console.error("Error escuchando periodos:", error);
+					},
+				);
+			} else {
+				if (unsubscribeFirestore) {
+					unsubscribeFirestore();
+					unsubscribeFirestore = null;
+				}
+				queryClient.setQueryData(["periods"], []);
+			}
+		});
+
+		return () => {
+			unsubscribeAuth();
+			if (unsubscribeFirestore) {
+				unsubscribeFirestore();
+			}
+		};
 	}, [queryClient]);
 
 	return useQuery({
