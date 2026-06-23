@@ -1,5 +1,5 @@
 import { notFound } from "@tanstack/react-router";
-import { DollarSignIcon, SaveAll } from "lucide-react";
+import { DollarSignIcon } from "lucide-react";
 import { usePeriodState } from "#/app/providers/period-provider";
 import { AlertDialogCustom } from "#/shared/components/Dialog";
 import { DynamicForm } from "#/shared/components/DynamicForm";
@@ -7,18 +7,20 @@ import { DynamicReportPageSkeleton } from "#/shared/components/DynamicReportPage
 import { DynamicReportPageState } from "#/shared/components/DynamicReportPageState";
 import { PageHeader } from "#/shared/components/PageHeader";
 import { useFormTemplateByModuleAndId } from "#/shared/hooks/useFormBuilder";
-import { Button } from "#/shared/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "#/shared/ui/card";
-import { DataTable } from "#/shared/ui/data-table";
-import { useOnEditTableActions } from "./BaseColumns";
-import { useBulkSubmission } from "./hooks/useBulkSubmission";
 import { useReportSubmission } from "./hooks/useReportSubmission";
+import { useSubmittedTotals } from "./hooks/useSubmittedModalidades";
 
 interface ScholarshipReportProps {
 	formId: string;
+	isEmbedded?: boolean;
+	onSuccess?: () => void;
 }
 
-export function ScholarshipReport({ formId }: ScholarshipReportProps) {
+export function ScholarshipReport({
+	formId,
+	isEmbedded = false,
+	onSuccess,
+}: ScholarshipReportProps) {
 	// 1. HOOK ZONE
 	const { isReadOnly } = usePeriodState();
 	const { template, isPending, isError, error } = useFormTemplateByModuleAndId(
@@ -36,27 +38,9 @@ export function ScholarshipReport({ formId }: ScholarshipReportProps) {
 		setIsDialogOpen: setIsConfirmDialogOpen,
 		resetForm: resetResponseForm,
 		setResetForm: setResetResponseForm,
-	} = useReportSubmission(formId, template);
-	const { actionColumns, editDataRef, removeDataRef } = useOnEditTableActions();
+	} = useReportSubmission(formId, template, onSuccess);
 
-	const {
-		columns,
-		data,
-		handleAddDataToMemory,
-		executeSubmitBulk,
-		isDialogOpen: dialogBulkState,
-		setIsDialogOpen: setIsDialogBulkState,
-		resetForm: resetBulkForm,
-		setResetForm: setResetBulkForm,
-		removeData,
-		editData,
-		cancelEdit,
-		editingIndex,
-		initialValues,
-	} = useBulkSubmission(formId, actionColumns, template);
-
-	editDataRef.current = editData;
-	removeDataRef.current = removeData;
+	const { data: crossStepLimits } = useSubmittedTotals("3", "student");
 
 	// 3. EARLY RETURNS
 	if (isPending) {
@@ -80,147 +64,30 @@ export function ScholarshipReport({ formId }: ScholarshipReportProps) {
 		throw notFound();
 	}
 
-	if (template.hasBulk) {
-		return (
-			<div className="w-full max-w-6xl mx-auto py-10" id="page-top">
-				<div className="mb-8">
-					<span className="text-xs font-bold uppercase tracking-widest text-primary/60">
-						Módulo: {template.module.replace("_", " ")}
-					</span>
-					<h1 className="text-3xl font-display font-bold mt-2">
-						Gestión de Reportes
-					</h1>
-				</div>
-
-				<PageHeader
-					icon={DollarSignIcon}
-					title={`Formulario: ${template.title}`}
-					description="Completa los campos requeridos para enviar el reporte."
-				/>
-
-				{!isReadOnly && (
-					<>
-						<DynamicForm
-							key={
-								editingId
-									? `response-edit-schol-${editingId}`
-									: `bulk-schol-${editingIndex ?? "new"}`
-							}
-							template={template!}
-							onSubmit={
-								editingId ? handleFormSubmitRequest : handleAddDataToMemory
-							}
-							className="grid grid-cols-1 md:grid-cols-2 gap-4"
-							submitLabel={
-								editingId
-									? "Guardar Cambios"
-									: editingIndex !== null
-										? "Actualizar registro"
-										: "Agregar a la lista"
-							}
-							resetForm={editingId ? resetResponseForm : resetBulkForm}
-							setResetForm={editingId ? setResetResponseForm : setResetBulkForm}
-							initialValues={editingId ? initialData : initialValues}
-							editMode={
-								editingId
-									? { type: "single", onCancel: handleCancelEdit }
-									: editingIndex !== null
-										? {
-												type: "bulk",
-												index: editingIndex,
-												onCancel: cancelEdit,
-											}
-										: { type: "none" }
-							}
-						/>
-
-						<div className="grid grid-cols-1 gap-8">
-							<div className="flex flex-col gap-4">
-								<Card className="shadow-sm border-border flex-1">
-									<CardHeader className="flex flex-row items-center justify-between">
-										<CardTitle className="text-lg">
-											Becarios por registrar ({data.length})
-										</CardTitle>
-									</CardHeader>
-									<CardContent className="p-4 sm:p-6">
-										{data.length === 0 ? (
-											<div className="h-40 flex items-center justify-center border-2 border-dashed rounded-lg text-muted-foreground">
-												No hay becarios en la lista. Llena el formulario para
-												comenzar.
-											</div>
-										) : (
-											<DataTable<Record<string, unknown>, unknown>
-												columns={columns}
-												data={data}
-												showColumnToggle
-											/>
-										)}
-									</CardContent>
-								</Card>
-
-								<div className="flex justify-end">
-									<Button
-										size="lg"
-										disabled={data.length === 0}
-										onClick={() => setIsDialogBulkState(true)}
-										className="w-full sm:w-auto font-bold"
-									>
-										<SaveAll className="mr-2 size-5" />
-										Finalizar y Enviar ({data.length}) Becarios
-									</Button>
-								</div>
-							</div>
-						</div>
-					</>
-				)}
-
-				<AlertDialogCustom
-					open={dialogBulkState}
-					onOpenChange={setIsDialogBulkState}
-					message="Confirmar envío"
-					description={`Estás a punto de enviar el formulario para el registro de Becas. Revisa que los datos sean correctos antes de continuar.`}
-					actionLabel="Enviar Reporte"
-					cancelLabel="Revisar de nuevo"
-					onConfirm={() => {
-						setIsDialogBulkState(false);
-						executeSubmitBulk();
-					}}
-					onCancel={() => {
-						setIsDialogBulkState(false);
-					}}
-				/>
-
-				<AlertDialogCustom
-					open={isConfirmDialogOpen}
-					onOpenChange={setIsConfirmDialogOpen}
-					message="Confirmar actualización"
-					description="Estás a punto de actualizar este registro. Revisa que los datos sean correctos antes de continuar."
-					actionLabel="Guardar Cambios"
-					cancelLabel="Revisar de nuevo"
-					onConfirm={confirmSubmit}
-					onCancel={cancelSubmit}
-				/>
-			</div>
-		);
-	}
-
 	// 4. MAIN RENDER (non-bulk)
 	return (
-		<div className="w-full max-w-6xl mx-auto py-10" id="page-top">
-			<div className="mb-8">
-				<span className="text-xs font-bold uppercase tracking-widest text-primary/60">
-					Módulo: {template.module.replace("_", " ")}
-				</span>
-				<h1 className="text-3xl font-display font-bold mt-2">
-					Gestión de Reportes
-				</h1>
-			</div>
+		<div
+			className={isEmbedded ? "space-y-6" : "w-full max-w-6xl mx-auto py-10"}
+			id="page-top"
+		>
+			{!isEmbedded && (
+				<>
+					<div className="mb-8">
+						<span className="text-xs font-bold uppercase tracking-widest text-primary/60">
+							Módulo: {template.module.replace("_", " ")}
+						</span>
+						<h1 className="text-3xl font-display font-bold mt-2">
+							Gestión de Reportes
+						</h1>
+					</div>
 
-			<PageHeader
-				icon={DollarSignIcon}
-				title={`Formulario: ${template.title}`}
-				description="Completa los campos requeridos para enviar el reporte."
-			/>
+					<PageHeader
+						icon={DollarSignIcon}
+						title={`Formulario: ${template.title}`}
+						description="Completa los campos requeridos para enviar el reporte."
+					/>
+				</>
+			)}
 
 			{!isReadOnly && (
 				<DynamicForm
@@ -237,6 +104,7 @@ export function ScholarshipReport({ formId }: ScholarshipReportProps) {
 							: { type: "none" }
 					}
 					submitLabel={editingId ? "Guardar Cambios" : "Enviar Reporte"}
+					crossStepLimits={crossStepLimits}
 				/>
 			)}
 

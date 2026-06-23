@@ -1,10 +1,24 @@
 import { useNavigate } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { BarChart3, FileSpreadsheet, Pencil, Trash2 } from "lucide-react";
+import { BarChart3, FileSpreadsheet, Pencil, Plus, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { usePeriodState } from "#/app/providers/period-provider";
 import { useProtectedRoute } from "#/features/auth/hooks/useProtectedRoute";
 import { useAuth } from "#/features/auth/providers/AuthProvider";
+import {
+	useProgramGraduationModalities,
+	useProgramModalities,
+} from "#/features/reference-data/hooks/useProgramModalities";
+import { GraduatesReport } from "#/features/reports/graduates";
+import { useDirectorProgress } from "#/features/reports/hooks/useDirectorProgress";
+import {
+	useSubmittedModalities,
+	useSubmittedResponseLimits,
+	useSubmittedTotals,
+} from "#/features/reports/hooks/useSubmittedModalidades";
+import { ScholarshipReport } from "#/features/reports/scholarship";
+import { StudentReport } from "#/features/reports/student";
+import { TeacherReport } from "#/features/reports/teacher";
 import { AlertDialogCustom } from "#/shared/components/Dialog";
 import { DynamicForm } from "#/shared/components/DynamicForm";
 import { InlineLoader } from "#/shared/components/InlineLoader";
@@ -17,12 +31,16 @@ import {
 	useGetResponses,
 	useUpdateFormResponse,
 } from "#/shared/hooks/useFormResponses";
-import type { FormResponseDef } from "#/shared/types/dynamic-form";
+import type {
+	FormResponseDef,
+	FormTemplateDef,
+} from "#/shared/types/dynamic-form";
 import { FormModules } from "#/shared/types/dynamic-form";
 import { Badge } from "#/shared/ui/badge";
 import { Button } from "#/shared/ui/button";
 import { Card, CardContent } from "#/shared/ui/card";
 import { DataTable } from "#/shared/ui/data-table";
+import { EntityFormSheet } from "#/shared/ui/entity-form-sheet";
 import {
 	Select,
 	SelectContent,
@@ -55,7 +73,7 @@ export function ResponsesPanel({
 }: ResponsePanelProps) {
 	// 1. HOOK ZONE
 	const { isAuthenticated } = useProtectedRoute();
-	const { userRole, user } = useAuth();
+	const { userRole, user, programId } = useAuth();
 	const { selectedPeriodId, isReadOnly } = usePeriodState();
 	const navigate = useNavigate();
 	const { template, allTemplates = [] } = useFormTemplateById(formId);
@@ -65,11 +83,151 @@ export function ResponsesPanel({
 	const updateMutation = useUpdateFormResponse();
 	const deleteMutation = useDeleteFormResponse();
 
+	// Creation sheet state
+	const [createSheetOpen, setCreateSheetOpen] = useState(false);
+
 	const [editingResponse, setEditingResponse] =
 		useState<FormResponseDef | null>(null);
 	const [resetEditForm, setResetEditForm] = useState(false);
 
 	const [deleteId, setDeleteId] = useState<string | null>(null);
+
+	// Modality & Progress hooks for template filtering
+	const progressQuery = useDirectorProgress();
+	const { data: allowedModalities } = useProgramModalities(programId ?? "");
+	const { data: allowedGraduationModalities } = useProgramGraduationModalities(
+		programId ?? "",
+	);
+
+	const previousTemplateId = useMemo(() => {
+		if (!template) return "";
+		const parts = template.id.split("-");
+		const stepNum = Number(parts[0]);
+		if (Number.isNaN(stepNum) || stepNum <= 1) return "";
+		const prevStep = stepNum - 1;
+		return parts.length > 1
+			? `${prevStep}-${parts.slice(1).join("-")}`
+			: String(prevStep);
+	}, [template]);
+
+	const { data: submittedModalities } = useSubmittedModalities(
+		previousTemplateId,
+		"student",
+	);
+
+	const { data: modalityLimits } = useSubmittedResponseLimits(
+		previousTemplateId,
+		module ?? "",
+	);
+
+	const crossStepSource = useMemo(() => {
+		if (!template) return null;
+		if (module === FormModules.student) {
+			if (template.step === 4) return { id: "2", module: "student" };
+			if (template.step === 5) return { id: "3", module: "student" };
+		}
+		if (module === FormModules.scholarships) {
+			return { id: "3", module: "student" };
+		}
+		return null;
+	}, [template, module]);
+
+	const { data: crossStepLimits } = useSubmittedTotals(
+		crossStepSource?.id ?? "",
+		crossStepSource?.module ?? "",
+	);
+
+	// Lock state checking for Directors
+	const completedSteps = progressQuery.data?.completedSteps || [];
+	const isStepLocked = useMemo(() => {
+		if (userRole !== "director" || !template || !allTemplates.length)
+			return false;
+
+		const allSortedTemplates = [...allTemplates].sort(
+			(a, b) => a.step - b.step,
+		);
+		const nextAvailableTemplate = allSortedTemplates.find(
+			(t) => !completedSteps.includes(t.step),
+		);
+		const currentActiveStep = nextAvailableTemplate
+			? nextAvailableTemplate.step
+			: Infinity;
+
+		return template.step > currentActiveStep;
+	}, [userRole, template, allTemplates, completedSteps]);
+
+	const filteredTemplate = useMemo(() => {
+		if (!template) return null;
+
+		if (module === FormModules.student) {
+			const isFollowUpForm = template.step > 1;
+			const modalityFilter = isFollowUpForm
+				? submittedModalities
+				: allowedModalities;
+
+			if (!modalityFilter || modalityFilter.length === 0) return template;
+
+			return {
+				...template,
+				fields: template.fields.map((field) => {
+					const isModalityField =
+						field.type === "select" &&
+						(field.name === "modalidad" ||
+							field.label.toLocaleLowerCase().includes("modalidad"));
+
+					if (isModalityField && field.options) {
+						return {
+							...field,
+							options: isFollowUpForm
+								? field.options.filter((opt) =>
+										modalityFilter.includes(String(opt.label)),
+									)
+								: field.options.filter((opt) =>
+										modalityFilter.includes(String(opt.value)),
+									),
+						};
+					}
+					return field;
+				}),
+			} as FormTemplateDef;
+		}
+
+		if (module === FormModules.graduate) {
+			if (
+				!allowedGraduationModalities ||
+				allowedGraduationModalities.length === 0
+			)
+				return template;
+
+			return {
+				...template,
+				fields: template.fields.map((field) => {
+					const isModalityField =
+						field.type === "select" &&
+						(field.name === "modalidad" ||
+							field.label.toLocaleLowerCase().includes("modalidad"));
+
+					if (isModalityField && field.options) {
+						return {
+							...field,
+							options: field.options.filter((option) =>
+								allowedGraduationModalities.includes(String(option.value)),
+							),
+						};
+					}
+					return field;
+				}),
+			} as FormTemplateDef;
+		}
+
+		return template;
+	}, [
+		template,
+		module,
+		allowedModalities,
+		submittedModalities,
+		allowedGraduationModalities,
+	]);
 
 	const handleUpdateResponse = async (
 		submittedData: Record<string, any>,
@@ -371,7 +529,23 @@ export function ResponsesPanel({
 						Exportar a Excel
 					</Button>
 				)}
+				{!isReadOnly && !isStepLocked && (
+					<Button
+						onClick={() => setCreateSheetOpen(true)}
+						className="font-semibold"
+					>
+						<Plus className="size-4 mr-2" />
+						Registrar Reporte
+					</Button>
+				)}
 			</div>
+
+			{isStepLocked && userRole === "director" && (
+				<div className="bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-lg p-4 text-sm font-medium animate-fade-up font-display">
+					Este paso de reporte está bloqueado porque aún no se han completado
+					los pasos anteriores en la gestión actual.
+				</div>
+			)}
 
 			{userRole === "administrator" && (
 				<Card className="glass-card animate-fade-up-delay-1">
@@ -449,7 +623,7 @@ export function ResponsesPanel({
 						</SheetHeader>
 						<div className="py-4">
 							<DynamicForm
-								template={template}
+								template={(filteredTemplate || template) as FormTemplateDef}
 								onSubmit={handleUpdateResponse}
 								resetForm={resetEditForm}
 								setResetForm={setResetEditForm}
@@ -459,10 +633,65 @@ export function ResponsesPanel({
 									onCancel: () => setEditingResponse(null),
 								}}
 								submitLabel="Guardar Cambios"
+								modalityLimits={modalityLimits}
+								crossStepLimits={crossStepLimits}
 							/>
 						</div>
 					</SheetContent>
 				</Sheet>
+			)}
+
+			{createSheetOpen && template && (
+				<EntityFormSheet
+					title={`Registrar Reporte: ${template.shortTitle || template.title}`}
+					description={`Módulo: ${template.module.toUpperCase()} • Ingresa los datos correspondientes.`}
+					open={createSheetOpen}
+					onOpenChange={setCreateSheetOpen}
+					className={
+						template.hasBulk
+							? "sm:max-w-[70vw] w-[95vw] md:w-[85vw] max-w-none!"
+							: "sm:max-w-xl w-[95vw]"
+					}
+				>
+					{(() => {
+						switch (module) {
+							case FormModules.student:
+								return (
+									<StudentReport
+										formId={formId}
+										isEmbedded
+										onSuccess={() => setCreateSheetOpen(false)}
+									/>
+								);
+							case FormModules.graduate:
+								return (
+									<GraduatesReport
+										formId={formId}
+										isEmbedded
+										onSuccess={() => setCreateSheetOpen(false)}
+									/>
+								);
+							case FormModules.teacher:
+								return (
+									<TeacherReport
+										formId={formId}
+										isEmbedded
+										onSuccess={() => setCreateSheetOpen(false)}
+									/>
+								);
+							case FormModules.scholarships:
+								return (
+									<ScholarshipReport
+										formId={formId}
+										isEmbedded
+										onSuccess={() => setCreateSheetOpen(false)}
+									/>
+								);
+							default:
+								return null;
+						}
+					})()}
+				</EntityFormSheet>
 			)}
 
 			<AlertDialogCustom

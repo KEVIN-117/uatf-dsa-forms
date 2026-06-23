@@ -1,6 +1,7 @@
 import { revalidateLogic, useForm, useStore } from "@tanstack/react-form";
 import { Loader2, Send, X } from "lucide-react";
 import { useEffect, useMemo } from "react";
+import { usePeriodById } from "#/features/reference-data/hooks/usePeriods";
 import type { ModalityLimits } from "#/features/reports/hooks/useSubmittedModalidades";
 import type {
 	FormFieldDef,
@@ -32,6 +33,7 @@ interface DynamicFormProps {
 	initialValues?: Record<string, unknown> | null;
 	editMode?: EditMode;
 	modalityLimits?: ModalityLimits;
+	crossStepLimits?: Record<string, number>;
 }
 
 export function DynamicForm({
@@ -44,7 +46,9 @@ export function DynamicForm({
 	initialValues,
 	editMode = { type: "none" },
 	modalityLimits,
+	crossStepLimits,
 }: DynamicFormProps) {
+	const period = usePeriodById(template.periodId);
 	const isEditing = editMode.type === "single";
 	// Compute defaultValues from initialValues when in edit mode,
 	// so the form mounts already pre-filled instead of relying on setFieldValue after mount
@@ -198,7 +202,7 @@ export function DynamicForm({
 
 	return (
 		<FormContainer
-			title={template.title}
+			title={`${template.title} - ${period?.id}`}
 			description={template.description || ""}
 		>
 			<form
@@ -241,6 +245,63 @@ export function DynamicForm({
 										if (Number.isFinite(numValue) && numValue > limit) {
 											return `El valor no puede ser mayor a ${limit} (límite del formulario anterior)`;
 										}
+									}
+								}
+								// Validación de límites cruzados entre pasos del mismo periodo
+								if (
+									fieldDef.type === "number" &&
+									value !== "" &&
+									crossStepLimits
+								) {
+									const maxVal = crossStepLimits[fieldDef.name];
+									if (maxVal !== undefined) {
+										const numValue = Number(value);
+										if (Number.isFinite(numValue) && numValue > maxVal) {
+											return `El valor no puede ser mayor a ${maxVal} (total registrado en el paso anterior de la gestión)`;
+										}
+									}
+								}
+								// Validación de celular (8 dígitos, empieza con 6 o 7)
+								if (
+									(fieldDef.name === "cel" ||
+										fieldDef.label.toLowerCase().includes("celular")) &&
+									value !== "" &&
+									value !== undefined &&
+									value !== null
+								) {
+									const strVal = String(value);
+									if (!/^[67]\d{7}$/.test(strVal)) {
+										return "El celular debe tener 8 dígitos y comenzar con 6 o 7";
+									}
+								}
+								// Validación de nombres y apellidos (letras y espacios)
+								if (
+									(fieldDef.name === "nombres" ||
+										fieldDef.name === "paterno" ||
+										fieldDef.name === "materno" ||
+										fieldDef.label.toLowerCase().includes("nombre") ||
+										fieldDef.label.toLowerCase().includes("apellido")) &&
+									value !== "" &&
+									value !== undefined &&
+									value !== null
+								) {
+									const strVal = String(value);
+									if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/.test(strVal)) {
+										return "Este campo sólo acepta letras y espacios";
+									}
+								}
+								// Validación de Carnet de Identidad (CI)
+								if (
+									(fieldDef.name === "ci" ||
+										fieldDef.label.toLowerCase().includes("carnet") ||
+										fieldDef.label.toLowerCase().includes("c.i.")) &&
+									value !== "" &&
+									value !== undefined &&
+									value !== null
+								) {
+									const strVal = String(value);
+									if (!/^\d+(?:[-\s][a-zA-Z0-9]+)?$/.test(strVal)) {
+										return "Formato inválido (ej: 1234567 o 1234567 PT)";
 									}
 								}
 								return undefined;

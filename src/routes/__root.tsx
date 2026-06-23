@@ -4,11 +4,11 @@ import {
 	HeadContent,
 	Outlet,
 	Scripts,
+	useLocation,
 } from "@tanstack/react-router";
 import { DashboardSidebar } from "#/app/layout/DashboardSidebar";
 import { PeriodProvider } from "#/app/providers/period-provider";
-import { AuthProvider } from "#/features/auth/providers/AuthProvider";
-import { DirectorProfileGate } from "#/features/director-profile/components/DirectorProfileGate";
+import { AuthProvider, useAuth } from "#/features/auth/providers/AuthProvider";
 import {
 	RouteErrorState,
 	RouteNotFoundState,
@@ -49,6 +49,34 @@ function RootComponent() {
 	);
 }
 
+function LayoutWrapper({ children }: { children: React.ReactNode }) {
+	const { isAuthenticated } = useAuth();
+	const location = useLocation();
+	const showSidebar =
+		isAuthenticated && !["/", "/auth/login"].includes(location.pathname);
+
+	if (showSidebar) {
+		return (
+			<SidebarProvider className="bg-sidebar">
+				<DashboardSidebar />
+				<div className="h-svh overflow-hidden lg:p-2 w-full">
+					<div className="lg:border lg:rounded-md overflow-hidden flex flex-col h-full w-full bg-background">
+						<main className="w-full flex-1 overflow-auto p-1">{children}</main>
+						<Toaster />
+					</div>
+				</div>
+			</SidebarProvider>
+		);
+	}
+
+	return (
+		<div className="h-svh overflow-hidden w-full flex flex-col bg-background">
+			<main className="w-full flex-1 overflow-auto">{children}</main>
+			<Toaster />
+		</div>
+	);
+}
+
 function RootDocument({ children }: { children: React.ReactNode }) {
 	return (
 		<html lang="en" suppressHydrationWarning>
@@ -59,18 +87,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<TooltipProvider delayDuration={0}>
 					<AuthProvider>
 						<PeriodProvider>
-							<SidebarProvider className="bg-sidebar">
-								<DashboardSidebar />
-								<div className="h-svh overflow-hidden lg:p-2 w-full">
-									<div className="lg:border lg:rounded-md overflow-hidden flex flex-col h-full w-full bg-background">
-										<main className="w-full flex-1 overflow-auto p-1">
-											{children}
-										</main>
-										<Toaster />
-									</div>
-								</div>
-							</SidebarProvider>
-							<DirectorProfileGate />
+							<LayoutWrapper>{children}</LayoutWrapper>
+							{/* <DirectorProfileGate /> */}
 						</PeriodProvider>
 					</AuthProvider>
 				</TooltipProvider>

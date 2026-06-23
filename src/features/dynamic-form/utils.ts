@@ -26,6 +26,7 @@ function createBlankTemplate(periodId = "", hasBulk = false): FormTemplateDef {
 		id: crypto.randomUUID(),
 		periodId,
 		title: "Nueva plantilla",
+		shortTitle: "Nueva plantilla",
 		description: "Describe el formulario aqui.",
 		module: FormModules.student,
 		isActive: true,

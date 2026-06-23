@@ -481,6 +481,21 @@ export default function FormBuilderPanel() {
 							</div>
 
 							<div className="space-y-2">
+								<Label htmlFor="template-shortTitle">
+									Título en menú (Corto)
+								</Label>
+								<Input
+									id="template-shortTitle"
+									value={draft.shortTitle ?? ""}
+									onChange={(event) =>
+										updateTemplate({ shortTitle: event.target.value })
+									}
+									placeholder="Ej. Post. Admitidos"
+									disabled={isReadOnly}
+								/>
+							</div>
+
+							<div className="space-y-2">
 								<Label htmlFor="template-description">Descripción</Label>
 								<Textarea
 									id="template-description"

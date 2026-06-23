@@ -7,7 +7,7 @@ import {
 import { requireRole } from "#/shared/lib/route-guards";
 import { Role } from "#/shared/types";
 
-export const Route = createFileRoute("/dashboard/dashboard")({
+export const Route = createFileRoute("/dashboard/")({
 	component: RouteComponent,
 	beforeLoad: () => requireRole([Role.ADMIN, Role.DIRECTOR]),
 	notFoundComponent: () => <RouteNotFoundState scope="dashboard" />,

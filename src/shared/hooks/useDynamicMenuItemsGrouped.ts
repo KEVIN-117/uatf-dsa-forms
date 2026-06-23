@@ -99,7 +99,7 @@ export const useDynamicMenuItemsGrouped = (): MenuItemGroup[] => {
 
 						return {
 							id: template.id,
-							name: template.title.replace(/_/g, " "),
+							name: template.shortTitle || template.title.replace(/_/g, " "),
 							icon: statusIcon,
 							href: isLocked ? "#" : `/${config.path}/${template.id}`,
 							isLocked,
@@ -123,53 +123,69 @@ export const useDynamicMenuItemsGrouped = (): MenuItemGroup[] => {
 };
 
 export const useDynamicResultsMenuItemsGrouped = (): MenuItemGroup[] => {
-	const templatesQuery = useAllResponses();
-	const { data: allFormTemplates } = useFormTemplates();
-	const { userRole, user } = useAuth();
+	const templatesQuery = useFormTemplates();
+	const progressQuery = useDirectorProgress();
+	const { userRole } = useAuth();
+	const isDirector = userRole === "director";
 
 	const menuGroups = useMemo(() => {
 		if (!templatesQuery.data) return [];
 
-		const responsesList = templatesQuery.data;
-		const filteredResponses =
-			userRole === "director"
-				? responsesList.filter((r) => r.submittedBy === user?.email)
-				: responsesList;
+		const completedSteps = isDirector
+			? progressQuery.data?.completedSteps || []
+			: [];
+		const allSortedTemplates = [...templatesQuery.data].sort(
+			(a, b) => a.step - b.step,
+		);
 
-		const groupedData = filteredResponses.reduce(
-			(acc, response) => {
-				const mod = response.module;
-				if (!acc[mod]) acc[mod] = [];
-				acc[mod].push(response);
+		const nextaAvailableTemplate = allSortedTemplates.find(
+			(t) => !completedSteps.includes(t.step),
+		);
+
+		const currentActiveStep = nextaAvailableTemplate
+			? nextaAvailableTemplate.step
+			: Infinity;
+
+		const groupedData = templatesQuery.data.reduce(
+			(acc, template) => {
+				const mod = template.module;
+				if (!acc[mod]) {
+					acc[mod] = [];
+				}
+				acc[mod].push(template);
 				return acc;
 			},
-			{} as Record<FormModules, FormResponseDef[]>,
+			{} as Record<FormModules, FormTemplateDef[]>,
 		);
 
 		const menuArray = Object.entries(groupedData).map(
-			([moduleKey, responses]) => {
+			([moduleKey, templates]) => {
 				const moduleEnum = moduleKey as FormModules;
 				const config = MODULE_CONFIG[moduleEnum];
+				const childrenItems: MenuItem[] = templates
+					.sort((a, b) => a.step - b.step)
+					.map((template) => {
+						const isCompleted = isDirector
+							? completedSteps.includes(template.step)
+							: false;
+						const isLocked = isDirector
+							? !isCompleted && template.step > currentActiveStep
+							: false;
+						let statusIcon = Quiz03Icon;
+						if (isDirector && isLocked) statusIcon = Lock;
+						if (isDirector && isCompleted) statusIcon = CheckCircle2;
 
-				const uniqueByTemplate = new Map<string, FormResponseDef>();
-				for (const resp of responses) {
-					if (!uniqueByTemplate.has(resp.templateId)) {
-						uniqueByTemplate.set(resp.templateId, resp);
-					}
-				}
-
-				const childrenItems: MenuItem[] = Array.from(
-					uniqueByTemplate.values(),
-				).map((response) => ({
-					id: response.templateId,
-					name:
-						allFormTemplates?.find((t) => t.id === response.templateId)
-							?.title ?? "sin titulo",
-					icon: Quiz03Icon,
-					href: `/dashboard/reports/${response.templateId}/${moduleEnum}`,
-					isLocked: false,
-					isCompleted: true,
-				}));
+						return {
+							id: template.id,
+							name: template.shortTitle || template.title.replace(/_/g, " "),
+							icon: statusIcon,
+							href: isLocked
+								? "#"
+								: `/dashboard/reports/${template.id}/${moduleEnum}`,
+							isLocked,
+							isCompleted,
+						};
+					});
 
 				return {
 					id: config.path,
@@ -179,8 +195,9 @@ export const useDynamicResultsMenuItemsGrouped = (): MenuItemGroup[] => {
 				} as MenuItemGroup;
 			},
 		);
+
 		return menuArray;
-	}, [templatesQuery.data, allFormTemplates, user?.email, userRole]);
+	}, [templatesQuery.data, progressQuery.data, isDirector]);
 
 	return menuGroups;
 };

@@ -1,5 +1,5 @@
 import { notFound } from "@tanstack/react-router";
-import { SaveAll, User } from "lucide-react";
+import { User } from "lucide-react";
 import { useMemo } from "react";
 import { usePeriodState } from "#/app/providers/period-provider";
 import { AlertDialogCustom } from "#/shared/components/Dialog";
@@ -9,24 +9,26 @@ import { DynamicReportPageState } from "#/shared/components/DynamicReportPageSta
 import { PageHeader } from "#/shared/components/PageHeader";
 import { useFormTemplateByModuleAndId } from "#/shared/hooks/useFormBuilder";
 import type { FormTemplateDef } from "#/shared/types/dynamic-form";
-import { Button } from "#/shared/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "#/shared/ui/card";
-import { DataTable } from "#/shared/ui/data-table";
 import { useAuth } from "../auth/providers/AuthProvider";
 import { useProgramModalities } from "../reference-data/hooks/useProgramModalities";
-import { useOnEditTableActions } from "./BaseColumns";
-import { useBulkSubmission } from "./hooks/useBulkSubmission";
 import { useReportSubmission } from "./hooks/useReportSubmission";
 import {
 	useSubmittedModalities,
 	useSubmittedResponseLimits,
+	useSubmittedTotals,
 } from "./hooks/useSubmittedModalidades";
 
 interface StudentReportProps {
 	formId: string;
+	isEmbedded?: boolean;
+	onSuccess?: () => void;
 }
 
-export function StudentReport({ formId }: StudentReportProps) {
+export function StudentReport({
+	formId,
+	isEmbedded = false,
+	onSuccess,
+}: StudentReportProps) {
 	// 1. HOOK ZONE
 	const { isReadOnly } = usePeriodState();
 	const { template, isPending, isError, error } = useFormTemplateByModuleAndId(
@@ -35,8 +37,6 @@ export function StudentReport({ formId }: StudentReportProps) {
 	);
 	const { programId } = useAuth();
 	const { data: allowedModalities } = useProgramModalities(programId ?? "");
-
-	const { actionColumns, editDataRef, removeDataRef } = useOnEditTableActions();
 
 	// Para formularios con step > 1, obtener las modalidades registradas en el formulario anterior (step - 1)
 	const previousTemplateId = useMemo(() => {
@@ -49,12 +49,26 @@ export function StudentReport({ formId }: StudentReportProps) {
 			? `${prevStep}-${parts.slice(1).join("-")}`
 			: String(prevStep);
 	}, [template]);
+
 	const { data: submittedModalities } = useSubmittedModalities(
 		previousTemplateId,
 		"student",
 	);
+
 	const { data: modalityLimits } = useSubmittedResponseLimits(
 		previousTemplateId,
+		"student",
+	);
+
+	const crossStepSourceId = useMemo(() => {
+		if (!template) return "";
+		if (template.step === 4) return "2";
+		if (template.step === 5) return "3";
+		return "";
+	}, [template]);
+
+	const { data: crossStepLimits } = useSubmittedTotals(
+		crossStepSourceId,
 		"student",
 	);
 
@@ -69,25 +83,7 @@ export function StudentReport({ formId }: StudentReportProps) {
 		initialData,
 		editingId,
 		handleCancelEdit,
-	} = useReportSubmission(formId, template);
-	const {
-		columns,
-		data,
-		handleAddDataToMemory,
-		executeSubmitBulk,
-		isDialogOpen: dialogStudentState,
-		setIsDialogOpen: setIsDialogStudentState,
-		resetForm: resetBulkForm,
-		setResetForm: setResetBulkForm,
-		removeData,
-		editData,
-		cancelEdit,
-		editingIndex,
-		initialValues,
-	} = useBulkSubmission(formId, actionColumns, template);
-
-	editDataRef.current = editData;
-	removeDataRef.current = removeData;
+	} = useReportSubmission(formId, template, onSuccess);
 
 	const filteredTemplate = useMemo(() => {
 		if (!template) return;
@@ -150,147 +146,30 @@ export function StudentReport({ formId }: StudentReportProps) {
 		throw notFound();
 	}
 
-	if (template.hasBulk) {
-		return (
-			<div className="w-full max-w-6xl mx-auto space-y-6" id="page-top">
-				<div className="mb-8">
-					<span className="text-xs font-bold uppercase tracking-widest text-primary/60">
-						Módulo: {template.module.replace("_", " ")}
-					</span>
-					<h1 className="text-3xl font-display font-bold mt-2">
-						Gestión de Reportes
-					</h1>
-				</div>
-
-				<PageHeader
-					icon={User}
-					title={`Formulario: ${template.title}`}
-					description="Completa los campos requeridos para enviar el reporte."
-				/>
-
-				{!isReadOnly && (
-					<>
-						<DynamicForm
-							key={
-								editingId
-									? `response-edit-stud-${editingId}`
-									: `bulk-stud-${editingIndex ?? "new"}`
-							}
-							template={filteredTemplate!}
-							onSubmit={
-								editingId ? handleFormSubmitRequest : handleAddDataToMemory
-							}
-							className="grid grid-cols-1 md:grid-cols-2 gap-4"
-							submitLabel={
-								editingId
-									? "Guardar Cambios"
-									: editingIndex !== null
-										? "Actualizar registro"
-										: "Agregar a la lista"
-							}
-							resetForm={editingId ? resetForm : resetBulkForm}
-							setResetForm={editingId ? setResetForm : setResetBulkForm}
-							initialValues={editingId ? initialData : initialValues}
-							editMode={
-								editingId
-									? { type: "single", onCancel: handleCancelEdit }
-									: editingIndex !== null
-										? {
-												type: "bulk",
-												index: editingIndex,
-												onCancel: cancelEdit,
-											}
-										: { type: "none" }
-							}
-							modalityLimits={template.step > 1 ? modalityLimits : undefined}
-						/>
-
-						<div className="grid grid-cols-1 gap-8">
-							<div className="flex flex-col gap-4">
-								<Card className="shadow-sm border-border flex-1">
-									<CardHeader className="flex flex-row items-center justify-between">
-										<CardTitle className="text-lg">
-											Estudiantes por registrar ({data.length})
-										</CardTitle>
-									</CardHeader>
-									<CardContent className="p-4 sm:p-6">
-										{data.length === 0 ? (
-											<div className="h-40 flex items-center justify-center border-2 border-dashed rounded-lg text-muted-foreground">
-												No hay estudiantes en la lista. Llena el formulario para
-												comenzar.
-											</div>
-										) : (
-											<DataTable<Record<string, unknown>, unknown>
-												columns={columns}
-												data={data}
-												showColumnToggle
-											/>
-										)}
-									</CardContent>
-								</Card>
-
-								<div className="flex justify-end">
-									<Button
-										size="lg"
-										disabled={data.length === 0}
-										onClick={() => setIsDialogStudentState(true)}
-										className="w-full sm:w-auto font-bold"
-									>
-										<SaveAll className="mr-2 size-5" />
-										Finalizar y Enviar ({data.length}) Estudiantes
-									</Button>
-								</div>
-							</div>
-						</div>
-					</>
-				)}
-
-				<AlertDialogCustom
-					open={dialogStudentState}
-					onOpenChange={setIsDialogStudentState}
-					message="Confirmar envío"
-					description={`Estás a punto de enviar el formulario para el registro de Estudiantes. Revisa que los datos sean correctos antes de continuar.`}
-					actionLabel="Enviar Reporte"
-					cancelLabel="Revisar de nuevo"
-					onConfirm={() => {
-						setIsDialogStudentState(false);
-						executeSubmitBulk();
-					}}
-					onCancel={() => {
-						setIsDialogStudentState(false);
-					}}
-				/>
-				<AlertDialogCustom
-					open={isDialogOpen}
-					onOpenChange={setIsDialogOpen}
-					message="Confirmar actualización"
-					description="Estás a punto de actualizar este registro. Revisa que los datos sean correctos antes de continuar."
-					actionLabel="Guardar Cambios"
-					cancelLabel="Revisar de nuevo"
-					onConfirm={confirmSubmit}
-					onCancel={cancelSubmit}
-				/>
-			</div>
-		);
-	}
-
 	// 4. MAIN RENDER
 	return (
-		<div className="w-full max-w-6xl mx-auto py-10" id="page-top">
-			<div className="mb-8">
-				<span className="text-xs font-bold uppercase tracking-widest text-primary/60">
-					Módulo: {template.module.replace("_", " ")}
-				</span>
-				<h1 className="text-3xl font-display font-bold mt-2">
-					Gestión de Reportes
-				</h1>
-			</div>
+		<div
+			className={isEmbedded ? "space-y-6" : "w-full max-w-6xl mx-auto py-10"}
+			id="page-top"
+		>
+			{!isEmbedded && (
+				<>
+					<div className="mb-8">
+						<span className="text-xs font-bold uppercase tracking-widest text-primary/60">
+							Módulo: {template.module.replace("_", " ")}
+						</span>
+						<h1 className="text-3xl font-display font-bold mt-2">
+							Gestión de Reportes
+						</h1>
+					</div>
 
-			<PageHeader
-				icon={User}
-				title={`Formulario: ${template.title}`}
-				description="Completa los campos requeridos para enviar el reporte."
-			/>
+					<PageHeader
+						icon={User}
+						title={`Formulario: ${template.title}`}
+						description="Completa los campos requeridos para enviar el reporte."
+					/>
+				</>
+			)}
 
 			{!isReadOnly && (
 				<DynamicForm
@@ -307,6 +186,8 @@ export function StudentReport({ formId }: StudentReportProps) {
 							: { type: "none" }
 					}
 					submitLabel={editingId ? "Guardar Cambios" : "Enviar Reporte"}
+					modalityLimits={modalityLimits}
+					crossStepLimits={crossStepLimits}
 				/>
 			)}
 

@@ -13,6 +13,7 @@ const mockTemplate: FormTemplateDef = {
 	id: "template-1",
 	periodId: "2026",
 	title: "Formulario de Admisiones",
+	shortTitle: "F. Admisiones",
 	description:
 		"Formulario para el registro de nuevos estudiantes en carreras oficiales.",
 	module: FormModules.student,

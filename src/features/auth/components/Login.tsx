@@ -80,7 +80,7 @@ export function Login({ onSuccess, redirectTo = "/dashboard" }: LoginProps) {
 	});
 
 	return (
-		<Card className="w-full glass-card border-border/40 relative">
+		<Card className="w-full max-w-4xl mx-auto glass-card border-border/40 relative">
 			{/* Decorative gradient */}
 			<div className="gradient-blob -top-16 -right-16 w-40 h-40 bg-primary/5" />
 

@@ -30,6 +30,7 @@ export interface FormTemplateDef {
 	id: string;
 	periodId: string;
 	title: string;
+	shortTitle: string;
 	description?: string;
 	module: FormModules;
 	step: number;

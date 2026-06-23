@@ -19,6 +19,7 @@ import { useGetNextTemplateUrl } from "./useNextFormRoute";
 export const useReportSubmission = (
 	formId: string,
 	template?: FormTemplateDef,
+	onSuccess?: () => void,
 ) => {
 	const { mutateAsync } = useSubmitFormResponse();
 	const { mutateAsync: markStepCompleted } = useMarkStepCompleted();
@@ -159,7 +160,9 @@ export const useReportSubmission = (
 				});
 				setResetForm(true);
 				setPendingData(null);
-				if (nextUrl) {
+				if (onSuccess) {
+					onSuccess();
+				} else if (nextUrl) {
 					navigate({ to: nextUrl, replace: true });
 				} else {
 					Toast({

@@ -13,6 +13,7 @@ export const useBulkSubmission = (
 	formId: string,
 	baseCols: ColumnDef<Record<string, unknown>, any>[],
 	template?: FormTemplateDef,
+	onSuccess?: () => void,
 ) => {
 	const { mutateAsync } = useSubmitFormResponse();
 	const { mutateAsync: markStepCompleted } = useMarkStepCompleted();
@@ -187,7 +188,9 @@ export const useBulkSubmission = (
 				message: `Se registraron ${data.length} registros correctamente.`,
 			});
 			setData([]);
-			if (nextUrl) {
+			if (onSuccess) {
+				onSuccess();
+			} else if (nextUrl) {
 				navigate({ to: nextUrl, replace: true });
 			} else {
 				Toast({

@@ -18,10 +18,7 @@ import * as React from "react";
 import { usePeriodState } from "#/app/providers/period-provider";
 import { useLogout } from "#/features/auth/hooks/useAuth";
 import { useAuth } from "#/features/auth/providers/AuthProvider";
-import {
-	useDynamicMenuItemsGrouped,
-	useDynamicResultsMenuItemsGrouped,
-} from "#/shared/hooks/useDynamicMenuItemsGrouped";
+import { useDynamicResultsMenuItemsGrouped } from "#/shared/hooks/useDynamicMenuItemsGrouped";
 import {
 	type IconSvgObject,
 	type MenuItem,
@@ -78,7 +75,7 @@ type NavItem = {
 const PRIMARY_NAV: NavItem[] = [
 	{
 		label: "Dashboard",
-		to: "/dashboard/dashboard",
+		to: "/dashboard",
 		icon: Home02Icon,
 		roles: [Role.ADMIN, Role.DIRECTOR],
 	},
@@ -152,7 +149,6 @@ export function DashboardSidebar({
 		"website-copy",
 	]);
 
-	const workgroups = useDynamicMenuItemsGrouped();
 	const resultGroups = useDynamicResultsMenuItemsGrouped();
 
 	const toggleItem = (id: string) => {
@@ -477,8 +473,8 @@ export function DashboardSidebar({
 						{(isAdmin || isDirector) && (
 							<SidebarGroup className="p-0 mt-4">
 								<SidebarGroupLabel className="flex items-center justify-between px-0 h-6">
-									<span className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground/70">
-										Resultados
+									<span className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground/70 font-display">
+										Reportes de Gestión
 									</span>
 								</SidebarGroupLabel>
 								<SidebarGroupContent>
@@ -490,18 +486,6 @@ export function DashboardSidebar({
 						)}
 					</>
 				)}
-				<SidebarGroup className="p-0 mt-4">
-					<SidebarGroupLabel className="flex items-center justify-between px-0 h-6">
-						<span className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground/70">
-							Formularios
-						</span>
-					</SidebarGroupLabel>
-					<SidebarGroupContent>
-						<SidebarMenu>
-							{workgroups.map((item) => renderWorkgroupItem(item))}
-						</SidebarMenu>
-					</SidebarGroupContent>
-				</SidebarGroup>
 			</SidebarContent>
 
 			<SidebarFooter className="px-2.5 pb-3 group-data-[collapsible=icon]:hidden">
