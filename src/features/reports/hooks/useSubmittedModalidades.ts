@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { collection, getDocs, query, where } from "firebase/firestore";
+import { usePeriodState } from "#/app/providers/period-provider";
 import { useAuth } from "#/features/auth/providers/AuthProvider";
 import { db } from "#/shared/lib/firebase";
 import type { FormResponseDef } from "#/shared/types/dynamic-form";
@@ -121,5 +122,51 @@ export const useSubmittedResponseLimits = (
 			return limits;
 		},
 		enabled: !!sourceTemplateId && !!module && !!programId,
+	});
+};
+
+export const useSubmittedTotals = (templateId: string, module: string) => {
+	const { programId } = useAuth();
+	const { selectedPeriodId } = usePeriodState();
+
+	return useQuery<Record<string, number>>({
+		queryKey: [
+			"submitted-totals",
+			module,
+			templateId,
+			programId,
+			selectedPeriodId,
+		],
+		queryFn: async () => {
+			if (!programId || !templateId || !selectedPeriodId) return {};
+
+			const q = query(
+				collection(db, module),
+				where("templateId", "==", templateId),
+				where("programId", "==", programId),
+				where("periodId", "==", selectedPeriodId),
+			);
+
+			const snapshot = await getDocs(q);
+			const totals: Record<string, number> = {};
+
+			for (const doc of snapshot.docs) {
+				const data = doc.data() as FormResponseDef;
+				const response = data.response;
+				if (!response) continue;
+
+				for (const [key, value] of Object.entries(response)) {
+					if (key === "modalidad" || key === "tipo" || key === "academic_level")
+						continue;
+					const numVal = Number(value);
+					if (Number.isFinite(numVal)) {
+						totals[key] = (totals[key] || 0) + numVal;
+					}
+				}
+			}
+
+			return totals;
+		},
+		enabled: !!templateId && !!module && !!programId && !!selectedPeriodId,
 	});
 };

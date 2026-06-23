@@ -28,7 +28,9 @@ export enum FormModules {
 
 export interface FormTemplateDef {
 	id: string;
+	periodId: string;
 	title: string;
+	shortTitle: string;
 	description?: string;
 	module: FormModules;
 	step: number;
@@ -40,6 +42,7 @@ export interface FormTemplateDef {
 export interface FormResponseDef {
 	id: string;
 	templateId: string;
+	periodId: string;
 	module: FormModules;
 	submittedBy: string;
 	facultyId: string;
@@ -52,5 +55,6 @@ export interface FormResponseDef {
 
 export interface DirectorProgressDef {
 	completedSteps: number[];
+	periodId: string;
 	updatedAt: Timestamp;
 }

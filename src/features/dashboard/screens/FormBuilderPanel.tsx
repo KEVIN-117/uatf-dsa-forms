@@ -1,5 +1,6 @@
 import { Copy, Plus, Save, ShieldCheck, Upload } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { usePeriodState } from "#/app/providers/period-provider";
 import { useProtectedRoute } from "#/features/auth/hooks/useProtectedRoute";
 import { BuilderSkeleton } from "#/features/dynamic-form/components/BuilderSkeleton";
 import { FieldEditor } from "#/features/dynamic-form/components/FieldEditor";
@@ -55,15 +56,16 @@ export default function FormBuilderPanel() {
 	} = useFormTemplates();
 	const { mutateAsync: upsertTemplate, isPending: isPendingUpsertTemplate } =
 		useUpsertFormTemplate();
+	const { isReadOnly, selectedPeriodId } = usePeriodState();
 	const [selectedTemplateId, setSelectedTemplateId] = useState<string>("new");
 	const [draft, setDraft] = useState<FormTemplateDef>(() =>
-		createBlankTemplate(),
+		createBlankTemplate(selectedPeriodId),
 	);
 	const [sheetOpen, setSheetOpen] = useState(false);
 
 	useEffect(() => {
 		if (selectedTemplateId === "new") {
-			setDraft(createBlankTemplate());
+			setDraft(createBlankTemplate(selectedPeriodId));
 			return;
 		}
 		const selectedTemplate = templates.find(
@@ -72,13 +74,16 @@ export default function FormBuilderPanel() {
 		if (selectedTemplate) {
 			setDraft(normalizeTemplate(selectedTemplate));
 		}
-	}, [selectedTemplateId, templates]);
+	}, [selectedTemplateId, templates, selectedPeriodId]);
 
 	const previewTemplate = useMemo(() => normalizeTemplate(draft), [draft]);
 
 	// 2. FUNCTIONS AND LOGIC
 	const handleSave = async () => {
-		const cleaned = normalizeTemplate(draft);
+		const cleaned = normalizeTemplate({
+			...draft,
+			periodId: draft.periodId || selectedPeriodId,
+		});
 
 		if (!cleaned.id.trim() || !cleaned.title.trim()) {
 			Toast({
@@ -141,6 +146,7 @@ export default function FormBuilderPanel() {
 		const duplicated = normalizeTemplate({
 			...draft,
 			id: generateTemplateId(draft.title || "template"),
+			periodId: selectedPeriodId,
 			title: draft.title ? `Copia de ${draft.title}` : "Nueva plantilla",
 		});
 
@@ -269,7 +275,12 @@ export default function FormBuilderPanel() {
 				</div>
 				{/* Botones de acción */}
 				<div className="flex flex-wrap gap-2">
-					<Button type="button" variant="outline" onClick={handleCreateNew}>
+					<Button
+						type="button"
+						variant="outline"
+						onClick={handleCreateNew}
+						disabled={isReadOnly}
+					>
 						<Plus className="size-4" />
 						Nueva plantilla
 					</Button>
@@ -285,7 +296,7 @@ export default function FormBuilderPanel() {
 						type="button"
 						variant="outline"
 						onClick={handleDuplicate}
-						disabled={!draft.title.trim()}
+						disabled={!draft.title.trim() || isReadOnly}
 					>
 						<Copy className="size-4" />
 						Duplicar
@@ -293,7 +304,7 @@ export default function FormBuilderPanel() {
 					<Button
 						type="button"
 						onClick={handleSave}
-						disabled={isPendingUpsertTemplate}
+						disabled={isPendingUpsertTemplate || isReadOnly}
 						className="bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer"
 					>
 						<Save className="size-4" />
@@ -301,6 +312,16 @@ export default function FormBuilderPanel() {
 					</Button>
 				</div>
 			</div>
+
+			{isReadOnly && (
+				<div className="mb-6 flex items-center gap-2 p-4 text-sm rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 font-medium animate-fade-in">
+					<span>
+						⚠️ Modo Solo Lectura: La gestión académica seleccionada no está
+						activa o se encuentra cerrada. No se permiten realizar
+						modificaciones a las plantillas.
+					</span>
+				</div>
+			)}
 
 			<div className="grid gap-6 xl:grid-cols-[2.5fr_1.5fr]">
 				<EntityFormSheet
@@ -366,7 +387,12 @@ export default function FormBuilderPanel() {
 									Cada campo representa una entrada del formulario renderizado.
 								</CardDescription>
 							</div>
-							<Button type="button" variant="outline" onClick={addField}>
+							<Button
+								type="button"
+								variant="outline"
+								onClick={addField}
+								disabled={isReadOnly}
+							>
 								<Plus className="size-4" />
 								Agregar campo
 							</Button>
@@ -383,6 +409,7 @@ export default function FormBuilderPanel() {
 									onMoveUp={() => moveField(field.id, "up")}
 									onMoveDown={() => moveField(field.id, "down")}
 									onClone={() => cloneField(field.id)}
+									disabled={isReadOnly}
 								/>
 							))}
 						</CardContent>
@@ -436,6 +463,7 @@ export default function FormBuilderPanel() {
 										updateTemplate({ id: event.target.value })
 									}
 									placeholder="template_student_report"
+									disabled={isReadOnly}
 								/>
 							</div>
 
@@ -448,6 +476,22 @@ export default function FormBuilderPanel() {
 										updateTemplate({ title: event.target.value })
 									}
 									placeholder="Reporte de estudiantes"
+									disabled={isReadOnly}
+								/>
+							</div>
+
+							<div className="space-y-2">
+								<Label htmlFor="template-shortTitle">
+									Título en menú (Corto)
+								</Label>
+								<Input
+									id="template-shortTitle"
+									value={draft.shortTitle ?? ""}
+									onChange={(event) =>
+										updateTemplate({ shortTitle: event.target.value })
+									}
+									placeholder="Ej. Post. Admitidos"
+									disabled={isReadOnly}
 								/>
 							</div>
 
@@ -461,6 +505,7 @@ export default function FormBuilderPanel() {
 									}
 									placeholder="Describe brevemente el formulario"
 									className="min-h-80"
+									disabled={isReadOnly}
 								/>
 							</div>
 
@@ -469,6 +514,7 @@ export default function FormBuilderPanel() {
 									<Label>Módulo</Label>
 									<Select
 										value={draft.module}
+										disabled={isReadOnly}
 										onValueChange={(value) =>
 											updateTemplate({ module: value as FormModules })
 										}
@@ -495,6 +541,7 @@ export default function FormBuilderPanel() {
 									<Input
 										type="number"
 										value={draft.step}
+										disabled={isReadOnly}
 										onChange={(event) =>
 											updateTemplate({ step: Number(event.target.value) })
 										}
@@ -509,6 +556,7 @@ export default function FormBuilderPanel() {
 									</div>
 									<Switch
 										checked={draft.hasBulk}
+										disabled={isReadOnly}
 										onCheckedChange={(checked) =>
 											updateTemplate({ hasBulk: checked })
 										}
@@ -524,6 +572,7 @@ export default function FormBuilderPanel() {
 									</div>
 									<Switch
 										checked={draft.isActive}
+										disabled={isReadOnly}
 										onCheckedChange={(checked) =>
 											updateTemplate({ isActive: checked })
 										}

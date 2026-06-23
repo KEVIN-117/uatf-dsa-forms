@@ -1,9 +1,10 @@
 import * as dotenv from "dotenv";
+
 dotenv.config({ override: true });
 
+import * as fs from "node:fs";
+import * as path from "node:path";
 import * as admin from "firebase-admin";
-import * as fs from "fs";
-import * as path from "path";
 
 const serviceAccount = JSON.parse(
 	fs.readFileSync(
@@ -18,7 +19,11 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
-import { FormModules, type FormResponseDef } from "#/shared/types/dynamic-form";
+import {
+	FormModules,
+	type FormResponseDef,
+	type FormTemplateDef,
+} from "#/shared/types/dynamic-form";
 
 import {
 	academicLevels,
@@ -26,6 +31,7 @@ import {
 	faculties,
 	graduationModalities,
 	modalities,
+	periods,
 	programs,
 	scholarshipsTypes,
 	teachingAcademicLevels,
@@ -138,12 +144,28 @@ export async function seedAcademicLevels() {
 
 export async function seedFormFields() {
 	try {
-		const allTemplates = [
+		const baseTemplates = [
 			...studentFormTemplates,
 			...graduateFormTemplates,
 			...teacherFormTemplates,
 			...scholarshipFormTemplates,
 		];
+
+		const allTemplates: FormTemplateDef[] = [];
+		for (const item of baseTemplates) {
+			// 2026 active version
+			allTemplates.push({
+				...item,
+				id: item.id,
+				periodId: "2026",
+			});
+			// 2025 historical version
+			allTemplates.push({
+				...item,
+				id: `${item.id}-2025`,
+				periodId: "2025",
+			});
+		}
 
 		const uploadPromises = allTemplates.map((item) =>
 			db
@@ -158,7 +180,7 @@ export async function seedFormFields() {
 
 		await Promise.all(uploadPromises);
 		console.log(
-			`✅ ${allTemplates.length} Form Templates sembrados exitosamente`,
+			`✅ ${allTemplates.length} Form Templates sembrados exitosamente (2025 y 2026)`,
 		);
 	} catch (error) {
 		console.error("❌ Error al sembrar los Form Templates:", error);
@@ -169,14 +191,15 @@ export async function seedFormResponses() {
 	console.log("🌱 Iniciando la siembra de respuestas de prueba...");
 	const responses: FormResponseDef[] = [];
 
-	const mockUsers = directors.length > 0
-		? directors.map((d) => d.email)
-		: [
-			"sheylajahel.cadiz@lef.edu.bo",
-			"juanvirgilio.silva@tmc.edu.bo",
-			"ovidiolucio.copa@tuu.edu.bo",
-			"neil.alfaro@ctt.edu.bo",
-		];
+	const mockUsers =
+		directors.length > 0
+			? directors.map((d) => d.email)
+			: [
+					"sheylajahel.cadiz@lef.edu.bo",
+					"juanvirgilio.silva@tmc.edu.bo",
+					"ovidiolucio.copa@tuu.edu.bo",
+					"neil.alfaro@ctt.edu.bo",
+				];
 
 	const directorMetaByEmail = new Map(
 		directors.map((director) => [
@@ -191,6 +214,9 @@ export async function seedFormResponses() {
 	);
 
 	for (let i = 1; i <= 200; i++) {
+		const periodId = i <= 100 ? "2025" : "2026";
+		const templateSuffix = periodId === "2025" ? "-2025" : "";
+
 		const moduleType = i % 4;
 		const isStudent = moduleType === 0;
 		const isGraduate = moduleType === 1;
@@ -201,7 +227,9 @@ export async function seedFormResponses() {
 		const total = masculino + femenino;
 
 		const submittedBy = mockUsers[Math.floor(Math.random() * mockUsers.length)];
-		const submitterMeta = directorMetaByEmail.get(submittedBy.toLowerCase()) ?? {
+		const submitterMeta = directorMetaByEmail.get(
+			submittedBy.toLowerCase(),
+		) ?? {
 			facultyId: "",
 			faculty: "",
 			programId: "",
@@ -214,7 +242,8 @@ export async function seedFormResponses() {
 		if (isStudent) {
 			responses.push({
 				id: `mock-resp-${i}`,
-				templateId: "1",
+				templateId: `1${templateSuffix}`,
+				periodId,
 				module: FormModules.student,
 				submittedBy,
 				facultyId: submitterMeta.facultyId,
@@ -224,7 +253,7 @@ export async function seedFormResponses() {
 				createdAt,
 				response: {
 					modalidad:
-						modalities[Math.floor(Math.random() * modalities.length)].id,
+						modalities[Math.floor(Math.random() * modalities.length)].modality,
 					masculino,
 					femenino,
 					total,
@@ -233,7 +262,8 @@ export async function seedFormResponses() {
 		} else if (isGraduate) {
 			responses.push({
 				id: `mock-resp-${i}`,
-				templateId: "7",
+				templateId: `7${templateSuffix}`,
+				periodId,
 				module: FormModules.graduate,
 				submittedBy,
 				facultyId: submitterMeta.facultyId,
@@ -243,7 +273,9 @@ export async function seedFormResponses() {
 				createdAt,
 				response: {
 					modalidad:
-						graduationModalities[Math.floor(Math.random() * graduationModalities.length)].id,
+						graduationModalities[
+							Math.floor(Math.random() * graduationModalities.length)
+						].name,
 					masculino,
 					femenino,
 					total,
@@ -272,7 +304,8 @@ export async function seedFormResponses() {
 			];
 			responses.push({
 				id: `mock-resp-${i}`,
-				templateId: "9",
+				templateId: `9${templateSuffix}`,
+				periodId,
 				module: FormModules.teacher,
 				submittedBy,
 				facultyId: submitterMeta.facultyId,
@@ -286,9 +319,16 @@ export async function seedFormResponses() {
 					nombres: names[Math.floor(Math.random() * names.length)],
 					ci: `${Math.floor(Math.random() * 9000000) + 1000000}`,
 					cel: `${Math.floor(Math.random() * 9000000) + 60000000}`,
-					carga_horaria: workloads[Math.floor(Math.random() * workloads.length)].id,
-					categoria: teachingCategories[Math.floor(Math.random() * teachingCategories.length)].id,
-					nivel_academico: teachingAcademicLevels[Math.floor(Math.random() * teachingAcademicLevels.length)].id,
+					carga_horaria:
+						workloads[Math.floor(Math.random() * workloads.length)].name,
+					categoria:
+						teachingCategories[
+							Math.floor(Math.random() * teachingCategories.length)
+						].name,
+					nivel_academico:
+						teachingAcademicLevels[
+							Math.floor(Math.random() * teachingAcademicLevels.length)
+						].name,
 					profesion: [
 						"Ing. Sistemas",
 						"Lic. Matemáticas",
@@ -300,7 +340,8 @@ export async function seedFormResponses() {
 		} else {
 			responses.push({
 				id: `mock-resp-${i}`,
-				templateId: "10",
+				templateId: `10${templateSuffix}`,
+				periodId,
 				module: FormModules.scholarships,
 				submittedBy,
 				facultyId: submitterMeta.facultyId,
@@ -309,7 +350,7 @@ export async function seedFormResponses() {
 				program: submitterMeta.program,
 				createdAt,
 				response: {
-					tipo: ["parcial", "completa"][Math.floor(Math.random() * 2)],
+					tipo: ["Parcial", "Completa"][Math.floor(Math.random() * 2)],
 					masculino,
 					femenino,
 					total,
@@ -331,6 +372,136 @@ export async function seedFormResponses() {
 	} catch (error) {
 		console.error("❌ Error al sembrar los Form Responses:", error);
 	}
+}
+
+function generateMockResponseForTemplate(
+	template: FormTemplateDef,
+	index?: number,
+) {
+	const response: Record<string, any> = {};
+	for (const field of template.fields) {
+		if (field.type === "number") {
+			if (field.name.toLowerCase() === "total") {
+				continue;
+			}
+			response[field.name] = Math.floor(Math.random() * 50) + 5;
+		} else if (
+			field.type === "select" &&
+			field.options &&
+			field.options.length > 0
+		) {
+			const optIndex =
+				index !== undefined
+					? index % field.options.length
+					: Math.floor(Math.random() * field.options.length);
+			response[field.name] = field.options[optIndex].label;
+		} else {
+			response[field.name] = "Dato de prueba " + field.label;
+		}
+	}
+
+	// Calculate total if there is a total field
+	const totalField = template.fields.find(
+		(f) =>
+			f.name.toLowerCase() === "total" || f.label.toLowerCase() === "total",
+	);
+	if (totalField) {
+		let sum = 0;
+		for (const field of template.fields) {
+			if (field.id !== totalField.id && field.type === "number") {
+				sum += response[field.name] || 0;
+			}
+		}
+		response[totalField.name] = sum;
+	}
+
+	return response;
+}
+
+export async function seedSpecificDirectorsData() {
+	console.log(
+		"🌱 Sembrando datos específicos para los 3 directores de prueba...",
+	);
+
+	const director1 = {
+		email: "director1@uatf.edu.bo",
+		facultyId: "E",
+		faculty: "FAC. DE CC SS Y HH",
+		programId: "TUU",
+		program: "Turismo - Uyuni",
+		completedSteps: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+	};
+
+	const director2 = {
+		email: "director2@uatf.edu.bo",
+		facultyId: "D",
+		faculty: "FAC. DE CIENCIAS PURAS",
+		programId: "EST",
+		program: "Estadistica",
+		completedSteps: [1, 2, 3, 4, 5, 6, 7],
+	};
+
+	const director3 = {
+		email: "director3@uatf.edu.bo",
+		facultyId: "C",
+		faculty: "FAC. DE CC EE FF Y AA",
+		programId: "CTT",
+		program: "Contaduria Publica - Tupiza",
+		completedSteps: [],
+	};
+
+	const specificDirectors = [director1, director2, director3];
+
+	// Obtener todas las plantillas sembradas en 2026
+	const templatesSnapshot = await db
+		.collection("form_templates")
+		.where("periodId", "==", "2026")
+		.get();
+	const templates: FormTemplateDef[] = [];
+	templatesSnapshot.forEach((doc) => {
+		templates.push(doc.data() as FormTemplateDef);
+	});
+
+	for (const director of specificDirectors) {
+		// 1. Guardar el progreso del director
+		await db.collection("director_progress").doc(director.email).set({
+			completedSteps: director.completedSteps,
+			periodId: "2026",
+			updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+		});
+
+		// 2. Sembrar respuestas para las etapas completadas
+		for (const step of director.completedSteps) {
+			const template = templates.find((t) => t.step === step);
+			if (!template) continue;
+
+			// Decidir cantidad de respuestas a generar
+			const count = template.hasBulk ? 3 : 1;
+			for (let j = 0; j < count; j++) {
+				const responseData = generateMockResponseForTemplate(template, j);
+				const respId = `spec-resp-${director.programId}-${step}-${j}`;
+
+				await db
+					.collection(template.module)
+					.doc(respId)
+					.set({
+						id: respId,
+						templateId: template.id,
+						periodId: "2026",
+						module: template.module,
+						submittedBy: director.email,
+						facultyId: director.facultyId,
+						faculty: director.faculty,
+						programId: director.programId,
+						program: director.program,
+						createdAt:
+							Date.now() - Math.floor(Math.random() * 5 * 24 * 60 * 60 * 1000),
+						response: responseData,
+					});
+			}
+		}
+	}
+	console.log("✅ Datos de directores específicos sembrados correctamente.");
 }
 
 export async function seedGraduationModalities() {
@@ -405,10 +576,29 @@ export async function seedTeachingAcademicLevels() {
 	}
 }
 
+export async function seedPeriods() {
+	try {
+		for (const item of periods) {
+			await db
+				.collection("periods")
+				.doc(item.id)
+				.set({
+					...item,
+					createdAt: new Date(),
+					updatedAt: new Date(),
+				});
+		}
+		console.log("✅ Periodos sembrados exitosamente");
+	} catch (error) {
+		console.error("❌ Error al sembrar periodos:", error);
+	}
+}
+
 export async function runSeed() {
 	console.log("🌱 Iniciando la siembra de datos en Firestore...");
 
 	try {
+		await seedPeriods();
 		await seedModalities();
 		await seedGraduationModalities();
 		await seedFaculties();
@@ -419,8 +609,9 @@ export async function runSeed() {
 		await seedTeachingAcademicLevels();
 		await seedScholarshipsTypes();
 		await seedFormFields();
-		if (process.env.NODE_ENV === "development") {
-			await seedFormResponses();
+		if (process.env.NODE_ENV !== "production") {
+			// await seedFormResponses();
+			// await seedSpecificDirectorsData();
 		}
 
 		console.log("🎉 Proceso de siembra finalizado con éxito.");

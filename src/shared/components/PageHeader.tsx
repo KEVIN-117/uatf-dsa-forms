@@ -23,11 +23,11 @@ export function PageHeader({
 	const ActionIcon = action?.icon;
 
 	return (
-		<div className="animate-fade-up relative overflow-hidden rounded-2xl border border-border/40 p-6 md:p-8 bg-linear-to-br from-primary/8 via-card to-secondary/5 glass-card">
+		<div className="animate-fade-up w-full relative overflow-hidden rounded-2xl border border-border/40 p-6 md:p-8 bg-linear-to-br from-primary/8 via-card to-secondary/5 glass-card">
 			<div className="gradient-blob -top-20 -right-20 w-48 h-48 bg-primary/5" />
 			<div className="gradient-blob -bottom-16 -left-16 w-40 h-40 bg-secondary/8" />
 
-			<div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+			<div className="relative flex w-full flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
 				<div className="flex items-start gap-4">
 					{Icon && (
 						<div className="hidden md:flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 shrink-0">

@@ -41,7 +41,7 @@ export const useFormGuard = (currentTemplate: FormTemplateDef | undefined) => {
 		if (currentTemplate.step > currentActiveStep) {
 			// Redirigir al inicio del Dashboard o al paso que le toca realmente
 			navigate({
-				to: "/dashboard/dashboard", // Redirigimos a un lugar seguro
+				to: "/dashboard", // Redirigimos a un lugar seguro
 				replace: true, // Reemplazamos el historial para que el botón "Atrás" no lo regrese aquí
 			});
 		}

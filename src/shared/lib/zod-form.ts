@@ -4,7 +4,9 @@ export function validateSchemaField<
 	TShape extends z.ZodRawShape,
 	TField extends Extract<keyof TShape, string>,
 >(schema: z.ZodObject<TShape>, field: TField, value: unknown) {
-	const result = schema.shape[field].safeParse(value);
+	const result = (schema.shape[field] as unknown as z.ZodTypeAny).safeParse(
+		value,
+	);
 
 	if (result.success) {
 		return undefined;

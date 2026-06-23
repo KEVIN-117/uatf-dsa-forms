@@ -79,3 +79,13 @@ export interface User {
 	role: Role;
 	updatedAt: number;
 }
+
+export interface Period {
+	docId: string;
+	id: string;
+	name: string;
+	isActive: boolean;
+	isClosed: boolean;
+	startDate: any;
+	endDate: any;
+}

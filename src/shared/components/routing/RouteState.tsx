@@ -37,7 +37,7 @@ export function RouteNotFoundState({ scope = "este módulo" }: RouteStateProps) 
 				</CardHeader>
 				<CardContent className="relative flex justify-center pb-6">
 					<Button asChild className="hover-lift">
-						<Link to="/dashboard/dashboard">
+						<Link to="/dashboard">
 							<Home className="mr-2 size-4" />
 							Ir al Dashboard
 						</Link>
@@ -79,7 +79,7 @@ export function RouteErrorState({
 					</p>
 					<div className="flex justify-center">
 						<Button asChild variant="outline" className="hover-lift">
-							<Link to="/dashboard/dashboard">
+							<Link to="/dashboard">
 								<Home className="mr-2 size-4" />
 								Volver al Dashboard
 							</Link>

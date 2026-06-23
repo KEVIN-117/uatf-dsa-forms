@@ -1,5 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { usePeriodState } from "#/app/providers/period-provider";
 import { useAuth } from "#/features/auth/providers/AuthProvider";
 import { useMarkStepCompleted } from "#/features/reports/hooks/useDirectorProgress";
 import { Toast } from "#/shared/components/Toast";
@@ -18,10 +19,12 @@ import { useGetNextTemplateUrl } from "./useNextFormRoute";
 export const useReportSubmission = (
 	formId: string,
 	template?: FormTemplateDef,
+	onSuccess?: () => void,
 ) => {
 	const { mutateAsync } = useSubmitFormResponse();
 	const { mutateAsync: markStepCompleted } = useMarkStepCompleted();
 	const { user, faculty, facultyId, program, programId } = useAuth();
+	const { selectedPeriodId } = usePeriodState();
 	const [resetForm, setResetForm] = useState(false);
 	const navigate = useNavigate();
 	const nextUrl = useGetNextTemplateUrl(formId);
@@ -136,7 +139,8 @@ export const useReportSubmission = (
 			} else {
 				await mutateAsync({
 					id: crypto.randomUUID(),
-					templateId: template?.id,
+					templateId: template?.id || "",
+					periodId: selectedPeriodId,
 					module: module as FormModules,
 					submittedBy: user?.email || "Director",
 					createdAt: Date.now(),
@@ -146,7 +150,7 @@ export const useReportSubmission = (
 					program: program as string,
 					response: transformedData,
 				});
-				await markStepCompleted(template.step);
+				await markStepCompleted(template?.step ?? 99);
 				Toast({
 					title: "Reporte guardado exitosamente",
 					type: "success",
@@ -156,7 +160,9 @@ export const useReportSubmission = (
 				});
 				setResetForm(true);
 				setPendingData(null);
-				if (nextUrl) {
+				if (onSuccess) {
+					onSuccess();
+				} else if (nextUrl) {
 					navigate({ to: nextUrl, replace: true });
 				} else {
 					Toast({

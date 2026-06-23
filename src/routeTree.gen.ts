@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as TeacherReportFormIdRouteImport } from './routes/teacher-report/$formId'
 import { Route as StudentReportFormIdRouteImport } from './routes/student-report/$formId'
 import { Route as ScholarshipReportFormIdRouteImport } from './routes/scholarship-report/$formId'
@@ -19,12 +20,12 @@ import { Route as DemoStorybookRouteImport } from './routes/demo/storybook'
 import { Route as DemoFormIdRouteImport } from './routes/demo/$formId'
 import { Route as DashboardTableRouteImport } from './routes/dashboard/table'
 import { Route as DashboardProgramsRouteImport } from './routes/dashboard/programs'
+import { Route as DashboardPeriodsRouteImport } from './routes/dashboard/periods'
 import { Route as DashboardModalitiesRouteImport } from './routes/dashboard/modalities'
 import { Route as DashboardGraduationModalitiesRouteImport } from './routes/dashboard/graduation-modalities'
 import { Route as DashboardFormBuilderRouteImport } from './routes/dashboard/form-builder'
 import { Route as DashboardFacultiesRouteImport } from './routes/dashboard/faculties'
 import { Route as DashboardDirectorsRouteImport } from './routes/dashboard/directors'
-import { Route as DashboardDashboardRouteImport } from './routes/dashboard/dashboard'
 import { Route as DashboardAdminRouteImport } from './routes/dashboard/admin'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as DashboardReportsTemplateIdModuleRouteImport } from './routes/dashboard/reports/$templateId/$module'
@@ -32,6 +33,11 @@ import { Route as DashboardReportsTemplateIdModuleRouteImport } from './routes/d
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TeacherReportFormIdRoute = TeacherReportFormIdRouteImport.update({
@@ -79,6 +85,11 @@ const DashboardProgramsRoute = DashboardProgramsRouteImport.update({
   path: '/dashboard/programs',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardPeriodsRoute = DashboardPeriodsRouteImport.update({
+  id: '/dashboard/periods',
+  path: '/dashboard/periods',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardModalitiesRoute = DashboardModalitiesRouteImport.update({
   id: '/dashboard/modalities',
   path: '/dashboard/modalities',
@@ -105,11 +116,6 @@ const DashboardDirectorsRoute = DashboardDirectorsRouteImport.update({
   path: '/dashboard/directors',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardDashboardRoute = DashboardDashboardRouteImport.update({
-  id: '/dashboard/dashboard',
-  path: '/dashboard/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DashboardAdminRoute = DashboardAdminRouteImport.update({
   id: '/dashboard/admin',
   path: '/dashboard/admin',
@@ -131,12 +137,12 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/dashboard/admin': typeof DashboardAdminRoute
-  '/dashboard/dashboard': typeof DashboardDashboardRoute
   '/dashboard/directors': typeof DashboardDirectorsRoute
   '/dashboard/faculties': typeof DashboardFacultiesRoute
   '/dashboard/form-builder': typeof DashboardFormBuilderRoute
   '/dashboard/graduation-modalities': typeof DashboardGraduationModalitiesRoute
   '/dashboard/modalities': typeof DashboardModalitiesRoute
+  '/dashboard/periods': typeof DashboardPeriodsRoute
   '/dashboard/programs': typeof DashboardProgramsRoute
   '/dashboard/table': typeof DashboardTableRoute
   '/demo/$formId': typeof DemoFormIdRoute
@@ -146,18 +152,19 @@ export interface FileRoutesByFullPath {
   '/scholarship-report/$formId': typeof ScholarshipReportFormIdRoute
   '/student-report/$formId': typeof StudentReportFormIdRoute
   '/teacher-report/$formId': typeof TeacherReportFormIdRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/reports/$templateId/$module': typeof DashboardReportsTemplateIdModuleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/dashboard/admin': typeof DashboardAdminRoute
-  '/dashboard/dashboard': typeof DashboardDashboardRoute
   '/dashboard/directors': typeof DashboardDirectorsRoute
   '/dashboard/faculties': typeof DashboardFacultiesRoute
   '/dashboard/form-builder': typeof DashboardFormBuilderRoute
   '/dashboard/graduation-modalities': typeof DashboardGraduationModalitiesRoute
   '/dashboard/modalities': typeof DashboardModalitiesRoute
+  '/dashboard/periods': typeof DashboardPeriodsRoute
   '/dashboard/programs': typeof DashboardProgramsRoute
   '/dashboard/table': typeof DashboardTableRoute
   '/demo/$formId': typeof DemoFormIdRoute
@@ -167,6 +174,7 @@ export interface FileRoutesByTo {
   '/scholarship-report/$formId': typeof ScholarshipReportFormIdRoute
   '/student-report/$formId': typeof StudentReportFormIdRoute
   '/teacher-report/$formId': typeof TeacherReportFormIdRoute
+  '/dashboard': typeof DashboardIndexRoute
   '/dashboard/reports/$templateId/$module': typeof DashboardReportsTemplateIdModuleRoute
 }
 export interface FileRoutesById {
@@ -174,12 +182,12 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/dashboard/admin': typeof DashboardAdminRoute
-  '/dashboard/dashboard': typeof DashboardDashboardRoute
   '/dashboard/directors': typeof DashboardDirectorsRoute
   '/dashboard/faculties': typeof DashboardFacultiesRoute
   '/dashboard/form-builder': typeof DashboardFormBuilderRoute
   '/dashboard/graduation-modalities': typeof DashboardGraduationModalitiesRoute
   '/dashboard/modalities': typeof DashboardModalitiesRoute
+  '/dashboard/periods': typeof DashboardPeriodsRoute
   '/dashboard/programs': typeof DashboardProgramsRoute
   '/dashboard/table': typeof DashboardTableRoute
   '/demo/$formId': typeof DemoFormIdRoute
@@ -189,6 +197,7 @@ export interface FileRoutesById {
   '/scholarship-report/$formId': typeof ScholarshipReportFormIdRoute
   '/student-report/$formId': typeof StudentReportFormIdRoute
   '/teacher-report/$formId': typeof TeacherReportFormIdRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/reports/$templateId/$module': typeof DashboardReportsTemplateIdModuleRoute
 }
 export interface FileRouteTypes {
@@ -197,12 +206,12 @@ export interface FileRouteTypes {
     | '/'
     | '/auth/login'
     | '/dashboard/admin'
-    | '/dashboard/dashboard'
     | '/dashboard/directors'
     | '/dashboard/faculties'
     | '/dashboard/form-builder'
     | '/dashboard/graduation-modalities'
     | '/dashboard/modalities'
+    | '/dashboard/periods'
     | '/dashboard/programs'
     | '/dashboard/table'
     | '/demo/$formId'
@@ -212,18 +221,19 @@ export interface FileRouteTypes {
     | '/scholarship-report/$formId'
     | '/student-report/$formId'
     | '/teacher-report/$formId'
+    | '/dashboard/'
     | '/dashboard/reports/$templateId/$module'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth/login'
     | '/dashboard/admin'
-    | '/dashboard/dashboard'
     | '/dashboard/directors'
     | '/dashboard/faculties'
     | '/dashboard/form-builder'
     | '/dashboard/graduation-modalities'
     | '/dashboard/modalities'
+    | '/dashboard/periods'
     | '/dashboard/programs'
     | '/dashboard/table'
     | '/demo/$formId'
@@ -233,18 +243,19 @@ export interface FileRouteTypes {
     | '/scholarship-report/$formId'
     | '/student-report/$formId'
     | '/teacher-report/$formId'
+    | '/dashboard'
     | '/dashboard/reports/$templateId/$module'
   id:
     | '__root__'
     | '/'
     | '/auth/login'
     | '/dashboard/admin'
-    | '/dashboard/dashboard'
     | '/dashboard/directors'
     | '/dashboard/faculties'
     | '/dashboard/form-builder'
     | '/dashboard/graduation-modalities'
     | '/dashboard/modalities'
+    | '/dashboard/periods'
     | '/dashboard/programs'
     | '/dashboard/table'
     | '/demo/$formId'
@@ -254,6 +265,7 @@ export interface FileRouteTypes {
     | '/scholarship-report/$formId'
     | '/student-report/$formId'
     | '/teacher-report/$formId'
+    | '/dashboard/'
     | '/dashboard/reports/$templateId/$module'
   fileRoutesById: FileRoutesById
 }
@@ -261,12 +273,12 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthLoginRoute: typeof AuthLoginRoute
   DashboardAdminRoute: typeof DashboardAdminRoute
-  DashboardDashboardRoute: typeof DashboardDashboardRoute
   DashboardDirectorsRoute: typeof DashboardDirectorsRoute
   DashboardFacultiesRoute: typeof DashboardFacultiesRoute
   DashboardFormBuilderRoute: typeof DashboardFormBuilderRoute
   DashboardGraduationModalitiesRoute: typeof DashboardGraduationModalitiesRoute
   DashboardModalitiesRoute: typeof DashboardModalitiesRoute
+  DashboardPeriodsRoute: typeof DashboardPeriodsRoute
   DashboardProgramsRoute: typeof DashboardProgramsRoute
   DashboardTableRoute: typeof DashboardTableRoute
   DemoFormIdRoute: typeof DemoFormIdRoute
@@ -276,6 +288,7 @@ export interface RootRouteChildren {
   ScholarshipReportFormIdRoute: typeof ScholarshipReportFormIdRoute
   StudentReportFormIdRoute: typeof StudentReportFormIdRoute
   TeacherReportFormIdRoute: typeof TeacherReportFormIdRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardReportsTemplateIdModuleRoute: typeof DashboardReportsTemplateIdModuleRoute
 }
 
@@ -286,6 +299,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/teacher-report/$formId': {
@@ -351,6 +371,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardProgramsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/periods': {
+      id: '/dashboard/periods'
+      path: '/dashboard/periods'
+      fullPath: '/dashboard/periods'
+      preLoaderRoute: typeof DashboardPeriodsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/modalities': {
       id: '/dashboard/modalities'
       path: '/dashboard/modalities'
@@ -386,13 +413,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardDirectorsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboard/dashboard': {
-      id: '/dashboard/dashboard'
-      path: '/dashboard/dashboard'
-      fullPath: '/dashboard/dashboard'
-      preLoaderRoute: typeof DashboardDashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/dashboard/admin': {
       id: '/dashboard/admin'
       path: '/dashboard/admin'
@@ -421,12 +441,12 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthLoginRoute: AuthLoginRoute,
   DashboardAdminRoute: DashboardAdminRoute,
-  DashboardDashboardRoute: DashboardDashboardRoute,
   DashboardDirectorsRoute: DashboardDirectorsRoute,
   DashboardFacultiesRoute: DashboardFacultiesRoute,
   DashboardFormBuilderRoute: DashboardFormBuilderRoute,
   DashboardGraduationModalitiesRoute: DashboardGraduationModalitiesRoute,
   DashboardModalitiesRoute: DashboardModalitiesRoute,
+  DashboardPeriodsRoute: DashboardPeriodsRoute,
   DashboardProgramsRoute: DashboardProgramsRoute,
   DashboardTableRoute: DashboardTableRoute,
   DemoFormIdRoute: DemoFormIdRoute,
@@ -436,6 +456,7 @@ const rootRouteChildren: RootRouteChildren = {
   ScholarshipReportFormIdRoute: ScholarshipReportFormIdRoute,
   StudentReportFormIdRoute: StudentReportFormIdRoute,
   TeacherReportFormIdRoute: TeacherReportFormIdRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
   DashboardReportsTemplateIdModuleRoute: DashboardReportsTemplateIdModuleRoute,
 }
 export const routeTree = rootRouteImport

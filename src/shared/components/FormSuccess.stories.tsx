@@ -32,6 +32,7 @@ export const Completion: StoryObj<typeof FormSuccess> = {
 			{
 				template: {
 					id: "template-1",
+					periodId: "2026",
 					title: "Reporte de Docentes",
 					module: FormModules.teacher,
 					step: 1,
@@ -43,6 +44,7 @@ export const Completion: StoryObj<typeof FormSuccess> = {
 					{
 						id: "response-1",
 						templateId: "template-1",
+						periodId: "2026",
 						module: FormModules.teacher,
 						submittedBy: "roberto@example.com",
 						facultyId: "fac-1",
@@ -74,6 +76,7 @@ export const Readonly: StoryObj<typeof FormSuccess> = {
 			{
 				template: {
 					id: "template-1",
+					periodId: "2026",
 					title: "Reporte de Docentes",
 					module: FormModules.teacher,
 					step: 1,
@@ -85,6 +88,7 @@ export const Readonly: StoryObj<typeof FormSuccess> = {
 					{
 						id: "response-1",
 						templateId: "template-1",
+						periodId: "2026",
 						module: FormModules.teacher,
 						submittedBy: "roberto@example.com",
 						facultyId: "fac-1",

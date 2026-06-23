@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { onAuthStateChanged } from "firebase/auth";
 import {
 	addDoc,
 	collection,
@@ -11,31 +12,50 @@ import {
 	updateDoc,
 } from "firebase/firestore";
 import { useEffect } from "react";
-import { db } from "#/shared/lib/firebase";
+import { auth, db } from "#/shared/lib/firebase";
 import type { Faculty } from "#/shared/types";
 
 export const useFaculties = () => {
 	const queryClient = useQueryClient();
 
 	useEffect(() => {
-		const q = query(collection(db, "faculties"), orderBy("id", "asc"));
+		let unsubscribeFirestore: (() => void) | null = null;
 
-		const unsubscribe = onSnapshot(
-			q,
-			(snapshot) => {
-				const faculties = snapshot.docs.map((docSnap) => ({
-					docId: docSnap.id,
-					...docSnap.data(),
-				})) as Faculty[];
+		const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+			if (user) {
+				if (unsubscribeFirestore) return;
 
-				queryClient.setQueryData(["faculties"], faculties);
-			},
-			(error) => {
-				console.error("Error escuchando facultades:", error);
-			},
-		);
+				const q = query(collection(db, "faculties"), orderBy("id", "asc"));
 
-		return () => unsubscribe();
+				unsubscribeFirestore = onSnapshot(
+					q,
+					(snapshot) => {
+						const faculties = snapshot.docs.map((docSnap) => ({
+							docId: docSnap.id,
+							...docSnap.data(),
+						})) as Faculty[];
+
+						queryClient.setQueryData(["faculties"], faculties);
+					},
+					(error) => {
+						console.error("Error escuchando facultades:", error);
+					},
+				);
+			} else {
+				if (unsubscribeFirestore) {
+					unsubscribeFirestore();
+					unsubscribeFirestore = null;
+				}
+				queryClient.setQueryData(["faculties"], []);
+			}
+		});
+
+		return () => {
+			unsubscribeAuth();
+			if (unsubscribeFirestore) {
+				unsubscribeFirestore();
+			}
+		};
 	}, [queryClient]);
 
 	return useQuery({

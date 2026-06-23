@@ -3,6 +3,7 @@ import {
 	ArrowDown01Icon,
 	ArrowRight01Icon,
 	AwardIcon,
+	Calendar,
 	DoorIcon,
 	Home02Icon,
 	Logout01Icon,
@@ -14,18 +15,17 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import * as React from "react";
+import { usePeriodState } from "#/app/providers/period-provider";
 import { useLogout } from "#/features/auth/hooks/useAuth";
 import { useAuth } from "#/features/auth/providers/AuthProvider";
-import {
-	useDynamicMenuItemsGrouped,
-	useDynamicResultsMenuItemsGrouped,
-} from "#/shared/hooks/useDynamicMenuItemsGrouped";
+import { useDynamicResultsMenuItemsGrouped } from "#/shared/hooks/useDynamicMenuItemsGrouped";
 import {
 	type IconSvgObject,
 	type MenuItem,
 	type MenuItemGroup,
 	Role,
 } from "#/shared/types";
+import { Badge } from "#/shared/ui/badge";
 import { Button } from "#/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "#/shared/ui/card";
 import {
@@ -40,6 +40,13 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "#/shared/ui/dropdown-menu";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "#/shared/ui/select";
 import {
 	Sidebar,
 	SidebarContent,
@@ -57,7 +64,6 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "#/shared/ui/tooltip";
 import logoUATF from "/dsa-icon.png";
 import ThemeToggle from "./ThemeToggle";
-import { Badge } from "#/shared/ui/badge";
 
 type NavItem = {
 	label: string;
@@ -69,7 +75,7 @@ type NavItem = {
 const PRIMARY_NAV: NavItem[] = [
 	{
 		label: "Dashboard",
-		to: "/dashboard/dashboard",
+		to: "/dashboard",
 		icon: Home02Icon,
 		roles: [Role.ADMIN, Role.DIRECTOR],
 	},
@@ -127,6 +133,12 @@ const ADMIN_MANAGEMENT_NAV: NavItem[] = [
 		icon: AwardIcon,
 		roles: [Role.ADMIN],
 	},
+	{
+		label: "Periodos",
+		to: "/dashboard/periods",
+		icon: Calendar,
+		roles: [Role.ADMIN],
+	},
 ];
 
 export function DashboardSidebar({
@@ -137,7 +149,6 @@ export function DashboardSidebar({
 		"website-copy",
 	]);
 
-	const workgroups = useDynamicMenuItemsGrouped();
 	const resultGroups = useDynamicResultsMenuItemsGrouped();
 
 	const toggleItem = (id: string) => {
@@ -149,6 +160,8 @@ export function DashboardSidebar({
 	const logoutMutation = useLogout();
 	const { isAuthenticated, isLoading, userRole, faculty, program, user } =
 		useAuth();
+	const { selectedPeriod, selectedPeriodId, setSelectedPeriodId, periods } =
+		usePeriodState();
 	const isDirector = userRole === "director";
 	const navigate = useNavigate();
 	const isAdmin = userRole === "administrator";
@@ -348,6 +361,45 @@ export function DashboardSidebar({
 						</DropdownMenuGroup>
 					</DropdownMenuContent>
 				</DropdownMenu>
+				{isAuthenticated && (
+					<div className="mt-3 px-1">
+						{isDirector ? (
+							<div className="flex flex-col gap-1 px-3 py-2 text-xs text-muted-foreground bg-accent/40 rounded-lg border border-border/40">
+								<span className="font-semibold text-foreground">
+									Gestión Actual:
+								</span>
+								<span className="truncate">
+									{selectedPeriod?.name || "Cargando..."}
+								</span>
+							</div>
+						) : (
+							<div className="space-y-1">
+								<span className="text-[10px] font-semibold tracking-wider text-muted-foreground/70 uppercase">
+									Gestión Académica
+								</span>
+								<Select
+									value={selectedPeriodId}
+									onValueChange={setSelectedPeriodId}
+								>
+									<SelectTrigger className="w-full h-8 text-xs bg-accent/40 dark:bg-input/20 border-border/40">
+										<SelectValue placeholder="Seleccionar Periodo" />
+									</SelectTrigger>
+									<SelectContent position="popper" className="w-56">
+										{periods.map((p) => (
+											<SelectItem
+												key={p.id}
+												value={p.id}
+												className={`text-xs bg-slate-100 flex justify-between`}
+											>
+												{p.name.replace("Academica ", "")}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+							</div>
+						)}
+					</div>
+				)}
 			</SidebarHeader>
 
 			<SidebarContent className="px-2.5">
@@ -392,60 +444,48 @@ export function DashboardSidebar({
 						</SidebarGroup>
 
 						{isAdmin && (
-							<>
-								<SidebarGroup className="p-0 mt-4">
-									<SidebarGroupLabel className="flex items-center justify-between px-0 h-6">
-										<span className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground/70">
-											Administración
-										</span>
-									</SidebarGroupLabel>
-									<SidebarGroupContent>
-										<SidebarMenu>
-											{allowedAdminManagementNav.map((item) => (
-												<SidebarMenuItem key={item.to}>
-													<Link to={item.to}>
-														<SidebarMenuButton className="h-8 text-sm rounded-lg hover:bg-accent/60 transition-all duration-200">
-															<HugeiconsIcon
-																icon={item.icon}
-																className="size-3.5"
-															/>
-															<span>{item.label}</span>
-														</SidebarMenuButton>
-													</Link>
-												</SidebarMenuItem>
-											))}
-										</SidebarMenu>
-									</SidebarGroupContent>
-								</SidebarGroup>
+							<SidebarGroup className="p-0 mt-4">
+								<SidebarGroupLabel className="flex items-center justify-between px-0 h-6">
+									<span className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground/70">
+										Administración
+									</span>
+								</SidebarGroupLabel>
+								<SidebarGroupContent>
+									<SidebarMenu>
+										{allowedAdminManagementNav.map((item) => (
+											<SidebarMenuItem key={item.to}>
+												<Link to={item.to}>
+													<SidebarMenuButton className="h-8 text-sm rounded-lg hover:bg-accent/60 transition-all duration-200">
+														<HugeiconsIcon
+															icon={item.icon}
+															className="size-3.5"
+														/>
+														<span>{item.label}</span>
+													</SidebarMenuButton>
+												</Link>
+											</SidebarMenuItem>
+										))}
+									</SidebarMenu>
+								</SidebarGroupContent>
+							</SidebarGroup>
+						)}
 
-								<SidebarGroup className="p-0 mt-4">
-									<SidebarGroupLabel className="flex items-center justify-between px-0 h-6">
-										<span className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground/70">
-											Resultados
-										</span>
-									</SidebarGroupLabel>
-									<SidebarGroupContent>
-										<SidebarMenu>
-											{resultGroups.map((item) => renderWorkgroupItem(item))}
-										</SidebarMenu>
-									</SidebarGroupContent>
-								</SidebarGroup>
-							</>
+						{(isAdmin || isDirector) && (
+							<SidebarGroup className="p-0 mt-4">
+								<SidebarGroupLabel className="flex items-center justify-between px-0 h-6">
+									<span className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground/70 font-display">
+										Reportes de Gestión
+									</span>
+								</SidebarGroupLabel>
+								<SidebarGroupContent>
+									<SidebarMenu>
+										{resultGroups.map((item) => renderWorkgroupItem(item))}
+									</SidebarMenu>
+								</SidebarGroupContent>
+							</SidebarGroup>
 						)}
 					</>
 				)}
-				<SidebarGroup className="p-0 mt-4">
-					<SidebarGroupLabel className="flex items-center justify-between px-0 h-6">
-						<span className="text-[10px] font-semibold tracking-widest uppercase text-muted-foreground/70">
-							Formularios
-						</span>
-					</SidebarGroupLabel>
-					<SidebarGroupContent>
-						<SidebarMenu>
-							{workgroups.map((item) => renderWorkgroupItem(item))}
-						</SidebarMenu>
-					</SidebarGroupContent>
-				</SidebarGroup>
 			</SidebarContent>
 
 			<SidebarFooter className="px-2.5 pb-3 group-data-[collapsible=icon]:hidden">

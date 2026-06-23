@@ -21,15 +21,18 @@ const fieldTypeOptions: Array<{ label: string; value: FieldType }> = [
 	{ label: "Select", value: "select" },
 ];
 
-function createBlankTemplate(): FormTemplateDef {
+function createBlankTemplate(periodId = "", hasBulk = false): FormTemplateDef {
 	return {
 		id: crypto.randomUUID(),
+		periodId,
 		title: "Nueva plantilla",
+		shortTitle: "Nueva plantilla",
 		description: "Describe el formulario aqui.",
 		module: FormModules.student,
 		isActive: true,
 		step: 99,
 		fields: [createDefaultField(1)],
+		hasBulk,
 	};
 }
 

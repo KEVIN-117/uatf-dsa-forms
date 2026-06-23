@@ -48,3 +48,12 @@ export interface DirectorSeedRaw {
 	faculty: string | null;
 	program: string;
 }
+
+export interface PeriodType {
+	id: string;
+	name: string;
+	isActive: boolean;
+	isClosed: boolean;
+	startDate: Date;
+	endDate: Date;
+}

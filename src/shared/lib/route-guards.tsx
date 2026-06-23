@@ -16,6 +16,6 @@ export async function requireRole(allowedRoles: Role[]) {
 	}
 	const role = await getCurrentRole();
 	if (!role || !allowedRoles.includes(role)) {
-		throw redirect({ to: "/dashboard/dashboard" });
+		throw redirect({ to: "/dashboard" });
 	}
 }

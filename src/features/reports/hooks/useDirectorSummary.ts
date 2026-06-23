@@ -21,18 +21,25 @@ const ALL_MODULES = Object.values(FormModules);
 const STALE_TIME = 5 * 60 * 1000;
 
 export function useDirectorSummary() {
-	const { user } = useAuth();
+	const { user, userRole, programId } = useAuth();
 	const { data: templates, isPending: isTemplatesPending } = useFormTemplates();
 	const email = user?.email ?? "";
 
 	const moduleQueries = useQueries({
 		queries: ALL_MODULES.map((module) => ({
-			queryKey: ["responses", module, "by-email", email],
+			queryKey: ["responses", module, "by-email", email, userRole, programId],
 			queryFn: async () => {
-				const q = query(
+				let q = query(
 					collection(db, module),
 					where("submittedBy", "==", email),
 				);
+				if (userRole === "director" && programId) {
+					q = query(
+						collection(db, module),
+						where("programId", "==", programId),
+						where("submittedBy", "==", email),
+					);
+				}
 				const snapshot = await getDocs(q);
 				return snapshot.docs.map((d) => d.data() as FormResponseDef);
 			},

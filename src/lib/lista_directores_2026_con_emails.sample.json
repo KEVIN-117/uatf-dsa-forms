@@ -31,5 +31,16 @@
 		"faculty": "FAC. DE CC EE FF Y AA",
 		"programId": "ECO",
 		"program": "Economia"
+	},
+	{
+		"email": "director.ejemplo4@programa4.edu.bo",
+		"name": "Nombre4",
+		"ci": "1000004-1E",
+		"paternalSurname": "ApellidoPaterno4",
+		"maternalSurname": "ApellidoMaterno4",
+		"facultyId": "D",
+		"faculty": "FAC. DE Humanidades y Cs. de la Educación",
+		"programId": "HUM",
+		"program": "Psicologia"
 	}
 ]

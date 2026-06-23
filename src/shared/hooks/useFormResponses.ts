@@ -12,12 +12,15 @@ import {
 	where,
 } from "firebase/firestore";
 import { useMemo } from "react";
+import { usePeriodState } from "#/app/providers/period-provider";
+import { useAuth } from "#/features/auth/providers/AuthProvider";
 import { db } from "#/shared/lib/firebase";
 import { Toast } from "../components/Toast";
 import { FormModules, type FormResponseDef } from "../types/dynamic-form";
 
 export function useSubmitFormResponse() {
 	const queryClient = useQueryClient();
+	const { selectedPeriodId } = usePeriodState();
 
 	return useMutation({
 		mutationFn: async (response: FormResponseDef) => {
@@ -26,6 +29,7 @@ export function useSubmitFormResponse() {
 			const responseToSave = {
 				...response,
 				id: newDocRef.id,
+				periodId: selectedPeriodId,
 				createdAt: Date.now(),
 			};
 
@@ -60,13 +64,34 @@ export function useSubmitFormResponse() {
 }
 
 export function useGetResponses(module: FormModules, templateId: string) {
+	const { selectedPeriodId } = usePeriodState();
+	const { userRole, user, programId } = useAuth();
+	const email = user?.email || "";
+
 	return useQuery({
-		queryKey: ["responses", module, templateId],
+		queryKey: [
+			"responses",
+			module,
+			templateId,
+			selectedPeriodId,
+			userRole,
+			email,
+			programId,
+		],
 		queryFn: async () => {
-			const q = query(
+			let q = query(
 				collection(db, module),
 				where("templateId", "==", templateId),
+				where("periodId", "==", selectedPeriodId),
 			);
+			if (userRole === "director" && programId) {
+				q = query(
+					collection(db, module),
+					where("templateId", "==", templateId),
+					where("periodId", "==", selectedPeriodId),
+					where("programId", "==", programId),
+				);
+			}
 
 			const snapshot = await getDocs(q);
 			const responses: FormResponseDef[] = [];
@@ -75,7 +100,12 @@ export function useGetResponses(module: FormModules, templateId: string) {
 			});
 			return responses.sort((a, b) => b.createdAt - a.createdAt);
 		},
-		enabled: !!module && !!templateId,
+		enabled:
+			!!module &&
+			!!templateId &&
+			!!selectedPeriodId &&
+			!!userRole &&
+			(userRole !== "director" || !!programId),
 	});
 }
 
@@ -105,12 +135,12 @@ export const useDeleteFormResponse = () => {
 				queryKey: ["responses"],
 			});
 			Toast({
-				title: "Éxito",
+				title: "Éxito, Respuesta eliminada correctamente",
 				type: "success",
 				duration: 5000,
 				closeButton: true,
 				position: "top-right",
-				message: "Respuesta eliminada correctamente",
+				message: "El registro ha sido eliminado correctamente.",
 			});
 		},
 		onError: (_error) => {
@@ -172,19 +202,38 @@ export const useUpdateFormResponse = () => {
 const ALL_MODULES = Object.values(FormModules);
 
 export const useAllResponses = () => {
-	return useQuery({
-		queryKey: ["responses", "all"],
+	const { selectedPeriodId } = usePeriodState();
+	const { userRole, user, programId } = useAuth();
+	const email = user?.email || "";
+
+	const queryResult = useQuery({
+		queryKey: ["responses", "all", userRole, email, programId],
 		queryFn: async () => {
 			const results = await Promise.all(
 				ALL_MODULES.map(async (mod) => {
-					const q = query(collection(db, mod), orderBy("createdAt", "desc"));
+					let q = query(collection(db, mod));
+					if (userRole === "director" && programId) {
+						q = query(collection(db, mod), where("programId", "==", programId));
+					}
 					const snapshot = await getDocs(q);
 					return snapshot.docs.map((doc) => doc.data() as FormResponseDef);
 				}),
 			);
 			return results.flat();
 		},
+		enabled: !!userRole && (userRole !== "director" || !!programId),
 	});
+	const filteredData = useMemo(() => {
+		if (!queryResult.data) return [];
+		return queryResult.data
+			.filter((r) => r.periodId === selectedPeriodId)
+			.sort((a, b) => b.createdAt - a.createdAt);
+	}, [queryResult.data, selectedPeriodId, userRole, email, programId]);
+
+	return {
+		...queryResult,
+		data: filteredData,
+	};
 };
 
 export const getResponsesById = (id: string, module: FormModules) => {

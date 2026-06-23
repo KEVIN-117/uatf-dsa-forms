@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { onAuthStateChanged } from "firebase/auth";
 import {
 	addDoc,
 	collection,
@@ -11,31 +12,50 @@ import {
 	updateDoc,
 } from "firebase/firestore";
 import { useEffect } from "react";
-import { db } from "#/shared/lib/firebase";
+import { auth, db } from "#/shared/lib/firebase";
 import type { GraduationModality, Modality } from "#/shared/types";
 
 export const useModalities = () => {
 	const queryClient = useQueryClient();
 
 	useEffect(() => {
-		const q = query(collection(db, "modalities"), orderBy("id", "asc"));
+		let unsubscribeFirestore: (() => void) | null = null;
 
-		const unsubscribe = onSnapshot(
-			q,
-			(snapshot) => {
-				const modalities = snapshot.docs.map((docSnap) => ({
-					docId: docSnap.id,
-					...docSnap.data(),
-				})) as Modality[];
+		const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+			if (user) {
+				if (unsubscribeFirestore) return;
 
-				queryClient.setQueryData(["modalities"], modalities);
-			},
-			(error) => {
-				console.error("Error escuchando modalidades:", error);
-			},
-		);
+				const q = query(collection(db, "modalities"), orderBy("id", "asc"));
 
-		return () => unsubscribe();
+				unsubscribeFirestore = onSnapshot(
+					q,
+					(snapshot) => {
+						const modalities = snapshot.docs.map((docSnap) => ({
+							docId: docSnap.id,
+							...docSnap.data(),
+						})) as Modality[];
+
+						queryClient.setQueryData(["modalities"], modalities);
+					},
+					(error) => {
+						console.error("Error escuchando modalidades:", error);
+					},
+				);
+			} else {
+				if (unsubscribeFirestore) {
+					unsubscribeFirestore();
+					unsubscribeFirestore = null;
+				}
+				queryClient.setQueryData(["modalities"], []);
+			}
+		});
+
+		return () => {
+			unsubscribeAuth();
+			if (unsubscribeFirestore) {
+				unsubscribeFirestore();
+			}
+		};
 	}, [queryClient]);
 
 	return useQuery({
@@ -50,30 +70,49 @@ export const useGraduationModalities = () => {
 	const queryClient = useQueryClient();
 
 	useEffect(() => {
-		const q = query(
-			collection(db, "graduation_modalities"),
-			orderBy("id", "asc"),
-		);
+		let unsubscribeFirestore: (() => void) | null = null;
 
-		const unsubscribe = onSnapshot(
-			q,
-			(snapshot) => {
-				const graduationModalities = snapshot.docs.map((docSnap) => ({
-					docId: docSnap.id,
-					...docSnap.data(),
-				})) as GraduationModality[];
+		const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+			if (user) {
+				if (unsubscribeFirestore) return;
 
-				queryClient.setQueryData(
-					["graduationModalities"],
-					graduationModalities,
+				const q = query(
+					collection(db, "graduation_modalities"),
+					orderBy("id", "asc"),
 				);
-			},
-			(error) => {
-				console.error("Error escuchando modalidades de graduación:", error);
-			},
-		);
 
-		return () => unsubscribe();
+				unsubscribeFirestore = onSnapshot(
+					q,
+					(snapshot) => {
+						const graduationModalities = snapshot.docs.map((docSnap) => ({
+							docId: docSnap.id,
+							...docSnap.data(),
+						})) as GraduationModality[];
+
+						queryClient.setQueryData(
+							["graduationModalities"],
+							graduationModalities,
+						);
+					},
+					(error) => {
+						console.error("Error escuchando modalidades de graduación:", error);
+					},
+				);
+			} else {
+				if (unsubscribeFirestore) {
+					unsubscribeFirestore();
+					unsubscribeFirestore = null;
+				}
+				queryClient.setQueryData(["graduationModalities"], []);
+			}
+		});
+
+		return () => {
+			unsubscribeAuth();
+			if (unsubscribeFirestore) {
+				unsubscribeFirestore();
+			}
+		};
 	}, [queryClient]);
 
 	return useQuery({

@@ -1,8 +1,8 @@
 // reset.js
-import admin from "firebase-admin";
 
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
+import admin from "firebase-admin";
 
 const serviceAccount = JSON.parse(
 	fs.readFileSync(

@@ -1,6 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
+import { usePeriodState } from "#/app/providers/period-provider";
 import { useAuth } from "#/features/auth/providers/AuthProvider";
 import { useMarkStepCompleted } from "#/features/reports/hooks/useDirectorProgress";
 import { Toast } from "#/shared/components/Toast";
@@ -12,10 +13,12 @@ export const useBulkSubmission = (
 	formId: string,
 	baseCols: ColumnDef<Record<string, unknown>, any>[],
 	template?: FormTemplateDef,
+	onSuccess?: () => void,
 ) => {
 	const { mutateAsync } = useSubmitFormResponse();
 	const { mutateAsync: markStepCompleted } = useMarkStepCompleted();
 	const { user, faculty, facultyId, program, programId } = useAuth();
+	const { selectedPeriodId } = usePeriodState();
 
 	const navigate = useNavigate();
 	const nextUrl = useGetNextTemplateUrl(formId);
@@ -161,6 +164,7 @@ export const useBulkSubmission = (
 				await mutateAsync({
 					id: crypto.randomUUID(),
 					templateId: template.id,
+					periodId: selectedPeriodId,
 					module: template.module,
 					submittedBy: submittedBy as string,
 					createdAt: createdAt as number,
@@ -184,7 +188,9 @@ export const useBulkSubmission = (
 				message: `Se registraron ${data.length} registros correctamente.`,
 			});
 			setData([]);
-			if (nextUrl) {
+			if (onSuccess) {
+				onSuccess();
+			} else if (nextUrl) {
 				navigate({ to: nextUrl, replace: true });
 			} else {
 				Toast({

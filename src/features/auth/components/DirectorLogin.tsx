@@ -59,7 +59,7 @@ export function DirectorLogin({ onSuccess }: DirectorLoginProps) {
 				});
 				form.reset();
 				onSuccess?.();
-				navigate({ to: "/dashboard/dashboard" });
+				navigate({ to: "/dashboard" });
 			} catch (error: unknown) {
 				Toast({
 					title: "Error de acceso",

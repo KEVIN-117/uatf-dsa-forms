@@ -28,98 +28,99 @@ code {
    TEMA CLARO (Default - Institucional)
    ========================================= */
 :root {
-  /* Fondos y textos - Blanco nítido y gris oscuro */
-  --background: oklch(0.99 0.01 250);
-  --foreground: oklch(0.2 0.02 250);
+  /* Fondos y textos - Pergamino Académico mate y Tinta de Escribano */
+  --background: oklch(0.97 0.01 75);
+  --foreground: oklch(0.22 0.01 250);
 
-  /* Tarjetas y superficies */
+  /* Tarjetas y superficies - Tiza Pura */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.02 250);
+  --card-foreground: oklch(0.22 0.01 250);
 
-  /* Color Institucional (Azul Académico) */
-  --primary: oklch(0.45 0.15 250);
-  --primary-foreground: oklch(0.98 0.01 250);
+  /* Color Institucional (Borgoña UATF) */
+  --primary: oklch(0.35 0.15 20);
+  --primary-foreground: oklch(0.98 0.01 75);
 
-  /* Acento Secundario (Oro/Amarillo Excelencia) */
-  --secondary: oklch(0.85 0.15 85);
-  --secondary-foreground: oklch(0.2 0.02 250);
+  /* Acento Secundario (Oro Cerro Rico) */
+  --secondary: oklch(0.92 0.03 75);
+  --secondary-foreground: oklch(0.35 0.15 20);
 
   /* Tonos neutros para textos secundarios */
-  --muted: oklch(0.95 0.01 250);
-  --muted-foreground: oklch(0.45 0.02 250);
+  --muted: oklch(0.94 0.01 75);
+  --muted-foreground: oklch(0.48 0.02 250);
 
-  /* Acentos interactivos (Azul claro/Celeste) */
-  --accent: oklch(0.92 0.05 250);
-  --accent-foreground: oklch(0.3 0.1 250);
+  /* Acentos interactivos (Oro translúcido) */
+  --accent: oklch(0.92 0.05 80);
+  --accent-foreground: oklch(0.35 0.15 20);
 
   /* Estados de error/alerta */
   --destructive: oklch(0.55 0.2 25);
   --destructive-foreground: oklch(0.98 0 0);
 
   /* Elementos UI */
-  --border: oklch(0.9 0.02 250);
-  --input: oklch(0.9 0.02 250);
-  --ring: oklch(0.45 0.15 250);
+  --border: oklch(0.88 0.01 250);
+  --input: oklch(0.88 0.01 250);
+  --ring: oklch(0.35 0.15 20);
 
   /* Gráficos y estadísticas */
-  --chart-1: oklch(0.45 0.15 250); /* Azul */
-  --chart-2: oklch(0.85 0.15 85); /* Oro */
+  --chart-1: oklch(0.35 0.15 20); /* Borgoña */
+  --chart-2: oklch(0.77 0.15 80); /* Oro */
   --chart-3: oklch(0.6 0.15 150); /* Verde éxito */
   --chart-4: oklch(0.7 0.1 300); /* Púrpura */
   --chart-5: oklch(0.65 0.18 25); /* Naranja */
 
-  --radius: 0.5rem; /* Bordes ligeramente más cuadrados, formales */
+  --radius: 0.25rem; /* Bordes ligeramente más cuadrados, formales */
 
-  /* Sidebar Institucional */
-  --sidebar: oklch(0.98 0.01 250);
-  --sidebar-foreground: oklch(0.2 0.02 250);
-  --sidebar-primary: oklch(0.45 0.15 250);
-  --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.92 0.05 250);
-  --sidebar-accent-foreground: oklch(0.3 0.1 250);
-  --sidebar-border: oklch(0.9 0.02 250);
-  --sidebar-ring: oklch(0.45 0.15 250);
+  /* Sidebar Institucional (Pergamino & Borgoña) */
+  --sidebar: oklch(0.96 0.01 75);
+  --sidebar-foreground: oklch(0.22 0.01 250);
+  --sidebar-primary: oklch(0.35 0.15 20);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.92 0.03 75);
+  --sidebar-accent-foreground: oklch(0.35 0.15 20);
+  --sidebar-border: oklch(0.88 0.01 250);
+  --sidebar-ring: oklch(0.35 0.15 20);
 }
 
 /* =========================================
    TEMA OSCURO (Lectura nocturna para estudiantes)
    ========================================= */
 .dark {
-  /* Fondo azul marino muy oscuro, menos cansado que el negro puro */
-  --background: oklch(0.2 0.02 250);
-  --foreground: oklch(0.95 0.01 250);
+  /* Fondo Tinta de Escribano oscura */
+  --background: oklch(0.18 0.01 250);
+  --foreground: oklch(0.95 0.01 75);
 
-  --card: oklch(0.23 0.02 250);
-  --card-foreground: oklch(0.95 0.01 250);
+  --card: oklch(0.21 0.01 250);
+  --card-foreground: oklch(0.95 0.01 75);
 
-  /* Azul más brillante para contrastar en fondo oscuro */
-  --primary: oklch(0.65 0.15 250);
-  --primary-foreground: oklch(0.15 0.02 250);
+  /* Borgoña brillante para contrastar en fondo oscuro */
+  --primary: oklch(0.45 0.16 20);
+  --primary-foreground: oklch(0.18 0.01 250);
 
-  --secondary: oklch(0.3 0.05 250);
-  --secondary-foreground: oklch(0.95 0.01 250);
+  --secondary: oklch(0.26 0.01 250);
+  --secondary-foreground: oklch(0.95 0.01 75);
 
-  --muted: oklch(0.28 0.02 250);
-  --muted-foreground: oklch(0.7 0.02 250);
+  --muted: oklch(0.24 0.01 250);
+  --muted-foreground: oklch(0.65 0.01 250);
 
-  --accent: oklch(0.3 0.05 250);
-  --accent-foreground: oklch(0.95 0.01 250);
+  --accent: oklch(0.26 0.02 80);
+  --accent-foreground: oklch(0.95 0.01 75);
 
   --destructive: oklch(0.45 0.2 25);
   --destructive-foreground: oklch(0.95 0 0);
 
-  --border: oklch(0.3 0.02 250);
-  --input: oklch(0.3 0.02 250);
-  --ring: oklch(0.65 0.15 250);
+  --border: oklch(0.28 0.01 250);
+  --input: oklch(0.28 0.01 250);
+  --ring: oklch(0.45 0.16 20);
 
-  --sidebar: oklch(0.18 0.02 250);
-  --sidebar-foreground: oklch(0.95 0.01 250);
-  --sidebar-primary: oklch(0.65 0.15 250);
-  --sidebar-primary-foreground: oklch(0.15 0.02 250);
-  --sidebar-accent: oklch(0.28 0.02 250);
-  --sidebar-accent-foreground: oklch(0.95 0.01 250);
-  --sidebar-border: oklch(0.3 0.02 250);
-  --sidebar-ring: oklch(0.65 0.15 250);
+  /* Sidebar Oscura (Fondo muy oscuro, textos claros y detalles Borgoña) */
+  --sidebar: oklch(0.16 0.01 250);
+  --sidebar-foreground: oklch(0.95 0.01 75);
+  --sidebar-primary: oklch(0.45 0.16 20);
+  --sidebar-primary-foreground: oklch(0.16 0.01 250);
+  --sidebar-accent: oklch(0.24 0.01 250);
+  --sidebar-accent-foreground: oklch(0.95 0.01 75);
+  --sidebar-border: oklch(0.25 0.01 250);
+  --sidebar-ring: oklch(0.45 0.16 20);
 }
 
 /* =========================================
@@ -170,6 +171,12 @@ code {
   /* Colores personalizados explícitos por si los necesitas en clases sueltas */
   --color-edu-blue: oklch(0.45 0.15 250);
   --color-edu-gold: oklch(0.85 0.15 85);
+
+  /* Colores de identidad de Potosí y UATF para la landing page */
+  --color-copper: oklch(0.48 0.12 40);
+  --color-copper-light: oklch(0.68 0.10 40);
+  --color-cream: oklch(0.97 0.01 75);
+  --color-gold: oklch(0.77 0.15 80);
 }
 
 @layer base {
@@ -178,6 +185,14 @@ code {
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-body);
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    @apply font-bold tracking-tight text-foreground/90;
+  }
+  [data-slot="card-title"] {
+    font-family: var(--font-display);
   }
 }
 
@@ -419,7 +434,7 @@ code {
 .form-field-premium:focus,
 .form-field-premium:focus-within {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px oklch(0.45 0.15 250 / 0.08);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 12%, transparent);
 }
 
 .form-field-premium::placeholder {
