@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import { BarChart3, FileSpreadsheet, Pencil, Plus, Trash2 } from "lucide-react";
+import { BarChart3, Pencil, Plus, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { usePeriodState } from "#/app/providers/period-provider";
 import { useProtectedRoute } from "#/features/auth/hooks/useProtectedRoute";
@@ -180,11 +180,11 @@ export function ResponsesPanel({
 							...field,
 							options: isFollowUpForm
 								? field.options.filter((opt) =>
-										modalityFilter.includes(String(opt.label)),
-									)
+									modalityFilter.includes(String(opt.label)),
+								)
 								: field.options.filter((opt) =>
-										modalityFilter.includes(String(opt.value)),
-									),
+									modalityFilter.includes(String(opt.value)),
+								),
 						};
 					}
 					return field;
@@ -520,7 +520,7 @@ export function ResponsesPanel({
 					{responses.length} registros
 				</Badge>
 				<div className="flex-1" />
-				{userRole === "administrator" && (
+				{/* {userRole === "administrator" && (
 					<Button
 						variant="outline"
 						className="font-semibold text-primary border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors"
@@ -528,8 +528,8 @@ export function ResponsesPanel({
 						<FileSpreadsheet className="size-4 mr-2" />
 						Exportar a Excel
 					</Button>
-				)}
-				{!isReadOnly && !isStepLocked && (
+				)} */}
+				{!isReadOnly && !isStepLocked && userRole === "director" && (
 					<Button
 						onClick={() => setCreateSheetOpen(true)}
 						className="font-semibold"

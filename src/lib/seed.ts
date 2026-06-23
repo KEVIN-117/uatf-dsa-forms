@@ -195,11 +195,11 @@ export async function seedFormResponses() {
 		directors.length > 0
 			? directors.map((d) => d.email)
 			: [
-					"sheylajahel.cadiz@lef.edu.bo",
-					"juanvirgilio.silva@tmc.edu.bo",
-					"ovidiolucio.copa@tuu.edu.bo",
-					"neil.alfaro@ctt.edu.bo",
-				];
+				"sheylajahel.cadiz@lef.edu.bo",
+				"juanvirgilio.silva@tmc.edu.bo",
+				"ovidiolucio.copa@tuu.edu.bo",
+				"neil.alfaro@ctt.edu.bo",
+			];
 
 	const directorMetaByEmail = new Map(
 		directors.map((director) => [
@@ -610,8 +610,8 @@ export async function runSeed() {
 		await seedScholarshipsTypes();
 		await seedFormFields();
 		if (process.env.NODE_ENV !== "production") {
-			// await seedFormResponses();
-			// await seedSpecificDirectorsData();
+			await seedFormResponses();
+			await seedSpecificDirectorsData();
 		}
 
 		console.log("🎉 Proceso de siembra finalizado con éxito.");
