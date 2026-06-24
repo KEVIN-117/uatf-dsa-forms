@@ -110,7 +110,10 @@ function CompletionFlow({
 
 	useEffect(() => {
 		if (!isLoading && !dismissed) {
-			setDialogOpen(true);
+			const timer = setTimeout(() => {
+				setDialogOpen(true);
+			}, 100);
+			return () => clearTimeout(timer);
 		}
 	}, [isLoading, dismissed]);
 
@@ -127,7 +130,7 @@ function CompletionFlow({
 
 			<AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
 				<AlertDialogContent className="max-w-md p-0 border-none bg-transparent shadow-none">
-					<SuccessCard />
+					<SuccessCard variant="minimal" />
 					<AlertDialogFooter className="px-6 pb-6 pt-0 justify-center">
 						<AlertDialogAction
 							onClick={handleContinue}

@@ -37,6 +37,10 @@ export interface FormTemplateDef {
 	isActive: boolean;
 	fields: FormFieldDef[];
 	hasBulk: boolean;
+	/** Si es true, permite múltiples envíos (uno por opción de select).
+	 *  Si es false, solo se permite un envío.
+	 *  Si es undefined, se infiere: tiene campo select con options → multi, sino → single. */
+	allowMultipleSubmissions?: boolean;
 }
 
 export interface FormResponseDef {

@@ -50,8 +50,7 @@ export function DynamicForm({
 }: DynamicFormProps) {
 	const period = usePeriodById(template.periodId);
 	const isEditing = editMode.type === "single";
-	// Compute defaultValues from initialValues when in edit mode,
-	// so the form mounts already pre-filled instead of relying on setFieldValue after mount
+
 	const defaultValues = useMemo(() => {
 		const base: Record<string, any> = {};
 
@@ -96,6 +95,9 @@ export function DynamicForm({
 
 	const formValues = useStore(form.store, (state) => state.values);
 
+	/**
+	 * Calcula el total de los campos numéricos y actualiza el campo total si es necesario.
+	 */
 	useEffect(() => {
 		if (!totalField || !totalKey) return;
 
@@ -124,7 +126,10 @@ export function DynamicForm({
 		}
 	}, [resetForm, form, setResetForm]);
 
-	// Encontrar la key del campo "modalidad" para usarlo en validación cruzada
+	/**
+	 * Busca el campo de modalidad en el template y retorna su key composite (fieldId@fieldName).
+	 * @returns La key del campo de modalidad o null si no se encuentra.
+	 */
 	const modalityFieldKey = useMemo(() => {
 		const modalityField = template.fields.find(
 			(f) =>

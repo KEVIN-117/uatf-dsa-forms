@@ -16,6 +16,7 @@ import {
 	useSubmittedResponseLimits,
 	useSubmittedTotals,
 } from "#/features/reports/hooks/useSubmittedModalidades";
+import { useSubmissionGuard } from "#/features/reports/hooks/useSubmissionGuard";
 import { ScholarshipReport } from "#/features/reports/scholarship";
 import { StudentReport } from "#/features/reports/student";
 import { TeacherReport } from "#/features/reports/teacher";
@@ -55,6 +56,7 @@ import {
 	SheetTitle,
 } from "#/shared/ui/sheet";
 import { Tooltip, TooltipContent, TooltipTrigger } from "#/shared/ui/tooltip";
+import type { Role } from "#/shared/types";
 
 interface ResponsePanelProps {
 	formId: string;
@@ -229,6 +231,53 @@ export function ResponsesPanel({
 		allowedGraduationModalities,
 	]);
 
+	// Respuestas del director actual (para la guardia de envíos)
+	const directorResponses = useMemo(() => {
+		if (userRole !== "director") return [];
+		return responses.filter((r) => r.submittedBy === user?.email);
+	}, [responses, userRole, user?.email]);
+
+	const submissionGuard = useSubmissionGuard(template, directorResponses, userRole ?? "");
+
+	/**
+	 * Template con las opciones de select ya usadas removidas.
+	 * Se aplica sobre el filteredTemplate para no perder los filtros de modalidad existentes.
+	 * Solo actúa cuando el guard detecta un formulario multi-submit con opciones usadas.
+	 */
+	const guardedTemplate = useMemo(() => {
+		const base = filteredTemplate || template;
+		if (!base) return null;
+		if (
+			userRole !== "director" ||
+			submissionGuard.submissionType !== "multi" ||
+			!submissionGuard.selectFieldName ||
+			submissionGuard.usedSelectValues.length === 0
+		) {
+			return base;
+		}
+
+		return {
+			...base,
+			fields: base.fields.map((field) => {
+				if (
+					field.name === submissionGuard.selectFieldName &&
+					field.type === "select" &&
+					field.options
+				) {
+					return {
+						...field,
+						options: field.options.filter(
+							(opt) =>
+								!submissionGuard.usedSelectValues.includes(String(opt.label)),
+						),
+					};
+				}
+				return field;
+			}),
+		} as FormTemplateDef;
+	}, [filteredTemplate, template, submissionGuard, userRole]);
+
+
 	const handleUpdateResponse = async (
 		submittedData: Record<string, any>,
 		moduleName: string,
@@ -283,6 +332,21 @@ export function ResponsesPanel({
 	};
 
 	const isEmbedded = variant === "embedded";
+
+	const translateModuleName = (module: FormModules) => {
+		switch (module) {
+			case FormModules.student:
+				return "Estudiantes";
+			case FormModules.graduate:
+				return "Graduados";
+			case FormModules.teacher:
+				return "Docentes";
+			case FormModules.scholarships:
+				return "Becas";
+			default:
+				return module;
+		}
+	};
 
 	useEffect(() => {
 		if (template && template.periodId !== selectedPeriodId) {
@@ -347,6 +411,8 @@ export function ResponsesPanel({
 			setSelectedProgramId("all");
 		}
 	}, [programOptions, selectedProgramId]);
+
+
 
 	const filteredResponses = useMemo(() => {
 		let list = responses;
@@ -511,7 +577,7 @@ export function ResponsesPanel({
 					variant="outline"
 					className="text-xs px-3 py-1 border-primary/30 bg-primary/5 text-primary"
 				>
-					{template.module.toUpperCase()}
+					{translateModuleName(template.module).toUpperCase()}
 				</Badge>
 				<Badge
 					variant="outline"
@@ -533,9 +599,12 @@ export function ResponsesPanel({
 					<Button
 						onClick={() => setCreateSheetOpen(true)}
 						className="font-semibold"
+						disabled={!submissionGuard.canSubmit}
 					>
 						<Plus className="size-4 mr-2" />
-						Registrar Reporte
+						{submissionGuard.canSubmit
+							? "Registrar Reporte"
+							: submissionGuard.disabledReason}
 					</Button>
 				)}
 			</div>
@@ -605,6 +674,7 @@ export function ResponsesPanel({
 							columns={columns}
 							data={filteredResponses}
 							showColumnToggle
+							role={userRole as Role}
 						/>
 					)}
 				</CardContent>
@@ -644,7 +714,7 @@ export function ResponsesPanel({
 			{createSheetOpen && template && (
 				<EntityFormSheet
 					title={`Registrar Reporte: ${template.shortTitle || template.title}`}
-					description={`Módulo: ${template.module.toUpperCase()} • Ingresa los datos correspondientes.`}
+					description={`Módulo: ${translateModuleName(template.module).toUpperCase()} • Ingresa los datos correspondientes.`}
 					open={createSheetOpen}
 					onOpenChange={setCreateSheetOpen}
 					className={

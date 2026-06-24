@@ -208,6 +208,40 @@ export const useReportSubmission = (
 		});
 	};
 
+	const skipForm = async () => {
+		if (!template) return;
+		try {
+			await markStepCompleted(template.step);
+			Toast({
+				title: "Formulario Omitido",
+				type: "success",
+				message: `Has omitido el formulario ${template.title}.`,
+			});
+			if (onSuccess) {
+				onSuccess();
+			} else if (nextUrl) {
+				navigate({ to: nextUrl, replace: true });
+			} else {
+				Toast({
+					title: "¡Proceso Completado!",
+					type: "success",
+					message: "Has finalizado todos los formularios requeridos.",
+				});
+				navigate({
+					to: "/formStatus/success",
+					search: { completed: true },
+					replace: true,
+				});
+			}
+		} catch (error) {
+			Toast({
+				title: "Error",
+				type: "error",
+				message: "No se pudo omitir el formulario.",
+			});
+		}
+	};
+
 	return {
 		isDialogOpen,
 		setIsDialogOpen,
@@ -226,5 +260,6 @@ export const useReportSubmission = (
 		handleCancelEdit,
 		deleteMutation,
 		updateMutation,
+		skipForm,
 	};
 };

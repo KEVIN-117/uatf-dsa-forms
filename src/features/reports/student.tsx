@@ -1,5 +1,5 @@
 import { notFound } from "@tanstack/react-router";
-import { User } from "lucide-react";
+import { AlertCircle, User } from "lucide-react";
 import { useMemo } from "react";
 import { usePeriodState } from "#/app/providers/period-provider";
 import { AlertDialogCustom } from "#/shared/components/Dialog";
@@ -8,10 +8,13 @@ import { DynamicReportPageSkeleton } from "#/shared/components/DynamicReportPage
 import { DynamicReportPageState } from "#/shared/components/DynamicReportPageState";
 import { PageHeader } from "#/shared/components/PageHeader";
 import { useFormTemplateByModuleAndId } from "#/shared/hooks/useFormBuilder";
+import { useGetResponses } from "#/shared/hooks/useFormResponses";
+import { FormModules } from "#/shared/types/dynamic-form";
 import type { FormTemplateDef } from "#/shared/types/dynamic-form";
 import { useAuth } from "../auth/providers/AuthProvider";
 import { useProgramModalities } from "../reference-data/hooks/useProgramModalities";
 import { useReportSubmission } from "./hooks/useReportSubmission";
+import { useSubmissionGuard } from "./hooks/useSubmissionGuard";
 import {
 	useSubmittedModalities,
 	useSubmittedResponseLimits,
@@ -35,8 +38,9 @@ export function StudentReport({
 		"student",
 		formId,
 	);
-	const { programId } = useAuth();
+	const { programId, userRole, user } = useAuth();
 	const { data: allowedModalities } = useProgramModalities(programId ?? "");
+	const { data: responses = [] } = useGetResponses(FormModules.student, formId);
 
 	// Para formularios con step > 1, obtener las modalidades registradas en el formulario anterior (step - 1)
 	const previousTemplateId = useMemo(() => {
@@ -85,6 +89,14 @@ export function StudentReport({
 		handleCancelEdit,
 	} = useReportSubmission(formId, template, onSuccess);
 
+	// Guardia de envíos
+	const directorResponses = useMemo(() => {
+		if (userRole !== "director") return [];
+		return responses.filter((r) => r.submittedBy === user?.email);
+	}, [responses, userRole, user?.email]);
+
+	const submissionGuard = useSubmissionGuard(template, directorResponses, userRole ?? "");
+
 	const filteredTemplate = useMemo(() => {
 		if (!template) return;
 
@@ -123,6 +135,40 @@ export function StudentReport({
 			}),
 		} as FormTemplateDef;
 	}, [template, allowedModalities, submittedModalities]);
+
+	// Template con opciones de select ya usadas removidas
+	const guardedTemplate = useMemo(() => {
+		const base = filteredTemplate || template;
+		if (!base) return;
+		if (
+			userRole !== "director" ||
+			submissionGuard.submissionType !== "multi" ||
+			!submissionGuard.selectFieldName ||
+			submissionGuard.usedSelectValues.length === 0
+		) {
+			return base;
+		}
+
+		return {
+			...base,
+			fields: base.fields.map((field) => {
+				if (
+					field.name === submissionGuard.selectFieldName &&
+					field.type === "select" &&
+					field.options
+				) {
+					return {
+						...field,
+						options: field.options.filter(
+							(opt) =>
+								!submissionGuard.usedSelectValues.includes(String(opt.label)),
+						),
+					};
+				}
+				return field;
+			}),
+		} as FormTemplateDef;
+	}, [filteredTemplate, template, submissionGuard, userRole]);
 
 	// 3. EARLY RETURNS
 	if (isPending) {
@@ -171,10 +217,17 @@ export function StudentReport({
 				</>
 			)}
 
-			{!isReadOnly && (
+			{!isReadOnly && !submissionGuard.canSubmit && !editingId && (
+				<div className="bg-amber-500/10 border border-amber-500/20 text-amber-600 rounded-lg p-4 text-sm font-medium flex items-center gap-2">
+					<AlertCircle className="size-4 shrink-0" />
+					{submissionGuard.disabledReason}
+				</div>
+			)}
+
+			{!isReadOnly && (submissionGuard.canSubmit || editingId) && (
 				<DynamicForm
 					key={`edit-${editingId ?? "new"}`}
-					template={filteredTemplate!}
+					template={editingId ? filteredTemplate! : guardedTemplate!}
 					className="grid grid-cols-1 md:grid-cols-2 gap-4"
 					onSubmit={handleFormSubmitRequest}
 					resetForm={resetForm}

@@ -24,16 +24,21 @@ export function ReceiptSummary({
 	const handleDownloadPDF = useCallback(() => {
 		const html = generateReceiptHTML(groups, directorName, faculty, program);
 
-		const printWindow = window.open("", "_blank");
-		if (!printWindow) return;
+		const htmlWithPrint = html.replace(
+			"</body>",
+			"<script>window.onload = function() { setTimeout(function() { window.print(); }, 300); }</script></body>"
+		);
 
-		printWindow.document.write(html);
-		printWindow.document.close();
-		printWindow.focus();
+		const blob = new Blob([htmlWithPrint], { type: "text/html;charset=utf-8" });
+		const url = URL.createObjectURL(blob);
 
-		printWindow.onload = () => {
-			printWindow.print();
-		};
+		window.open(url, "_blank", "noopener,noreferrer");
+
+		setTimeout(() => {
+			URL.revokeObjectURL(url);
+		}, 5000);
+
+
 	}, [groups, directorName, faculty, program]);
 
 	return (
@@ -113,12 +118,12 @@ export function ReceiptSummary({
 								const lastDate =
 									group.responses.length > 0
 										? new Date(
-												Math.max(...group.responses.map((r) => r.createdAt)),
-											).toLocaleDateString("es-ES", {
-												day: "2-digit",
-												month: "short",
-												year: "numeric",
-											})
+											Math.max(...group.responses.map((r) => r.createdAt)),
+										).toLocaleDateString("es-ES", {
+											day: "2-digit",
+											month: "short",
+											year: "numeric",
+										})
 										: "-";
 
 								return (

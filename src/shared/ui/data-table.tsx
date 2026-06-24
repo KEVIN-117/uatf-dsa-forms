@@ -44,6 +44,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "#/shared/ui/select";
+import { Role } from "../types";
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 	const itemRank = rankItem(row.getValue(columnId), value);
@@ -57,6 +58,7 @@ interface DataTableProps<TData, TValue> {
 	searchKey?: string;
 	searchPlaceholder?: string;
 	showColumnToggle?: boolean;
+	role: Role;
 }
 
 export function DataTable<TData, TValue>({
@@ -65,6 +67,7 @@ export function DataTable<TData, TValue>({
 	searchKey,
 	searchPlaceholder = "Buscar...",
 	showColumnToggle = false,
+	role
 }: DataTableProps<TData, TValue>) {
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -205,6 +208,14 @@ export function DataTable<TData, TValue>({
 							{table.getHeaderGroups().map((headerGroup) => (
 								<tr key={headerGroup.id}>
 									{headerGroup.headers.map((header) => {
+										if (role !== Role.ADMIN) {
+											return (
+												<th key={header.id}
+													className="px-5 py-3.5 font-semibold whitespace-nowrap align-top">
+													{flexRender(header.column.columnDef.header, header.getContext())}
+												</th>
+											)
+										}
 										return (
 											<th
 												key={header.id}
@@ -230,13 +241,13 @@ export function DataTable<TData, TValue>({
 																			<ChevronDown className="size-3.5 text-primary" />
 																		),
 																	}[header.column.getIsSorted() as string] ?? (
-																		<ChevronsUpDown className="size-3.5" />
-																	)}
+																			<ChevronsUpDown className="size-3.5" />
+																		)}
 																</span>
 															)}
 														</div>
 														{header.column.columnDef.header !== "Estado" &&
-														header.column.getCanFilter() ? (
+															header.column.getCanFilter() ? (
 															<div>
 																<Input
 																	placeholder={`Filtrar...`}

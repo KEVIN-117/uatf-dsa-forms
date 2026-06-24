@@ -373,7 +373,7 @@ export function DashboardHome() {
 									size="sm"
 									className="gap-2 font-semibold hover-lift shrink-0"
 								>
-									<Link to="/formStatus/success" search={{ completed: true }}>
+									<Link to="/formStatus/success">
 										Ver comprobante
 									</Link>
 								</Button>
@@ -403,50 +403,6 @@ export function DashboardHome() {
 									count={myResponsesByModule[mod] ?? 0}
 								/>
 							))}
-						</CardContent>
-					</Card>
-
-					<Card className="border-border/40 bg-card/80 backdrop-blur-sm shadow-sm overflow-hidden dash-animate dash-delay-4">
-						<CardHeader>
-							<div className="flex items-center gap-3">
-								<div className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary/10">
-									<CalendarDays className="w-4.5 h-4.5 text-primary" />
-								</div>
-								<div>
-									<CardTitle className="text-base">
-										Actividad reciente
-									</CardTitle>
-									<CardDescription className="text-xs">
-										Tus últimos formularios enviados
-									</CardDescription>
-								</div>
-							</div>
-						</CardHeader>
-						<CardContent>
-							{responsesLoading ? (
-								<div className="flex items-center justify-center py-8">
-									<div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-								</div>
-							) : myResponses.length === 0 ? (
-								<div className="flex flex-col items-center justify-center py-10 text-center">
-									<div className="w-14 h-14 rounded-2xl bg-muted/60 flex items-center justify-center mb-3">
-										<FileText className="w-7 h-7 text-muted-foreground/50" />
-									</div>
-									<p className="text-sm font-medium text-muted-foreground">
-										Aún no tienes formularios enviados
-									</p>
-									<p className="text-xs text-muted-foreground/70 mt-1">
-										Tus envíos aparecerán aquí una vez que completes un
-										formulario.
-									</p>
-								</div>
-							) : (
-								<div className="space-y-2">
-									{myResponses.slice(0, 8).map((resp: FormResponseDef) => (
-										<ResponseItem key={resp.id} resp={resp} />
-									))}
-								</div>
-							)}
 						</CardContent>
 					</Card>
 				</>

@@ -3,54 +3,54 @@ import { MODULE_LABELS } from "#/features/reports/utils/moduleLabels";
 
 /** Replace HTML-special characters to prevent XSS when interpolating into raw HTML. */
 function escapeHTML(str: string): string {
-	return str
-		.replace(/&/g, "&amp;")
-		.replace(/</g, "&lt;")
-		.replace(/>/g, "&gt;")
-		.replace(/"/g, "&quot;")
-		.replace(/'/g, "&#39;");
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 export function generateReceiptHTML(
-	groups: TemplateSummary[],
-	directorName: string,
-	faculty: string,
-	program: string,
+  groups: TemplateSummary[],
+  directorName: string,
+  faculty: string,
+  program: string,
 ): string {
-	const now = new Date().toLocaleDateString("es-ES", {
-		day: "2-digit",
-		month: "long",
-		year: "numeric",
-		hour: "2-digit",
-		minute: "2-digit",
-	});
+  const now = new Date().toLocaleDateString("es-ES", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
-	const totalRecords = groups.reduce((sum, g) => sum + g.responses.length, 0);
+  const totalRecords = groups.reduce((sum, g) => sum + g.responses.length, 0);
 
-	const rows = groups
-		.map((g) => {
-			const moduleLabel = MODULE_LABELS[g.template.module] ?? g.template.module;
-			const lastDate =
-				g.responses.length > 0
-					? new Date(
-							Math.max(...g.responses.map((r) => r.createdAt)),
-						).toLocaleDateString("es-ES", {
-							day: "2-digit",
-							month: "short",
-							year: "numeric",
-						})
-					: "-";
-			return `<tr>
+  const rows = groups
+    .map((g) => {
+      const moduleLabel = MODULE_LABELS[g.template.module] ?? g.template.module;
+      const lastDate =
+        g.responses.length > 0
+          ? new Date(
+            Math.max(...g.responses.map((r) => r.createdAt)),
+          ).toLocaleDateString("es-ES", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })
+          : "-";
+      return `<tr>
         <td>${g.template.step}</td>
         <td>${escapeHTML(moduleLabel)}</td>
         <td>${escapeHTML(g.template.title)}</td>
         <td style="text-align:center;font-weight:600">${g.responses.length}</td>
         <td>${escapeHTML(lastDate)}</td>
       </tr>`;
-		})
-		.join("");
+    })
+    .join("");
 
-	return `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -67,10 +67,21 @@ export function generateReceiptHTML(
       margin: 0 auto;
     }
     .header {
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       border-bottom: 2px solid #1e40af;
       padding-bottom: 14px;
       margin-bottom: 18px;
+    }
+    .header-text {
+      text-align: center;
+      flex: 1;
+    }
+    .header img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
     }
     .header h1 { font-size: 18px; color: #1e40af; margin-bottom: 4px; }
     .header h2 { font-size: 12px; font-weight: normal; color: #475569; }
@@ -144,8 +155,12 @@ export function generateReceiptHTML(
 </head>
 <body>
   <div class="header">
+    <img src="${window.location.origin}/logoUATF.png" alt="Logo UATF" />
+    <div class="header-text">
     <h1>Universidad Autónoma Tomás Frías</h1>
     <h2>Comprobante de Envío de Reportes Académicos</h2>
+    </div>
+    <img src="${window.location.origin}/dsa-icon.png" alt="Logo DSA" />
   </div>
 
   <div class="info-box">
